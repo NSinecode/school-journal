@@ -10,10 +10,10 @@
 ## UI
 - Cross platform 
 - Production 
--- Minimize delay on inputs
--- Minimize server requests
--- Cash system 
--- Lazy downloading (unimportant packages)
+   - Minimize delay on inputs
+   - Minimize server requests
+   - Cash system 
+   - Lazy downloading (unimportant packages)
 
 ## Test
 - Basic functional testing
