@@ -11,7 +11,7 @@ export default function LoginPage() {
   return (
     <ClientOnly>
       <SignIn
-        forceRedirectUrl="/todo"
+        forceRedirectUrl="/account-role"
         appearance={{ baseTheme: theme === "dark" ? dark : undefined }}
       />
     </ClientOnly>
