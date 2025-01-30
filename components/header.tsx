@@ -27,6 +27,12 @@ export default function Header() {
           >
             Home
           </Link>
+          <Link
+            href="/Courses"
+            className="hover:underline"
+          >
+            Courses
+          </Link>
           <SignedIn>
             <Link
               href="/todo"
