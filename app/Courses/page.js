@@ -13,7 +13,6 @@ export default function MyPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
-  const [newImage, setNewImage] = useState("");
   const [isError, setIsError] = useState(false);
   const [shake, setShake] = useState(false);
 
