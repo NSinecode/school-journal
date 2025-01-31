@@ -4,11 +4,6 @@ h2 {
   text-size-adjust: 500px;
 }
 
-button {
-  margin-top: 20px;
-  background-color: blue;
-  color: white;
-}
 .card {
   position: relative;
   border-radius: 8px;
@@ -17,7 +12,7 @@ button {
   background-color: white;
 }
 .card:hover {
-  transform: scale(1.05); /* Увеличивает карточку */
+  transform: scale(1.1); /* Увеличивает карточку */
   z-index: 1; /* Делаем карточку на переднем плане */
 }
 
@@ -69,7 +64,7 @@ button {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(255, 255, 255, 0.7); /* Белая плашка с полупрозрачностью */
+  background-color: rgba(255, 255, 255, 1.0); /* Белая плашка с полупрозрачностью */
   padding: 10px;
   text-align: left; /* Текст в плашке выравнивается по левому краю */
   width: 100%;
@@ -82,4 +77,15 @@ button {
   color: black;
   margin: 0;
   word-wrap: break-word; /* Перенос слов на новую строку */
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+}
+
+.animate-shake {
+  animation: shake 0.3s ease-in-out;
 }

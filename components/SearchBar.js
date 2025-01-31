@@ -1,18 +1,11 @@
 import { useState } from "react";
 
-export default function SearchBar({ data }) {
+export default function SearchBar({ courses }) {
   const [query, setQuery] = useState("");
 
-  const articles = [
-    { id: 1, title: "Учимся JavaScript", imageUrl: "/_DSC168690.jpg"},
-    { id: 2, title: "React: руководство"},
-    { id: 3, title: "Next.js для начинающих"},
-    { id: 4, title: "Trigonometry"}
-  ];
-
   // Фильтрация статей по заголовку
-  const filteredArticles = articles.filter((article) =>
-    article.title.toLowerCase().includes(query.toLowerCase())
+  const filteredArticles = courses.filter((course) =>
+    course.title.toLowerCase().includes(query.toLowerCase())
   );
 
   return (
@@ -26,23 +19,23 @@ export default function SearchBar({ data }) {
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {filteredArticles.length > 0 ? (
-            filteredArticles.map((article) => (
-            <div key={article.id} className="card mt-5">
+            filteredArticles.map((course) => (
+            <div key={course.id} className="card mt-5">
                 <div className="card-image">
-                {article.imageUrl ? (
+                {course.imageUrl ? (
                     <img
-                    src={article.imageUrl} // изображение, если оно есть
-                    alt={article.title}
+                    src={course.imageUrl} // изображение, если оно есть
+                    alt={course.title}
                     className="card-img"
                     />
                 ) : (
                     <div className="no-image-bg">
-                    <h2 className="no-image-title">{article.title}</h2>
+                    <h2 className="no-image-title">{course.title}</h2>
                     </div>
                 )}
                 </div>
                 <div className="card-content">
-                <h3 className="card-title">{article.title}</h3>
+                <h3 className="card-title">{course.title}</h3>
                 </div>
             </div>
             ))
