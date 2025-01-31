@@ -36,25 +36,6 @@ export default function MyPage() {
     setIsError(false); 
   };
 
-  // Функция добавления нового курса
-  const addCourse = () => {
-    if (!newTitle.trim()) {
-      setIsError(true);
-      return;
-    };
-
-    const newCourse = {
-      id: courses.length + 1,
-      title: newTitle,
-      imageUrl: newImage || null,
-    };
-
-    setCourses([...courses, newCourse]);
-    setNewTitle("");
-    setNewImage("");
-    setIsError(false);
-    toggleModal();
-  };
 
   return (
     <>
@@ -102,7 +83,6 @@ export default function MyPage() {
         </div>
       )}
       </div>
-      <script src="/Courses/script.js" />
       <link rel="stylesheet" href="/Courses/style.css" />
     </>
   );
