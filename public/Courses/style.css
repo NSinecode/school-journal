@@ -4,6 +4,10 @@ h2 {
   text-size-adjust: 500px;
 }
 
+.filter {
+  background-color: gray;
+}
+
 .card {
   position: relative;
   border-radius: 8px;
@@ -49,7 +53,8 @@ h2 {
   overflow: hidden; /* Текст не выйдет за пределы */
 }
 
-.no-image-title {
+.no-image-title { 
+  user-select: none;
   font-size: 24px;
   font-weight: bold;
   color: rgb(177, 177, 177);

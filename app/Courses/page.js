@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
+import { SignedIn } from "@clerk/nextjs";
 import Head from "next/head";
 import SearchBar from "../../components/SearchBar";
 
-export default function MyPage() {
+export default function Courses() {
   
   const [courses, setCourses] = useState([
     { id: 1, title: "Основы программирования"},
@@ -39,21 +40,23 @@ export default function MyPage() {
   return (
     <>
       <Head>
-        <title>Моя страница</title>
+        <title>Courses</title>
       </Head>
       <div>
         <h1 className="flex flex-col items-center p-5">Courses searching</h1>
-        <div className="flex justify-center">
-          <button onClick={toggleModal} className="flex justify-center p-2 bg-blue-500 text-white rounded-lg mb-4">
-            Create course
-          </button>
-        </div>
+        <SignedIn>
+          <div className="flex justify-center">
+            <button onClick={toggleModal} className="flex justify-center p-2 bg-blue-500 text-white rounded-lg mb-4">
+              Create course
+            </button>
+          </div>
+        </SignedIn>
         <SearchBar courses={courses}/>
         {/* Модальное окно */}
         {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div
-            className={`bg-black p-6 w-[400px] rounded-lg shadow-lg transition-transform ${
+            className={`bg-gray-800 p-6 w-[400px] rounded-lg shadow-lg transition-transform ${
               shake ? "animate-shake" : ""
             }`}
           >
