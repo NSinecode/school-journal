@@ -16,7 +16,7 @@
         },
         "role": {
           "name": "role",
-          "type": "text",
+          "type": "role",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
