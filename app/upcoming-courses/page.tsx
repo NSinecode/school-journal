@@ -17,7 +17,7 @@ export default function UpcomingCourses() {
         </div>
         <h1 className="text-4xl font-bold mb-4">Coming Soon</h1>
         <p className="text-lg">
-          We're working on something awesome. Stay tuned!
+          We&apos;re working on something awesome. Stay tuned!
         </p>
       </motion.div>
     </div>
