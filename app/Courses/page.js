@@ -5,12 +5,6 @@ import Head from "next/head";
 import SearchBar from "../../components/SearchBar";
 
 export default function Courses() {
-  
-  const [courses, setCourses] = useState([
-    { id: 1, title: "Основы программирования"},
-    { id: 2, title: "Frontend-разработка с React"},
-    { id: 3, title: "Backend на Node.js"},
-  ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -51,7 +45,7 @@ export default function Courses() {
             </button>
           </div>
         </SignedIn>
-        <SearchBar courses={courses}/>
+        <SearchBar/>
         {/* Модальное окно */}
         {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

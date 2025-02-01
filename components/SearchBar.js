@@ -1,6 +1,22 @@
+"use client";
 import { useState, useRef, useEffect } from "react";
 
-export default function SearchBar({ courses }) {
+export default function SearchBar() {
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const res = await fetch("/api/courses");
+        if (!res.ok) throw new Error("Ошибка загрузки курсов");
+        const data = await res.json();
+        setCourses(data);
+      } catch (error) {
+        console.error("Ошибка при загрузке:", error);
+      }
+    }
+    fetchCourses();
+  }, []);
   const [query, setQuery] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef(null);
