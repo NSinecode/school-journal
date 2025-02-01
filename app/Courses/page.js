@@ -34,13 +34,11 @@ export default function Courses() {
   }, []);
   
   useEffect(() => {
-    console.log("Fetching courses...");
       async function fetchCourses() {
         try {
           const res = await fetch("/api/courses");
           if (!res.ok) throw new Error("Ошибка загрузки курсов");
           const data = await res.json();
-          console.log("Loaded courses:", data);
           setCourses(data);
         } catch (error) {
           console.error("Ошибка при загрузке:", error);
@@ -48,6 +46,27 @@ export default function Courses() {
       }
       fetchCourses();
     }, []);
+
+    const handleClick = async () => {
+      if (!delId) return; // Если id не задано, ничего не делаем
+  
+      try {
+        const res = await fetch(`/api/delCourse/${delId}`, {
+          method: "POST", // или POST, если необходимо отправить данные в теле
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+  
+        if (!res.ok) throw new Error("Ошибка при получении данных");
+        
+        setCourses((prevCourses) => prevCourses.filter((course) => (course.id != delId)))
+        const data = await res.json();
+        setResponse(data); // Сохраняем ответ от API
+      } catch (error) {
+        console.error("Ошибка при запросе:", error);
+      }
+    };
 
   const handleAddCourse = async () => {
     const tempId = Date.now();
@@ -91,7 +110,7 @@ export default function Courses() {
             </button>
           </div>
         </SignedIn>
-        <SearchBar courses = { courses }/>
+        <SearchBar courses = { courses } userId = { userId }/>
         {/* Модальное окно */}
         {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

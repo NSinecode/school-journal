@@ -1,6 +1,6 @@
 "use server";
 
-import { getCourses, createCourse } from "@/db/queries/courses_queries";
+import { getCourses, createCourse, deleteCourse } from "@/db/queries/courses_queries";
 import { InsertCourse } from "@/db/schema/course-schema";
 import { ActionState } from "@/types";
 import { revalidatePath } from "next/cache";
@@ -23,5 +23,16 @@ export async function createCourseAction(course: InsertCourse): Promise<ActionSt
   } catch (error) {
     console.error("Error creating course:", error);
     return { status: "error", message: "Failed to create course" };
+  }
+}
+
+export async function deleteCourseAction(id: number): Promise<ActionState> {
+  try {
+    await deleteCourse(id);
+    revalidatePath("/Courses");
+    return { status: "success", message: "Course deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    return { status: "error", message: "Failed to delete course" };
   }
 }
