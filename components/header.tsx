@@ -27,6 +27,12 @@ export default function Header() {
           >
             Home
           </Link>
+          <Link
+            href="/courses"
+            className="hover:underline"
+          >
+            Courses
+          </Link>
           <SignedIn>
             <Link
               href="/todo"
@@ -67,6 +73,14 @@ export default function Header() {
                 Home
               </Link>
             </li>
+            <li>
+              <Link
+                href="/courses"
+                className="hover:underline"
+              >
+                Courses
+              </Link>
+          </li>
             <SignedIn>
               <li>
                 <Link
