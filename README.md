@@ -9,7 +9,7 @@
 
 ## UI
 - Cross platform 
-- Production 
+- Production  
    - Minimize delay on inputs
    - Minimize server requests
    - Cash system 
