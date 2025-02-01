@@ -1,7 +1,7 @@
-CREATE TYPE "public"."membership" AS ENUM('free', 'pro');--> statement-breakpoint
+CREATE TYPE "public"."role" AS ENUM('student', 'teacher', 'admin');--> statement-breakpoint
 CREATE TABLE "profiles" (
 	"user_id" text PRIMARY KEY NOT NULL,
-	"membership" "membership" DEFAULT 'free' NOT NULL,
+	"role" "role" DEFAULT 'student' NOT NULL,
 	"stripe_customer_id" text,
 	"stripe_subscription_id" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,

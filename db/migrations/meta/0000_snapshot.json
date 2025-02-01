@@ -14,13 +14,13 @@
           "primaryKey": true,
           "notNull": true
         },
-        "membership": {
-          "name": "membership",
-          "type": "membership",
+        "role": {
+          "name": "role",
+          "type": "role",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'free'"
+          "default": "'student'"
         },
         "stripe_customer_id": {
           "name": "stripe_customer_id",
@@ -112,12 +112,13 @@
     }
   },
   "enums": {
-    "public.membership": {
-      "name": "membership",
+    "public.role": {
+      "name": "role",
       "schema": "public",
       "values": [
-        "free",
-        "pro"
+        "student",
+        "teacher",
+        "admin"
       ]
     }
   },

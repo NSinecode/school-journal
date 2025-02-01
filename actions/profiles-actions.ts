@@ -4,6 +4,7 @@ import { createProfile, deleteProfile, getAllProfiles, getProfileByUserId, updat
 import { InsertProfile } from "@/db/schema/profile-schema";
 import { ActionState } from "@/types";
 import { revalidatePath } from "next/cache";
+import { auth } from "@clerk/nextjs/server";
 
 export async function createProfileAction(data: InsertProfile): Promise<ActionState> {
   try {
@@ -50,5 +51,18 @@ export async function deleteProfileAction(userId: string): Promise<ActionState> 
     return { status: "success", message: "Profile deleted successfully" };
   } catch (error) {
     return { status: "error", message: "Failed to delete profile" };
+  }
+}
+
+export async function setUserRoleAction(role: "student" | "teacher"): Promise<ActionState> {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+    
+    const updatedProfile = await updateProfile(userId, { role });
+    revalidatePath("/profile");
+    return { status: "success", message: "Role updated successfully", data: updatedProfile };
+  } catch (error) {
+    return { status: "error", message: "Failed to update role" };
   }
 }

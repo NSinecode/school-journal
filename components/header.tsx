@@ -14,7 +14,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-primary text-primary-foreground shadow-md">
+    <header className="border-b bg-background">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <CheckSquare className="h-6 w-6" />
@@ -62,7 +62,7 @@ export default function Header() {
         </div>
       </div>
       {isMenuOpen && (
-        <nav className="md:hidden bg-primary-foreground text-primary p-4">
+        <nav className="md:hidden p-4">
           <ul className="space-y-2">
             <li>
               <Link
