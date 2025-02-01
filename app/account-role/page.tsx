@@ -3,11 +3,25 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { setUserRoleAction } from "@/actions/profiles-actions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getUserRole } from "@/actions/profiles-actions";
 
 export default function AccountRolePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const checkRole = async () => {
+      const role = await getUserRole();
+      if (role === "student") {
+        router.push("/upcoming-courses");
+      } else if (role === "teacher") {
+        router.push("/courses");
+      }
+    };
+    
+    checkRole();
+  }, [router]);
 
   const handleRoleSelect = async (role: "student" | "teacher") => {
     try {
@@ -18,7 +32,7 @@ export default function AccountRolePage() {
         throw new Error(result.message);
       }
       
-      router.push(role === "teacher" ? "/teacher-dashboard" : "/student-dashboard");
+      router.push(role === "teacher" ? "/courses" : "/upcoming-courses");
     } catch (error) {
       console.error("Error setting role:", error);
     } finally {

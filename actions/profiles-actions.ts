@@ -5,6 +5,7 @@ import { InsertProfile } from "@/db/schema/profile-schema";
 import { ActionState } from "@/types";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
+import { db } from "@/db/db";
 
 export async function createProfileAction(data: InsertProfile): Promise<ActionState> {
   try {
@@ -64,5 +65,21 @@ export async function setUserRoleAction(role: "student" | "teacher"): Promise<Ac
     return { status: "success", message: "Role updated successfully", data: updatedProfile };
   } catch (error) {
     return { status: "error", message: "Failed to update role" };
+  }
+}
+
+export async function getUserRole() {
+  try {
+    const { userId } = await auth();
+    if (!userId) return null;
+    
+    const profile = await db.query.profiles.findFirst({
+      where: (profiles, { eq }) => eq(profiles.userId, userId)
+    });
+    
+    return profile?.role;
+  } catch (error) {
+    console.error("Error fetching user role:", error);
+    return null;
   }
 }
