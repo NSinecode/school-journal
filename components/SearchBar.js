@@ -1,22 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 
-export default function SearchBar() {
-  const [courses, setCourses] = useState([]);
-
-  useEffect(() => {
-    async function fetchCourses() {
-      try {
-        const res = await fetch("/api/courses");
-        if (!res.ok) throw new Error("Ошибка загрузки курсов");
-        const data = await res.json();
-        setCourses(data);
-      } catch (error) {
-        console.error("Ошибка при загрузке:", error);
-      }
-    }
-    fetchCourses();
-  }, []);
+export default function SearchBar( { courses } ) {
   const [query, setQuery] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef(null);
@@ -34,9 +19,9 @@ export default function SearchBar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isFilterOpen]);
 
-  const filteredArticles = courses.filter((course) =>
-    course.title.toLowerCase().includes(query.toLowerCase())
-  );
+  const filteredArticles = courses.filter((course) => course.title.toLowerCase().includes(query.toLowerCase()))
+  console.log(filteredArticles);
+  console.log(courses);
 
   return (
     <div className="relative min-h-screen">
@@ -110,8 +95,8 @@ export default function SearchBar() {
         )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
-          {filteredArticles.length > 0 ? (
-              filteredArticles.map((course) => (
+          {filteredArticles && filteredArticles.length > 0 ? (
+              filteredArticles.map((course) => course.id ? (
               <div key={course.id} className="card mt-5">
                   <div className="card-image">
                   {course.imageUrl ? (
@@ -130,7 +115,7 @@ export default function SearchBar() {
                   <h3 className="card-title">{course.title}</h3>
                   </div>
               </div>
-              ))
+              ) : null)
           ) : (
               <p className="col-span-full text-gray-500 text-center mt-4">No results</p>
           )}

@@ -18,7 +18,7 @@ export async function getCoursesAction(): Promise<ActionState> {
 export async function createCourseAction(course: InsertCourse): Promise<ActionState> {
   try {
     const newCourse = await createCourse(course);
-    revalidatePath("/Course");
+    revalidatePath("/Courses");
     return { status: "success", message: "Course created successfully", data: newCourse };
   } catch (error) {
     console.error("Error creating course:", error);

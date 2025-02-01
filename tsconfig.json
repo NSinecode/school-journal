@@ -23,6 +23,6 @@
       "@/db/*": ["./db/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/SearchBar.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "components/SearchBar.ts", "app/api/addCourse/route.js"],
   "exclude": ["node_modules"]
 }

@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect } from "react";
 import { createCourseAction } from "@/actions/courses-actions";
 import { SignedIn } from "@clerk/nextjs";
@@ -8,6 +10,7 @@ import SearchBar from "../../components/SearchBar";
 
 export default function Courses() {
   const router = useRouter();
+  const [courses, setCourses] = useState([]);
   const [userId, setUserId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -29,8 +32,25 @@ export default function Courses() {
 
     fetchUserId();
   }, []);
+  
+  useEffect(() => {
+    console.log("Fetching courses...");
+      async function fetchCourses() {
+        try {
+          const res = await fetch("/api/courses");
+          if (!res.ok) throw new Error("Ошибка загрузки курсов");
+          const data = await res.json();
+          console.log("Loaded courses:", data);
+          setCourses(data);
+        } catch (error) {
+          console.error("Ошибка при загрузке:", error);
+        }
+      }
+      fetchCourses();
+    }, []);
 
   const handleAddCourse = async () => {
+    const tempId = Date.now();
     if (newTitle.trim() == "") {
       setIsError(true);
       setShake(true);
@@ -38,18 +58,22 @@ export default function Courses() {
       return;
     }
     const optimisticCourse = {
+      id: tempId,
       title: newTitle,
       author_id: userId
     };
 
-    await createCourseAction({ title: newTitle, author_id: userId});
+    setCourses((prevCourses) => [...prevCourses, optimisticCourse]);
+    await createCourseAction({title: newTitle, author_id: userId});
     setIsModalOpen(false);
-    window.location.reload();
+    setNewTitle("");
+    router.refresh();
   };
   // Функция открытия и закрытия окна
   const toggleModal = () =>  { 
     setIsModalOpen(!isModalOpen);
     setIsError(false); 
+    router.refresh();
   };
 
 
@@ -67,7 +91,7 @@ export default function Courses() {
             </button>
           </div>
         </SignedIn>
-        <SearchBar/>
+        <SearchBar courses = { courses }/>
         {/* Модальное окно */}
         {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

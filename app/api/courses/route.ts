@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCourses } from "@/db/queries/courses_queries"; // ✅ Путь к твоей функции
+import { revalidatePath } from "next/cache";
 
 export async function GET() {
   try {
