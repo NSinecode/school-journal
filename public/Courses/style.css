@@ -1,0 +1,96 @@
+/* style.css */
+h2 {
+  margin-top: 20px;
+  text-size-adjust: 500px;
+}
+
+.filter {
+  background-color: gray;
+}
+
+.card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+.card:hover {
+  transform: scale(1.1); /* Увеличивает карточку */
+  z-index: 1; /* Делаем карточку на переднем плане */
+}
+
+.card:not(:hover) {
+  transform: scale(0.95); /* Уменьшаем остальные карточки */
+  filter: brightness(0.9); /* Уменьшаем яркость остальных карточек */
+}
+
+/* Фон с картинкой */
+.card-image {
+  position: relative;
+  width: 100%;
+  height: 200px; /* Можно настроить для нужного размера */
+  overflow: hidden;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* В случае, если изображения нет, показываем фон с названием */
+.no-image-bg {
+  display: flex;
+  justify-content: flex-start; /* Текст будет прижаться к левой стороне */
+  align-items: flex-start; /* Текст будет прижат к верхнему краю */
+  height: 100%;
+  background-color: #f0f0f0; /* Цвет фона */
+  text-align: left; /* Выравнивание текста по левому краю */
+  padding: 5px;
+  white-space: wrap; /* Запрещает перенос строк */
+  overflow: hidden; /* Текст не выйдет за пределы */
+}
+
+.no-image-title { 
+  user-select: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: rgb(177, 177, 177);
+  text-transform: uppercase;
+  display: inline-block; /* Каждое слово будет на новой строке */
+  word-spacing: 999px; /* Слова не будут обрезаться */
+}
+
+/* Плашка с текстом */
+.card-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 1.0); /* Белая плашка с полупрозрачностью */
+  padding: 10px;
+  text-align: left; /* Текст в плашке выравнивается по левому краю */
+  width: 100%;
+}
+
+/* Текст на карточке */
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: black;
+  margin: 0;
+  word-wrap: break-word; /* Перенос слов на новую строку */
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+}
+
+.animate-shake {
+  animation: shake 0.3s ease-in-out;
+}
