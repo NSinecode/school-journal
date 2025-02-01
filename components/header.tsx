@@ -28,7 +28,7 @@ export default function Header() {
             Home
           </Link>
           <Link
-            href="/courses"
+            href="/Courses"
             className="hover:underline"
           >
             Courses
