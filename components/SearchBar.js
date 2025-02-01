@@ -85,10 +85,6 @@ export default function SearchBar() {
               <h4 className="font-semibold mb-2">Author</h4>
               <label className="block mb-2">
                 <input type="checkbox" className="mr-2" />
-                My teacher
-              </label>
-              <label className="block mb-2">
-                <input type="checkbox" className="mr-2" />
                 Me
               </label>
               <label className="block mb-2">

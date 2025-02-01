@@ -4,7 +4,8 @@ export const coursesTable = pgTable("courses", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   image_url: text("image_url"),
-  subject: text("subject").array()
+  subject: text("subject").array(),
+  author_id: text("author_id").notNull()
 });
 
 export type InsertCourse = typeof coursesTable.$inferInsert;

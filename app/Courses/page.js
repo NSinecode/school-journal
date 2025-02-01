@@ -1,29 +1,51 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createCourseAction } from "@/actions/courses-actions";
 import { SignedIn } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Head from "next/head";
 import SearchBar from "../../components/SearchBar";
 
 export default function Courses() {
-
+  const router = useRouter();
+  const [userId, setUserId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [isError, setIsError] = useState(false);
   const [shake, setShake] = useState(false);
 
-  const handleAddCourse = () => {
-    if (!newTitle.trim()) {
+  useEffect(() => {
+    async function fetchUserId() {
+      try {
+        const res = await fetch("/api/user");
+        if (!res.ok) throw new Error("Ошибка при получении userId");
+        
+        const data = await res.json();
+        setUserId(data.userId);
+      } catch (err) {
+        console.error("❌ Ошибка загрузки userId:", err);
+      }
+    }
+
+    fetchUserId();
+  }, []);
+
+  const handleAddCourse = async () => {
+    if (newTitle.trim() == "") {
       setIsError(true);
       setShake(true);
       setTimeout(() => setShake(false), 500); // Останавливаем тряску
       return;
     }
-    setCourses([...courses, { id: Date.now(), title: newTitle }]);
-    setNewTitle("");
-    setIsError(false);
-    setIsModalOpen(false);
-  };
+    const optimisticCourse = {
+      title: newTitle,
+      author_id: userId
+    };
 
+    await createCourseAction({ title: newTitle, author_id: userId});
+    setIsModalOpen(false);
+    window.location.reload();
+  };
   // Функция открытия и закрытия окна
   const toggleModal = () =>  { 
     setIsModalOpen(!isModalOpen);
