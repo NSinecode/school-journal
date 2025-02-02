@@ -35,14 +35,12 @@ export default function Header() {
           >
             Courses
           </Link>
-          <SignedIn>
-            <Link
-              href="/todo"
-              className="hover:underline"
-            >
-              Todos
-            </Link>
-          </SignedIn>
+          <Link
+            href="/forum"
+            className="hover:underline"
+          >
+            Forum
+          </Link>
         </nav>
         <div className="flex items-center space-x-4">
           <SignedOut>
