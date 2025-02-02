@@ -98,9 +98,12 @@ export default function PostFeed() {
         {filteredPosts.length > 0 ? (
           filteredPosts.map(post => (
             <div key={post.id} className="p-4 rounded shadow">
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full">
                 <UserRound className="w-4 h-4"></UserRound>
                 <p className="text-sm font-bold">{post.author_id}</p>
+                <span className="text-sm text-blue-900">{
+                    post.created_at.replaceAll("-", ".").replaceAll("T", " ").slice(0, -5)
+                }</span>
               </div>
               <h3 className="font-bold text-white whitespace-pre-line">{post.message}</h3>
               <div className="border-b border-t mt-2">
@@ -147,6 +150,7 @@ export default function PostFeed() {
         </div>
       </div>
       )}
+      <link rel="stylesheet" href="/Courses/style.css" />
     </div>
   );
 }
