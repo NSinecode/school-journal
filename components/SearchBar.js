@@ -31,7 +31,7 @@ export default function SearchBar( { courses, userId, delClick } ) {
 
   // Закрываем меню при клике вне его
   useEffect(() => {
-    function handleClickOutside(event) {
+    function handleClickOutside() {
       // if (filterRef.current && !filterRef.current.contains(event.target)) {
       //   setIsFilterOpen(false);
       // }

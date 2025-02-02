@@ -17,8 +17,10 @@ export default function Header() {
     <header className="border-b bg-background">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <CheckSquare className="h-6 w-6" />
-          <h1 className="text-xl font-bold">Todo App</h1>
+          <Link href="/" className="flex items-center space-x-2">
+            <CheckSquare className="h-6 w-6" />
+            <h1 className="text-xl font-bold">School Journal</h1>
+          </Link>
         </div>
         <nav className="hidden md:flex space-x-4">
           <Link
