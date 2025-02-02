@@ -21,3 +21,11 @@ export const createCourse = async (data: InsertCourse) => {
     throw new Error("Failed to create course");
   }
 };
+export const deleteCourse = async (id: number) => {
+  try {
+    await db.delete(coursesTable).where(eq(coursesTable.id, id));
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    throw new Error("Failed to delete course");
+  }
+};

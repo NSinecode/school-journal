@@ -22,5 +22,7 @@ CREATE TABLE "courses" (
 	"title" TEXT NOT NULL, 
 	"image_url" TEXT,
 	"subject" TEXT[] NOT NULL,
-	"author_id" TEXT NOT NULL
+	"author_id" TEXT NOT NULL,
+	"description" TEXT,
+	"tags" TEXT,
 );

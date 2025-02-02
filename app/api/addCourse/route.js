@@ -8,11 +8,7 @@ export async function POST(request) {
     return NextResponse.json({ error: "Missing data" }, { status: 400 });
   }
 
-  try {
-    const newCourse = await createCourse({ title, author_id });
-
-    return NextResponse.json(newCourse);
-  } catch (error) {
-    return NextResponse.json({ error: "Error creating course" }, { status: 500 });
-  }
+  
+  const newCourse = await createCourse({ title, author_id });
+  return NextResponse.json(newCourse);
 }
