@@ -7,7 +7,6 @@ import { SignedIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
 import SearchBar from "../../components/SearchBar";
-import { Description } from "@radix-ui/react-dialog";
 
 export default function Courses() {
   const router = useRouter();

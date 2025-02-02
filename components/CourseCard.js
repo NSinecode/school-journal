@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Pencil } from "lucide-react";
 import { Bookmark } from "lucide-react";
