@@ -7,7 +7,10 @@ import { Button } from "@/components/ui/button"
 export default function TestPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
-  const [showHint, setShowHint] = useState(false)
+
+  const handleAnswerSelect = (index: number) => {
+    setSelectedAnswer(index)
+  }
 
   return (
     <div className="p-8 max-w-4xl mx-auto">
@@ -29,10 +32,12 @@ export default function TestPage() {
               variant="outline"
               className={`w-full justify-between ${
                 selectedAnswer === index 
-                  ? "bg-blue-500 text-white hover:bg-blue-500" 
+                  ? index === questions[currentQuestion].correctAnswer
+                    ? "bg-green-500 text-white hover:bg-green-500"
+                    : "bg-red-500 text-white hover:bg-red-500"
                   : "text-white hover:text-white hover:bg-white/10"
               }`}
-              onClick={() => setSelectedAnswer(index)}
+              onClick={() => handleAnswerSelect(index)}
             >
               <span>
                 {String.fromCharCode(65 + index)}: {answer}
