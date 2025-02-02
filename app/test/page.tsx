@@ -52,12 +52,18 @@ export default function TestPage() {
         <Button 
           variant="outline"
           className="text-white hover:text-white hover:bg-white/10"
-          onClick={() => setCurrentQuestion(Math.max(0, currentQuestion - 1))}
+          onClick={() => {
+            setCurrentQuestion(Math.max(0, currentQuestion - 1))
+            setSelectedAnswer(null)
+          }}
         >
           Back
         </Button>
         <Button
-          onClick={() => setCurrentQuestion(Math.min(questions.length - 1, currentQuestion + 1))}
+          onClick={() => {
+            setCurrentQuestion(Math.min(questions.length - 1, currentQuestion + 1))
+            setSelectedAnswer(null)
+          }}
         >
           Next
         </Button>
