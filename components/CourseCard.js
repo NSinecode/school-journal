@@ -30,7 +30,7 @@ export default function CourseCard({ course, uId, dClick, isExp, isExpanded }) {
             <div
               className="w-full absolute inset-0 bg-gradient-to-l from-black/20 to-transparent 
             flex justify-end text-white p-4 text-right 
-            transition-opacity duration-300"
+            transition-all duration-300"
             >
               <p className="w-1/3 text-sm md:text-base break-words font-bold uppercase text-black">{course.description || "No description available"}</p>
             </div>

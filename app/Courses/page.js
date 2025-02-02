@@ -14,9 +14,13 @@ export default function Courses() {
   const [courses, setCourses] = useState([]);
   const [userId, setUserId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
+  const [newTags, setNewTags] = useState("");
+
   const [isError, setIsError] = useState(false);
+  const [isErrorTag, setIsErrorTag] = useState(false);
   const [shake, setShake] = useState(false);
 
   useEffect(() => {
@@ -76,16 +80,24 @@ export default function Courses() {
       setShake(true);
       setTimeout(() => setShake(false), 500); // Останавливаем тряску
       return;
+    } else if (newTags.includes("/")) {
+      setIsErrorTag(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500); // Останавливаем тряску
+      return;
     }
+    const newTagReady = newTags.replaceAll(", ", "/");
+    console.log(newTagReady);
     const optimisticCourse = {
       id: tempId,
       title: newTitle,
       author_id: userId,
-      description: newDescription
+      description: newDescription,
+      tags: newTagReady,
     };
 
     setCourses((prevCourses) => [...prevCourses, optimisticCourse]);
-    await createCourseAction({title: newTitle, author_id: userId, description: newDescription});
+    await createCourseAction({title: newTitle, author_id: userId, description: newDescription, tags: newTagReady});
     setIsModalOpen(false);
     setNewTitle("");
     setNewDescription("");
@@ -140,12 +152,27 @@ export default function Courses() {
               value={newDescription}
               onChange={(e) => {
                 setNewDescription(e.target.value);
-                setIsError(false);
+              }}
+              className="w-full p-2 border rounded mt-3 border-gray-300"
+              placeholder="Enter the description"
+            />
+            <input
+              type="text" 
+              spellCheck="false" 
+              autoComplete="off" 
+              autoCorrect="off" 
+              value={newTags}
+              onChange={(e) => {
+                setNewTags(e.target.value);
+                if (e.target.value.includes("/")) 
+                  setIsErrorTag(true);
+                else
+                  setIsErrorTag(false);
               }}
               className={`w-full p-2 border rounded mt-3 ${
-                isError ? "border-red-500" : "border-gray-300"
+                isErrorTag ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter the description"
+              placeholder="Enter the tags through a commma"
             />
             <div className="flex justify-end gap-2 mt-4">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-700 rounded">

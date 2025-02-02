@@ -9,6 +9,7 @@ export default function SearchBar( { courses, userId, delClick } ) {
   });
   const filtersRend = filters;
   const [query, setQuery] = useState("");
+  const [tagString, setTags] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef(null);
   const [expandedId, setExpandedId] = useState(null);
@@ -31,9 +32,9 @@ export default function SearchBar( { courses, userId, delClick } ) {
   // Закрываем меню при клике вне его
   useEffect(() => {
     function handleClickOutside(event) {
-      if (filterRef.current && !filterRef.current.contains(event.target)) {
-        setIsFilterOpen(false);
-      }
+      // if (filterRef.current && !filterRef.current.contains(event.target)) {
+      //   setIsFilterOpen(false);
+      // }
     }
     if (isFilterOpen) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -41,11 +42,18 @@ export default function SearchBar( { courses, userId, delClick } ) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isFilterOpen]);
 
-  const filteredArticles = courses.filter((course) => course.title.toLowerCase().includes(query.toLowerCase()))
+  const tagss = tagString === "" ? null : tagString.toLowerCase().split(" ");
+
+  const filteredCoursesSearch = courses.filter((course) => course.title.toLowerCase().includes(query.toLowerCase()))
+  
+  const filteredCoursesTags = tagss != null ? filteredCoursesSearch.filter((course) => tagss.every((tag) => {
+    const match = course.tags.toLowerCase().includes(tag);
+    return match;
+  })) : filteredCoursesSearch;
 
   const filteredCourses = isFilterActive
-    ? filteredArticles.filter((course) => (filters.authorMe == (course.author_id == userId)) || (filters.authorOther == (course.author_id != userId))) // фильтруем по категории
-    : filteredArticles; // если все чекбоксы `false`, показываем все
+    ? filteredCoursesTags.filter((course) => (filters.authorMe == (course.author_id == userId)) || (filters.authorOther == (course.author_id != userId))) // фильтруем по категории
+    : filteredCoursesTags; // если все чекбоксы `false`, показываем все
 
   return (
     <div className="relative min-h-screen">
@@ -127,10 +135,17 @@ export default function SearchBar( { courses, userId, delClick } ) {
               </label>
             </div>
           </div>
+            <input
+              type="text"
+              placeholder="Enter the tags through space"
+              className="flex-1 w-full p-2 border rounded-md mt-5"
+              value={tagString}
+              onChange={(e) => setTags(e.target.value)}
+            />
           </div>
         )}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10 grid-rows-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10 grid-rows-auto transition-all duration-300">
           {filteredCourses && filteredCourses.length > 0 ? (
               filteredCourses.map((course) => course.id ? (
                 <CourseCard 
