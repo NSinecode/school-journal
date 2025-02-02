@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import CourseCard from "./CourseCard";
 
 export default function SearchBar( { courses, userId, delClick } ) {
   const [filters, setFilters] = useState({
@@ -8,9 +9,13 @@ export default function SearchBar( { courses, userId, delClick } ) {
   });
   const filtersRend = filters;
   const [query, setQuery] = useState("");
-  const [delId, setDelId] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef(null);
+  const [expandedId, setExpandedId] = useState(null);
+
+  const handleExpand = (id) => {
+    setExpandedId((prev) => (prev === id ? null : id)); // Устанавливаем id карточки, которая расширена
+  };
 
   const handleCheckboxChange = (event) => {
     const { name, checked } = event.target;
@@ -125,27 +130,17 @@ export default function SearchBar( { courses, userId, delClick } ) {
           </div>
         )}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10 grid-rows-auto">
           {filteredCourses && filteredCourses.length > 0 ? (
               filteredCourses.map((course) => course.id ? (
-              <div key={course.id} className="card mt-5">
-                  <div className="card-image">
-                  {course.imageUrl ? (
-                      <img
-                      src={course.imageUrl} // изображение, если оно есть
-                      alt={course.title}
-                      className="card-img"
-                      />
-                  ) : (
-                      <div className="no-image-bg">
-                      <h2 className="no-image-title">{course.title}</h2>
-                      </div>
-                  )}
-                  </div>
-                  <div className="card-content">
-                  <h3 className="card-title">{course.title}</h3>
-                  </div>
-              </div>
+                <CourseCard 
+                  key={course.id} 
+                  course={course} 
+                  uId={ userId } 
+                  dClick={ delClick }
+                  isExpanded={expandedId === course.id}
+                  isExp={ handleExpand }
+                />
               ) : null)
           ) : (
               <p className="col-span-full text-gray-500 text-center mt-4">No results</p>

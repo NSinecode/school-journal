@@ -5,7 +5,8 @@ export const coursesTable = pgTable("courses", {
   title: text("title").notNull(),
   image_url: text("image_url"),
   subject: text("subject").array(),
-  author_id: text("author_id").notNull()
+  author_id: text("author_id").notNull(),
+  description: text("description"),
 });
 
 export type InsertCourse = typeof coursesTable.$inferInsert;
