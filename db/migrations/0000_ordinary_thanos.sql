@@ -16,3 +16,13 @@ CREATE TABLE "todos" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
+
+CREATE TABLE "courses" (
+	"id" SERIAL PRIMARY KEY,
+	"title" TEXT NOT NULL, 
+	"image_url" TEXT,
+	"subject" TEXT[] NOT NULL,
+	"author_id" TEXT NOT NULL,
+	"description" TEXT,
+	"tags" TEXT,
+);

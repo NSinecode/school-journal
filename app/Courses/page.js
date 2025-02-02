@@ -1,39 +1,113 @@
 "use client";
-import { useState } from "react";
+export const dynamic = "force-dynamic";
+
+import { useState, useEffect } from "react";
+import { createCourseAction } from "@/actions/courses-actions";
 import { SignedIn } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Head from "next/head";
 import SearchBar from "../../components/SearchBar";
+import { Description } from "@radix-ui/react-dialog";
 
 export default function Courses() {
-  
-  const [courses, setCourses] = useState([
-    { id: 1, title: "Основы программирования"},
-    { id: 2, title: "Frontend-разработка с React"},
-    { id: 3, title: "Backend на Node.js"},
-  ]);
-
+  const router = useRouter();
+  const [courses, setCourses] = useState([]);
+  const [userId, setUserId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [newTitle, setNewTitle] = useState("");
+  const [newDescription, setNewDescription] = useState("");
+  const [newTags, setNewTags] = useState("");
+
   const [isError, setIsError] = useState(false);
+  const [isErrorTag, setIsErrorTag] = useState(false);
   const [shake, setShake] = useState(false);
 
-  const handleAddCourse = () => {
-    if (!newTitle.trim()) {
+  useEffect(() => {
+    async function fetchUserId() {
+      try {
+        const res = await fetch("/api/user");
+        if (!res.ok) throw new Error("Ошибка при получении userId");
+        
+        const data = await res.json();
+        setUserId(data.userId);
+      } catch (err) {
+        console.error("❌ Ошибка загрузки userId:", err);
+      }
+    }
+
+    fetchUserId();
+  }, []);
+  
+  useEffect(() => {
+      async function fetchCourses() {
+        try {
+          const res = await fetch("/api/courses");
+          if (!res.ok) throw new Error("Ошибка загрузки курсов");
+          const data = await res.json();
+          setCourses(data);
+        } catch (error) {
+          console.error("Ошибка при загрузке:", error);
+        }
+      }
+      fetchCourses();
+    }, []);
+
+    const handleClick = async (delId) => {
+      if (!delId) return; // Если id не задано, ничего не делаем
+      console.log(delId);
+      try {
+        const res = await fetch("/api/delCourse", {
+          method: "POST", // или POST, если необходимо отправить данные в теле
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ delId }),
+        });
+  
+        if (!res.ok) throw new Error("Ошибка при получении данных");
+        
+        setCourses((prevCourses) => prevCourses.filter((course) => (course.id != delId)))
+      } catch (error) {
+        console.error("Ошибка при запросе:", error);
+      }
+    };
+
+  const handleAddCourse = async () => {
+    const tempId = parseInt(Math.abs(Math.cos(Date.now()) * 100), 10);
+    if (newTitle.trim() == "") {
       setIsError(true);
       setShake(true);
       setTimeout(() => setShake(false), 500); // Останавливаем тряску
       return;
+    } else if (newTags.includes("/")) {
+      setIsErrorTag(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500); // Останавливаем тряску
+      return;
     }
-    setCourses([...courses, { id: Date.now(), title: newTitle }]);
-    setNewTitle("");
-    setIsError(false);
-    setIsModalOpen(false);
-  };
+    const newTagReady = newTags.replaceAll(", ", "/");
+    console.log(newTagReady);
+    const optimisticCourse = {
+      id: tempId,
+      title: newTitle,
+      author_id: userId,
+      description: newDescription,
+      tags: newTagReady,
+    };
 
+    setCourses((prevCourses) => [...prevCourses, optimisticCourse]);
+    await createCourseAction({title: newTitle, author_id: userId, description: newDescription, tags: newTagReady});
+    setIsModalOpen(false);
+    setNewTitle("");
+    setNewDescription("");
+    router.refresh();
+  };
   // Функция открытия и закрытия окна
   const toggleModal = () =>  { 
     setIsModalOpen(!isModalOpen);
     setIsError(false); 
+    router.refresh();
   };
 
 
@@ -51,7 +125,7 @@ export default function Courses() {
             </button>
           </div>
         </SignedIn>
-        <SearchBar courses={courses}/>
+        <SearchBar courses = { courses } userId = { userId } delClick={ handleClick }/>
         {/* Модальное окно */}
         {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -72,6 +146,33 @@ export default function Courses() {
                 isError ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Enter the name"
+            />
+            <input
+              type="text"
+              value={newDescription}
+              onChange={(e) => {
+                setNewDescription(e.target.value);
+              }}
+              className="w-full p-2 border rounded mt-3 border-gray-300"
+              placeholder="Enter the description"
+            />
+            <input
+              type="text" 
+              spellCheck="false" 
+              autoComplete="off" 
+              autoCorrect="off" 
+              value={newTags}
+              onChange={(e) => {
+                setNewTags(e.target.value);
+                if (e.target.value.includes("/")) 
+                  setIsErrorTag(true);
+                else
+                  setIsErrorTag(false);
+              }}
+              className={`w-full p-2 border rounded mt-3 ${
+                isErrorTag ? "border-red-500" : "border-gray-300"
+              }`}
+              placeholder="Enter the tags through a commma"
             />
             <div className="flex justify-end gap-2 mt-4">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-700 rounded">

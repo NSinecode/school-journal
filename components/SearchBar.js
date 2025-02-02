@@ -1,16 +1,40 @@
+"use client";
 import { useState, useRef, useEffect } from "react";
+import CourseCard from "./CourseCard";
 
-export default function SearchBar({ courses }) {
+export default function SearchBar( { courses, userId, delClick } ) {
+  const [filters, setFilters] = useState({
+    authorMe: false,
+    authorOther: false
+  });
+  const filtersRend = filters;
   const [query, setQuery] = useState("");
+  const [tagString, setTags] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef(null);
+  const [expandedId, setExpandedId] = useState(null);
+
+  const handleExpand = (id) => {
+    setExpandedId((prev) => (prev === id ? null : id)); // Устанавливаем id карточки, которая расширена
+  };
+
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: checked,
+    }));
+
+    console.log(!(filters.authorMe == (courses[1].author_id == userId)));
+  };
+  const isFilterActive = Object.values(filters).some((value) => value);
 
   // Закрываем меню при клике вне его
   useEffect(() => {
     function handleClickOutside(event) {
-      if (filterRef.current && !filterRef.current.contains(event.target)) {
-        setIsFilterOpen(false);
-      }
+      // if (filterRef.current && !filterRef.current.contains(event.target)) {
+      //   setIsFilterOpen(false);
+      // }
     }
     if (isFilterOpen) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -18,9 +42,18 @@ export default function SearchBar({ courses }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isFilterOpen]);
 
-  const filteredArticles = courses.filter((course) =>
-    course.title.toLowerCase().includes(query.toLowerCase())
-  );
+  const tagss = tagString === "" ? null : tagString.toLowerCase().split(" ");
+
+  const filteredCoursesSearch = courses.filter((course) => course.title.toLowerCase().includes(query.toLowerCase()))
+  
+  const filteredCoursesTags = tagss != null ? filteredCoursesSearch.filter((course) => tagss.every((tag) => {
+    const match = course.tags.toLowerCase().includes(tag);
+    return match;
+  })) : filteredCoursesSearch;
+
+  const filteredCourses = isFilterActive
+    ? filteredCoursesTags.filter((course) => (filters.authorMe == (course.author_id == userId)) || (filters.authorOther == (course.author_id != userId))) // фильтруем по категории
+    : filteredCoursesTags; // если все чекбоксы `false`, показываем все
 
   return (
     <div className="relative min-h-screen">
@@ -68,15 +101,23 @@ export default function SearchBar({ courses }) {
             <div>
               <h4 className="font-semibold mb-2">Author</h4>
               <label className="block mb-2">
-                <input type="checkbox" className="mr-2" />
-                My teacher
-              </label>
-              <label className="block mb-2">
-                <input type="checkbox" className="mr-2" />
+                <input 
+                  type="checkbox" 
+                  className="mr-2" 
+                  name="authorMe"
+                  checked={ filtersRend.authorMe }
+                  onChange={ handleCheckboxChange }
+                />
                 Me
               </label>
               <label className="block mb-2">
-                <input type="checkbox" className="mr-2" />
+                <input 
+                  type="checkbox" 
+                  className="mr-2" 
+                  name="authorOther"
+                  checked={ filtersRend.authorOther }
+                  onChange={ handleCheckboxChange }
+                />
                 Other
               </label>
             </div>
@@ -94,31 +135,28 @@ export default function SearchBar({ courses }) {
               </label>
             </div>
           </div>
+            <input
+              type="text"
+              placeholder="Enter the tags through space"
+              className="flex-1 w-full p-2 border rounded-md mt-5"
+              value={tagString}
+              onChange={(e) => setTags(e.target.value)}
+            />
           </div>
         )}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10">
-          {filteredArticles.length > 0 ? (
-              filteredArticles.map((course) => (
-              <div key={course.id} className="card mt-5">
-                  <div className="card-image">
-                  {course.imageUrl ? (
-                      <img
-                      src={course.imageUrl} // изображение, если оно есть
-                      alt={course.title}
-                      className="card-img"
-                      />
-                  ) : (
-                      <div className="no-image-bg">
-                      <h2 className="no-image-title">{course.title}</h2>
-                      </div>
-                  )}
-                  </div>
-                  <div className="card-content">
-                  <h3 className="card-title">{course.title}</h3>
-                  </div>
-              </div>
-              ))
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10 grid-rows-auto transition-all duration-300">
+          {filteredCourses && filteredCourses.length > 0 ? (
+              filteredCourses.map((course) => course.id ? (
+                <CourseCard 
+                  key={course.id} 
+                  course={course} 
+                  uId={ userId } 
+                  dClick={ delClick }
+                  isExpanded={expandedId === course.id}
+                  isExp={ handleExpand }
+                />
+              ) : null)
           ) : (
               <p className="col-span-full text-gray-500 text-center mt-4">No results</p>
           )}
