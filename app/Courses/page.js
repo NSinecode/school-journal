@@ -22,23 +22,24 @@ export default function Courses() {
   const [isError, setIsError] = useState(false);
   const [isErrorTag, setIsErrorTag] = useState(false);
   const [shake, setShake] = useState(false);
-  if(isSignedIn) {
     useEffect(() => {
-      async function fetchUserId() {
+    async function fetchUserId() {
+      if (isSignedIn) {
         try {
           const res = await fetch("/api/user");
           if (!res.ok) throw new Error("Ошибка при получении userId");
-          
+            
           const data = await res.json();
           setUserId(data.userId);
         } catch (err) {
           console.error("❌ Ошибка загрузки userId:", err);
         }
       }
+    }
 
-      fetchUserId();
-    }, []);
-  }
+    fetchUserId();
+  }, []);
+  
   
   useEffect(() => {
       async function fetchCourses() {

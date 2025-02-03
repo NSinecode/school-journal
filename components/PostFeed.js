@@ -40,9 +40,9 @@ export default function PostFeed() {
       setIsModalOpen(false);
       setNewMessage("");
   }
-  if (isSignedIn) {
-    useEffect(() => {
-      async function fetchUserId() {
+  useEffect(() => {
+    async function fetchUserId() {
+      if (isSignedIn) {
         try {
           const res = await fetch("/api/user");
           if (!res.ok) throw new Error("Ошибка при получении userId");
@@ -53,10 +53,11 @@ export default function PostFeed() {
           console.error("❌ Ошибка загрузки userId:", err);
         }
       }
-
-      fetchUserId();
-    }, []);
-  }
+    }
+  
+    fetchUserId();
+  }, []);
+  
 
   useEffect(() => {
         async function fetchPosts() {
