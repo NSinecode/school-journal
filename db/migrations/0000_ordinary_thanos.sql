@@ -26,3 +26,10 @@ CREATE TABLE "courses" (
 	"description" TEXT,
 	"tags" TEXT,
 );
+
+CREATE TABLE "tests" (
+	"id" SERIAL PRIMARY KEY,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"user_id" TEXT NOT NULL,
+	"body" JSONB NOT NULL,
+);
