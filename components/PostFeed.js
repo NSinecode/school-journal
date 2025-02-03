@@ -16,7 +16,6 @@ export default function PostFeed() {
 
 
   const [isError, setIsError] = useState(false);
-  const [isErrorTag, setIsErrorTag] = useState(false);
   const [shake, setShake] = useState(false);
 
   const handleAddMessage = async () => {
@@ -31,6 +30,7 @@ export default function PostFeed() {
         id: tempId,
         message: newMessage,
         author_id: userId,
+        created_at: new Date().toISOString()
       };
     
       setPosts((prevPosts) => [...prevPosts, optimisticPost]);
@@ -135,8 +135,9 @@ export default function PostFeed() {
             value={newMessage}
             onChange={(e) => {
               setNewMessage(e.target.value);
+              setIsError(false);
             }}
-            className="w-full p-2 border rounded mt-3 border-gray-300"
+            className={`w-full p-2 border rounded mt-3 border-gray-300 ${isError ? "border-red-500" : "border-gray-300"}`}
             placeholder="Enter the message"
           />
           <div className="flex justify-end gap-2 mt-4">
