@@ -1,5 +1,5 @@
 import { db } from '@/db/db'
-import { tests } from '@/db/schema/tests-schema'
+import { testsTable } from '@/db/schema/tests-schema'
 import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
@@ -9,7 +9,7 @@ export async function GET(
 ) {
   try {
     const test = await db.query.tests.findFirst({
-      where: eq(tests.id, parseInt(params.id))
+      where: eq(testsTable.id, parseInt(params.id))
     })
 
     if (test) {

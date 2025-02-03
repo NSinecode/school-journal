@@ -23,6 +23,8 @@ Add file to the
 and make it similar to the other files in the folder (for {x} table).
 then add schema to the index.ts in this folder.
 
+Update the db.ts file to include the new table. like others
+
 Create actions file in
 ```
 /actions/{x}-actions.ts 
