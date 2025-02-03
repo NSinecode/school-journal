@@ -27,6 +27,14 @@ CREATE TABLE "courses" (
 	"tags" TEXT,
 );
 
+CREATE TABLE "messages" (
+	"id" SERIAL PRIMARY KEY,
+	"author_id" TEXT NOT NULL, 
+	"message" TEXT NOT NULL,
+	"score" BIGINT DEFAULT 0 NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL
+)
+
 CREATE TABLE "tests" (
 	"id" SERIAL PRIMARY KEY,
 	"created_at" timestamp DEFAULT now() NOT NULL,

@@ -5,7 +5,7 @@
 - Interactive components like tests and tasks 
 - Exam preparation module (mock tests)
 - Statistics 
-- Forum
+- Forum 
 
 ## UI
 - Cross platform 
