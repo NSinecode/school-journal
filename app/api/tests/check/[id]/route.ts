@@ -5,11 +5,11 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     const test = await db.query.tests.findFirst({
-      where: eq(testsTable.id, parseInt(params.id))
+      where: eq(testsTable.id, parseInt(context.params.id))
     })
 
     if (test) {
