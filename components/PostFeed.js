@@ -18,6 +18,23 @@ export default function PostFeed() {
   const [isError, setIsError] = useState(false);
   const [shake, setShake] = useState(false);
 
+  useEffect(() => {
+    async function fetchUserId() {
+      if (isSignedIn) { // Используем isSignedIn внутри
+        try {
+          const res = await fetch("/api/user");
+          if (!res.ok) throw new Error("Ошибка при получении userId");
+
+          const data = await res.json();
+          setUserId(data.userId);
+        } catch (err) {
+          console.error("❌ Ошибка загрузки userId:", err);
+        }
+      }
+    }
+
+    fetchUserId();
+}, [isSignedIn]);
   const handleUpdateScore = async (id, newScore) => {
     setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: newScore } : post)));
 
@@ -36,7 +53,8 @@ export default function PostFeed() {
         id: tempId,
         message: newMessage,
         author_id: userId,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        score: 0
       };
     
       setPosts((prevPosts) => [...prevPosts, optimisticPost]);
@@ -46,23 +64,6 @@ export default function PostFeed() {
   }
 
 
-  useEffect(() => {
-    async function fetchUserId() {
-      if (isSignedIn) {
-        try {
-          const res = await fetch("/api/user");
-          if (!res.ok) throw new Error("Ошибка при получении userId");
-          
-          const data = await res.json();
-          setUserId(data.userId);
-        } catch (err) {
-          console.error("❌ Ошибка загрузки userId:", err);
-        }
-      }
-    }
-  
-    fetchUserId();
-  }, []);
   
 
   useEffect(() => {
