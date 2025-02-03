@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
-import { createTestAction, getTestsAction } from '@/actions/tests-actions'
+import { getTestsAction } from '@/actions/tests-actions'
 
 interface Question {
   title: string
