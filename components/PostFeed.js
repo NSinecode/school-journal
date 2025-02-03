@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { UserRound } from 'lucide-react';
 import { ArrowBigUp } from 'lucide-react';
-import { createMessageAction } from "@/actions/messages-actions";
+import { createMessageAction, updateMessageAction } from "@/actions/messages-actions";
 import { ArrowBigDown } from 'lucide-react';
 import { SignedIn, useAuth } from "@clerk/nextjs";
 
@@ -15,38 +15,16 @@ export default function PostFeed() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [newMessage, setNewMessage] = useState("");
-
-
   const [isError, setIsError] = useState(false);
   const [shake, setShake] = useState(false);
 
-  const handleAddMessage = async () => {
-    const tempId = parseInt(Math.abs(Math.cos(Date.now()) * 100), 10);
-    if (newMessage.trim() == "") {
-      setIsError(true);
-      setShake(true);
-      setTimeout(() => setShake(false), 500); // Останавливаем тряску
-      return;
-    }
-      const optimisticPost = {
-        id: tempId,
-        message: newMessage,
-        author_id: userId,
-        created_at: new Date().toISOString()
-      };
-    
-      setPosts((prevPosts) => [...prevPosts, optimisticPost]);
-      await createMessageAction({author_id: userId, message: newMessage});
-      setIsModalOpen(false);
-      setNewMessage("");
-  }
   useEffect(() => {
     async function fetchUserId() {
-      if (isSignedIn) {
+      if (isSignedIn) { // Используем isSignedIn внутри
         try {
           const res = await fetch("/api/user");
           if (!res.ok) throw new Error("Ошибка при получении userId");
-          
+
           const data = await res.json();
           setUserId(data.userId);
         } catch (err) {
@@ -54,26 +32,66 @@ export default function PostFeed() {
         }
       }
     }
-  
+
     fetchUserId();
-  }, []);
+}, [isSignedIn]);
+  const handleUpdateScore = async (id, newScore) => {
+    setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: newScore } : post)));
+
+    await updateMessageAction(id, {score: newScore})
+  }
+
+  const handleAddMessage = async () => {
+    const tempId = parseInt(Math.abs(Math.cos(Date.now()) * 100), 10);
+    if (newMessage.trim() === "") {
+      setIsError(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      return;
+    }
+      const optimisticPost = {
+        id: tempId,
+        message: newMessage,
+        author_id: userId,
+        created_at: new Date().toISOString(),
+        score: 0
+      };
+    
+      setPosts((prevPosts) => [...prevPosts, optimisticPost]);
+      await createMessageAction({author_id: userId, message: newMessage});
+      setIsModalOpen(false);
+      setNewMessage("");
+  }
+
+
   
 
   useEffect(() => {
-        async function fetchPosts() {
-          try {
-            const res = await fetch("/api/getMessages");
-            if (!res.ok) throw new Error("Ошибка загрузки постов");
-            const data = await res.json();
-            setPosts(data);
-          } catch (error) {
-            console.error("Ошибка при загрузке:", error);
-          }
+    async function fetchPosts() {
+      try {
+        const res = await fetch("/api/getMessages");
+        if (!res.ok) throw new Error("Ошибка загрузки постов");
+          const data = await res.json();
+          setPosts(data);
+        } catch (error) {
+          console.error("Ошибка при загрузке:", error);
         }
-        fetchPosts();
-      }, []);
+      }
+    fetchPosts();
+  }, []);
 
-  const filteredPosts = posts.filter(post =>
+  const sortedPostsByTime = posts.sort((a, b) => {
+    const dateA = new Date(a.created_at).getTime();
+    const dateB = new Date(b.created_at).getTime();
+    return dateB - dateA; 
+  });
+  const sortedPostsByScore = sortedPostsByTime.sort((a, b) => {
+    const ratingA = Number(a.score); 
+    const ratingB = Number(b.score); 
+    return ratingB - ratingA; 
+  });
+
+  const filteredPosts = sortedPostsByScore.filter(post =>
     post.message.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -106,18 +124,26 @@ export default function PostFeed() {
               <div className="flex gap-2 w-full">
                 <UserRound className="w-4 h-4"></UserRound>
                 <p className="text-sm font-bold">{post.author_id}</p>
-                <span className="text-sm text-blue-900">{
+                <span className="text-sm text-blue-400">{
                     post.created_at.replaceAll("-", ".").replaceAll("T", " ").slice(0, -5)
                 }</span>
               </div>
               <h3 className="font-bold text-white whitespace-pre-line">{post.message}</h3>
-              <div className="border-b border-t mt-2">
-                <button className="mt-2">
+              <div className="flex border-b border-t mt-2">
+                <button 
+                  className="mt-1 mb-1"
+                  onClick={() => handleUpdateScore(post.id, post.score + 1)}
+                >
                   <ArrowBigUp className="w-8 h-8 pr-2 border-r"></ArrowBigUp>
                 </button>
-                <button className="mt-2">
+                <button 
+                  className=""
+                  onClick={() => handleUpdateScore(post.id, post.score - 1)}
+                >
                   <ArrowBigDown className="w-8 h-8 pl-2 "></ArrowBigDown>
                 </button>
+                <h3 className={`mt-2 pl-3 
+                  ${ post.score >= 0 ? "text-green-300" : "text-red-300"}`}>{ post.score }</h3>
               </div>
             </div>
           ))
@@ -126,35 +152,36 @@ export default function PostFeed() {
         )}
       </div>
 
-      {/* Модальное окно для нового поста */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <div
-          className={`bg-gray-800 p-6 w-[400px] rounded-lg shadow-lg transition-transform ${
-            shake ? "animate-shake" : ""
-          }`}
-        >
-          <h2 className="text-lg font-bold mb-4">New post</h2>
-          <textarea
-            type="text"
-            value={newMessage}
-            onChange={(e) => {
-              setNewMessage(e.target.value);
-              setIsError(false);
-            }}
-            className={`w-full p-2 border rounded mt-3 border-gray-300 ${isError ? "border-red-500" : "border-gray-300"}`}
-            placeholder="Enter the message"
-          />
-          <div className="flex justify-end gap-2 mt-4">
-            <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-700 rounded">
-              Cancel
-            </button>
-            <button onClick={handleAddMessage} className="px-4 py-2 bg-blue-500 text-white rounded">
-              Post
-            </button>
+          <div
+            className={`bg-gray-800 p-6 w-[400px] rounded-lg shadow-lg transition-transform ${
+              shake ? "animate-shake" : ""
+            }`}
+          >
+            <h2 className="text-lg font-bold mb-4">New post</h2>
+            <textarea
+              type="text"
+              value={newMessage}
+              onChange={(e) => {
+                setNewMessage(e.target.value);
+                setIsError(false);
+              }}
+              className={`w-full p-2 border rounded mt-3 border-gray-300 ${
+                isError ? "border-red-500" : "border-gray-300"
+              }`}
+              placeholder="Enter the message"
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-700 rounded">
+                Cancel
+              </button>
+              <button onClick={handleAddMessage} className="px-4 py-2 bg-blue-500 text-white rounded">
+                Post
+              </button>
+            </div>
           </div>
         </div>
-      </div>
       )}
       <link rel="stylesheet" href="/Courses/style.css" />
     </div>

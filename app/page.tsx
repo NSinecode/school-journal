@@ -1,6 +1,6 @@
 "use client"
 
-import Script from "next/script";
+//import Script from "next/script";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -56,7 +56,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <Script src="/script.js" strategy="afterInteractive" />
     </div>
   );
 }

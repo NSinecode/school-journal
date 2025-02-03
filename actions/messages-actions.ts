@@ -1,6 +1,6 @@
 "use server";
 
-import { getMessages, createMessage, deleteMessage } from "@/db/queries/messages_queries";
+import { getMessages, createMessage, deleteMessage, updateMessage } from "@/db/queries/messages_queries";
 import { InsertMessage } from "@/db/schema/messages-schema";
 import { ActionState } from "@/types";
 import { revalidatePath } from "next/cache";
@@ -34,5 +34,16 @@ export async function deleteMessageAction(id: number): Promise<ActionState> {
   } catch (error) {
     console.error("Error deleting message:", error);
     return { status: "error", message: "Failed to delete message" };
+  }
+}
+
+export async function updateMessageAction(id: number, data: Partial<InsertMessage>): Promise<ActionState> {
+  try {
+    const updatedMessage = await updateMessage(id, data);
+    revalidatePath("/forum");
+    return { status: "success", message: "Message updated successfully", data: updatedMessage };
+  } catch (error) {
+    console.error("Error updating message:", error);
+    return { status: "error", message: "Failed to update Message" };
   }
 }
