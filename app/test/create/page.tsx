@@ -17,6 +17,7 @@ export default function CreatePage() {
   const router = useRouter()
   const { userId } = useAuth()
   const [questions, setQuestions] = useState<Question[]>([])
+  const [isPublishing, setIsPublishing] = useState(false)
   const [currentQuestion, setCurrentQuestion] = useState<Question>({
     title: '',
     answers: ['', '', '', ''],
@@ -57,6 +58,8 @@ export default function CreatePage() {
   const handlePublish = async () => {
     if (!testName || questions.length === 0 || !userId) return
     
+    setIsPublishing(true)
+    
     const test = {
       name: testName,
       body: questions,
@@ -64,9 +67,15 @@ export default function CreatePage() {
       created_at: new Date()
     }
 
-    const result = await createTestAction(test)
-    if (result.status === "success") {
-      router.push("/test")
+    try {
+      const result = await createTestAction(test)
+      if (result.status === "success") {
+        router.push("/test")
+      }
+      setIsPublishing(false)
+    } catch (error) {
+      console.error('Failed to create test:', error)
+      setIsPublishing(false)
     }
   }
 
@@ -148,9 +157,9 @@ export default function CreatePage() {
           <Button 
             onClick={handlePublish}
             className="w-full"
-            disabled={!testName || questions.length === 0}
+            disabled={!testName || questions.length === 0 || isPublishing}
           >
-            Publish Test
+            {isPublishing ? 'Publishing...' : 'Publish Test'}
           </Button>
         </>
       )}

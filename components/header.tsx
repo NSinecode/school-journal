@@ -41,6 +41,12 @@ export default function Header() {
           >
             Forum
           </Link>
+          <Link
+            href="/test/create"
+            className="hover:underline"
+          >
+            Create Test
+          </Link>
         </nav>
         <div className="flex items-center space-x-4">
           <SignedOut>
@@ -89,6 +95,15 @@ export default function Header() {
                 onClick={toggleMenu}
               >
                 Forum
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/test/create"
+                className="block hover:underline"
+                onClick={toggleMenu}
+              >
+                Create Test
               </Link>
             </li>
           </ul>
