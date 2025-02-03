@@ -35,7 +35,7 @@ export default function AccountRolePage() {
         throw new Error(result.message);
       }
       
-      router.push(role === "teacher" ? "/courses" : "/upcoming-courses");
+      router.push(role === "teacher" ? "/Courses" : "/upcoming-courses");
     } catch (error) {
       console.error("Error setting role:", error);
     } finally {

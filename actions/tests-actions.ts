@@ -8,7 +8,11 @@ import { revalidatePath } from "next/cache";
 export async function getTestsAction(): Promise<ActionState> {
   try {
     const tests = await getTests();
-    return { status: "success", message: "Tests retrieved successfully", data: tests };
+    const transformedTests = tests.map(test => ({
+      ...test,
+      body: typeof test.body === 'string' ? JSON.parse(test.body) : test.body
+    }));
+    return { status: "success", message: "Tests retrieved successfully", data: transformedTests };
   } catch (error) {
     console.error("Error getting tests:", error);
     return { status: "error", message: "Failed to get tests" };
