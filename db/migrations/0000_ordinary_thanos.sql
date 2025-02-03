@@ -39,5 +39,6 @@ CREATE TABLE "tests" (
 	"id" SERIAL PRIMARY KEY,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"user_id" TEXT NOT NULL,
+	"name" TEXT NOT NULL,
 	"body" JSONB NOT NULL,
 );
