@@ -42,18 +42,6 @@ export default function CreatePage() {
     })
   }
 
-  const downloadJSON = () => {
-    const jsonString = JSON.stringify(questions, null, 2)
-    const blob = new Blob([jsonString], { type: 'application/json' })
-    const href = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = href
-    link.download = 'questions.json'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(href)
-  }
 
   const handlePublish = async () => {
     if (!testName || questions.length === 0 || !userId) return
