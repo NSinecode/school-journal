@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { UserRound } from 'lucide-react';
 import { ArrowBigUp } from 'lucide-react';
-import { createMessageAction } from "@/actions/messages-actions";
+import { createMessageAction, updateMessageAction } from "@/actions/messages-actions";
 import { ArrowBigDown } from 'lucide-react';
 import { SignedIn, useAuth } from "@clerk/nextjs";
 
@@ -17,6 +17,12 @@ export default function PostFeed() {
   const [newMessage, setNewMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [shake, setShake] = useState(false);
+
+  const handleUpdateScore = async (id, newScore) => {
+    setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: newScore } : post)));
+
+    await updateMessageAction(id, {score: newScore})
+  }
 
   const handleAddMessage = async () => {
     const tempId = parseInt(Math.abs(Math.cos(Date.now()) * 100), 10);
@@ -38,6 +44,8 @@ export default function PostFeed() {
       setIsModalOpen(false);
       setNewMessage("");
   }
+
+
   useEffect(() => {
     async function fetchUserId() {
       if (isSignedIn) {
@@ -121,10 +129,16 @@ export default function PostFeed() {
               </div>
               <h3 className="font-bold text-white whitespace-pre-line">{post.message}</h3>
               <div className="flex border-b border-t mt-2">
-                <button className="mt-1 mb-1">
+                <button 
+                  className="mt-1 mb-1"
+                  onClick={() => handleUpdateScore(post.id, post.score + 1)}
+                >
                   <ArrowBigUp className="w-8 h-8 pr-2 border-r"></ArrowBigUp>
                 </button>
-                <button className="">
+                <button 
+                  className=""
+                  onClick={() => handleUpdateScore(post.id, post.score - 1)}
+                >
                   <ArrowBigDown className="w-8 h-8 pl-2 "></ArrowBigDown>
                 </button>
                 <h3 className={`mt-2 pl-3 

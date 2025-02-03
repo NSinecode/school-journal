@@ -56,7 +56,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <Script src="/script.js" strategy="afterInteractive" />
     </div>
   );
 }
