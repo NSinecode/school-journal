@@ -3,12 +3,13 @@ export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
 import { createCourseAction } from "@/actions/courses-actions";
-import { SignedIn } from "@clerk/nextjs";
+import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
 import SearchBar from "../../components/SearchBar";
 
 export default function Courses() {
+  const { isSignedIn } = useAuth();
   const router = useRouter();
   const [courses, setCourses] = useState([]);
   const [userId, setUserId] = useState("");
@@ -21,22 +22,23 @@ export default function Courses() {
   const [isError, setIsError] = useState(false);
   const [isErrorTag, setIsErrorTag] = useState(false);
   const [shake, setShake] = useState(false);
-
-  useEffect(() => {
-    async function fetchUserId() {
-      try {
-        const res = await fetch("/api/user");
-        if (!res.ok) throw new Error("Ошибка при получении userId");
-        
-        const data = await res.json();
-        setUserId(data.userId);
-      } catch (err) {
-        console.error("❌ Ошибка загрузки userId:", err);
+  if(isSignedIn) {
+    useEffect(() => {
+      async function fetchUserId() {
+        try {
+          const res = await fetch("/api/user");
+          if (!res.ok) throw new Error("Ошибка при получении userId");
+          
+          const data = await res.json();
+          setUserId(data.userId);
+        } catch (err) {
+          console.error("❌ Ошибка загрузки userId:", err);
+        }
       }
-    }
 
-    fetchUserId();
-  }, []);
+      fetchUserId();
+    }, []);
+  }
   
   useEffect(() => {
       async function fetchCourses() {

@@ -5,9 +5,11 @@ import { UserRound } from 'lucide-react';
 import { ArrowBigUp } from 'lucide-react';
 import { createMessageAction } from "@/actions/messages-actions";
 import { ArrowBigDown } from 'lucide-react';
+import { SignedIn, useAuth } from "@clerk/nextjs";
 
 
 export default function PostFeed() {
+  const { isSignedIn } = useAuth();
   const [posts, setPosts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,22 +40,23 @@ export default function PostFeed() {
       setIsModalOpen(false);
       setNewMessage("");
   }
-
-  useEffect(() => {
-    async function fetchUserId() {
-      try {
-        const res = await fetch("/api/user");
-        if (!res.ok) throw new Error("Ошибка при получении userId");
-        
-        const data = await res.json();
-        setUserId(data.userId);
-      } catch (err) {
-        console.error("❌ Ошибка загрузки userId:", err);
+  if (isSignedIn) {
+    useEffect(() => {
+      async function fetchUserId() {
+        try {
+          const res = await fetch("/api/user");
+          if (!res.ok) throw new Error("Ошибка при получении userId");
+          
+          const data = await res.json();
+          setUserId(data.userId);
+        } catch (err) {
+          console.error("❌ Ошибка загрузки userId:", err);
+        }
       }
-    }
 
-    fetchUserId();
-  }, []);
+      fetchUserId();
+    }, []);
+  }
 
   useEffect(() => {
         async function fetchPosts() {
@@ -77,13 +80,14 @@ export default function PostFeed() {
     <div className="max-w-2xl mx-auto p-4">
       <div className="flex gap-2">
         {/* Кнопка добавления поста */}
-        <button 
+        <SignedIn>
+          <button 
             className="flex-1 w-full bg-blue-500 text-white py-2 rounded mb-4 hover:bg-blue-600 p-3"
             onClick={() => setIsModalOpen(true)}
-        >
+          >
             New
-        </button>
-
+          </button>
+        </SignedIn>
         {/* Поисковая строка */}
         <input
             type="text"
