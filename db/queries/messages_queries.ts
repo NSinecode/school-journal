@@ -29,3 +29,12 @@ export const deleteMessage = async (id: number) => {
     throw new Error("Failed to delete message");
   }
 };
+export const updateMessage = async (id: number, data: Partial<InsertMessage>) => {
+  try {
+    const [updatedMessage] = await db.update(messagesTable).set(data).where(eq(messagesTable.id, id)).returning();
+    return updatedMessage;
+  } catch (error) {
+    console.error("Error updating message:", error);
+    throw new Error("Failed to update message");
+  }
+};
