@@ -75,23 +75,22 @@ export default function Header() {
             </li>
             <li>
               <Link
-                href="/courses"
+                href="/Courses"
                 className="hover:underline"
+                onClick={toggleMenu}
               >
                 Courses
               </Link>
           </li>
-            <SignedIn>
-              <li>
-                <Link
-                  href="/todo"
-                  className="block hover:underline"
-                  onClick={toggleMenu}
-                >
-                  Todos
-                </Link>
-              </li>
-            </SignedIn>
+            <li>
+              <Link
+                href="/forum"
+                className="block hover:underline"
+                onClick={toggleMenu}
+              >
+                Forum
+              </Link>
+            </li>
           </ul>
         </nav>
       )}
