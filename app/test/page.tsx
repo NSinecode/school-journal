@@ -1,9 +1,15 @@
 'use client'
 
-import questions from './questions.json'
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
-import { createTestAction } from '@/actions/tests-actions'
+import { createTestAction, getTestsAction } from '@/actions/tests-actions'
+
+interface Question {
+  title: string
+  answers: string[]
+  correctAnswer: number
+  topic: string
+}
 
 export default function TestPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -12,16 +18,26 @@ export default function TestPage() {
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set())
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({})
   const [showSummary, setShowSummary] = useState(false)
+  const [questions, setQuestions] = useState<Question[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Load saved data on mount
   useEffect(() => {
-    const savedScore = localStorage.getItem('quizScore')
-    const savedAnswered = localStorage.getItem('answeredQuestions')
-    const savedUserAnswers = localStorage.getItem('userAnswers')
-    
-    if (savedScore) setScore(parseInt(savedScore))
-    if (savedAnswered) setAnsweredQuestions(new Set(JSON.parse(savedAnswered)))
-    if (savedUserAnswers) setUserAnswers(JSON.parse(savedUserAnswers))
+    async function loadQuestions() {
+      const result = await getTestsAction()
+      if (result.status === 'success' && result.data) {
+        // Log to see the structure
+        console.log('API Response:', result.data[0]?.body)
+        // Access questions directly if body is the questions array
+        setQuestions(result.data[0]?.body || [])
+        setIsLoading(false)
+        
+        // Clear previous test data when loading new questions
+        localStorage.removeItem('quizScore')
+        localStorage.removeItem('answeredQuestions')
+        localStorage.removeItem('userAnswers')
+      }
+    }
+    loadQuestions()
   }, [])
 
   useEffect(() => {
@@ -31,23 +47,21 @@ export default function TestPage() {
 
   const handleAnswerSelect = (index: number) => {
     setSelectedAnswer(index)
-    const newUserAnswers = { ...userAnswers, [currentQuestion]: index }
-    setUserAnswers(newUserAnswers)
-    localStorage.setItem('userAnswers', JSON.stringify(newUserAnswers))
-  }
-
-  const handleAnswer = (questionIndex: number, selectedAnswer: number) => {
-    // Only give points for first correct attempt
-    if (!answeredQuestions.has(questionIndex)) {
-      if (selectedAnswer === questions[questionIndex].correctAnswer) {
+    // Automatically submit answer when selected
+    if (!answeredQuestions.has(currentQuestion)) {
+      if (index === questions[currentQuestion].correctAnswer) {
         const newScore = score + 1
         setScore(newScore)
         localStorage.setItem('quizScore', newScore.toString())
       }
       
-      const newAnswered = new Set(answeredQuestions).add(questionIndex)
+      const newAnswered = new Set(answeredQuestions).add(currentQuestion)
       setAnsweredQuestions(newAnswered)
       localStorage.setItem('answeredQuestions', JSON.stringify([...newAnswered]))
+
+      const newUserAnswers = { ...userAnswers, [currentQuestion]: index }
+      setUserAnswers(newUserAnswers)
+      localStorage.setItem('userAnswers', JSON.stringify(newUserAnswers))
     }
   }
 
@@ -65,34 +79,14 @@ export default function TestPage() {
       : "text-white hover:text-white hover:bg-white/10"
   }
 
-  const isQuizComplete = answeredQuestions.size === questions.length
-
-  // Add new function to save test results
-  const saveTestResults = async () => {
-    const testData = {
-      user_id: '1', // Replace with actual user ID from your auth system
-      body: {
-        score,
-        totalQuestions: questions.length,
-        userAnswers,
-        completedAt: new Date().toISOString()
-      }
-    }
-
-    try {
-      await createTestAction(testData)
-    } catch (error) {
-      console.error('Failed to save test results:', error)
-    }
+  // Add loading state handling
+  if (isLoading) {
+    return <div className="p-8 text-white">Loading questions...</div>
   }
 
-  // Modify the useEffect that handles quiz completion
-  useEffect(() => {
-    if (isQuizComplete) {
-      setShowSummary(true)
-      saveTestResults() // Save results when quiz is complete
-    }
-  }, [answeredQuestions])
+  if (!questions.length) {
+    return <div className="p-8 text-white">No questions available.</div>
+  }
 
   if (showSummary) {
     // Get incorrect questions and group by topic
@@ -181,10 +175,7 @@ export default function TestPage() {
               key={index}
               variant="outline"
               className={`w-full justify-between ${getButtonStyle(index)}`}
-              onClick={() => {
-                handleAnswerSelect(index)
-                handleAnswer(currentQuestion, index)
-              }}
+              onClick={() => handleAnswerSelect(index)}
             >
               <span>
                 {String.fromCharCode(65 + index)}: {answer}
@@ -203,18 +194,23 @@ export default function TestPage() {
             setCurrentQuestion(Math.max(0, currentQuestion - 1))
             setSelectedAnswer(null)
           }}
+          disabled={currentQuestion === 0}
         >
           Back
         </Button>
         <Button
           onClick={() => {
             if (currentQuestion === questions.length - 1) {
-              setShowSummary(true)
+              // Only show summary if all questions are answered
+              if (answeredQuestions.size === questions.length) {
+                setShowSummary(true)
+              }
             } else {
               setCurrentQuestion(Math.min(questions.length - 1, currentQuestion + 1))
               setSelectedAnswer(null)
             }
           }}
+          disabled={!answeredQuestions.has(currentQuestion) && selectedAnswer === null}
         >
           {currentQuestion === questions.length - 1 ? 'Finish Quiz' : 'Next'}
         </Button>
