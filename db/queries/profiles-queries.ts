@@ -19,7 +19,6 @@ export const getProfileByUserId = async (userId: string) => {
     const profile = await db.query.profiles.findFirst({
       where: eq(profilesTable.userId, userId)
     });
-
     return profile;
   } catch (error) {
     console.error("Error getting profile by user ID:", error);

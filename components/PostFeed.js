@@ -4,11 +4,15 @@ import { useState, useEffect } from 'react';
 import { UserRound } from 'lucide-react';
 import { ArrowBigUp } from 'lucide-react';
 import { createMessageAction, updateMessageAction } from "@/actions/messages-actions";
+import { getProfileByUserIdAction, updateProfileAction } from "@/actions/profiles-actions";
 import { ArrowBigDown } from 'lucide-react';
 import { SignedIn, useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 
 export default function PostFeed() {
+  const router = useRouter();
   const { isSignedIn } = useAuth();
   const [posts, setPosts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,6 +21,9 @@ export default function PostFeed() {
   const [newMessage, setNewMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [shake, setShake] = useState(false);
+  const [profile, setProfile] = useState();
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     async function fetchUserId() {
@@ -34,13 +41,42 @@ export default function PostFeed() {
     }
 
     fetchUserId();
-}, [isSignedIn]);
-  const handleUpdateScore = async (id, newScore) => {
-    setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: newScore } : post)));
+  }, [isSignedIn]);
+  
+  useEffect(() => {
+    async function fetchProfile() {
+      if (userId != "FUCKIN GOD") {
+        const res = await getProfileByUserIdAction(userId);
+        if (res.status === "success") {
+          if (isSignedIn && res?.data) {
+            setProfile(res);
+            setLoading(false);
+          }
+        } else {
+          console.error("Не удалось получить профиль")
+        }
+      } else {
+        setLoading(false);
+      }
+    }
+    fetchProfile();
+  }, [userId], [isSignedIn]);
 
-    await updateMessageAction(id, {score: newScore})
+  const handleUpdateScore = async (id, score, value) => {
+    const path = "/forum";
+    if (!profile.data.posts_liked.includes(Number(id))) { 
+      setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + value } : post)));
+      
+      const updatedPostsLiked = [...(profile.data.posts_liked || []), id];
+      await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path);
+      await updateMessageAction(id, {score: score + value})
+    } else {
+      const updatedPostsLiked = profile.data.posts_liked.filter(pid => pid !== Number(id));
+      await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path)
+    }
+    router.refresh();
   }
-
+  
   const handleAddMessage = async () => {
     const tempId = parseInt(Math.abs(Math.cos(Date.now()) * 100), 10);
     if (newMessage.trim() === "") {
@@ -95,6 +131,10 @@ export default function PostFeed() {
     post.message.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  if (loading) {
+    return <div>Загрузка...</div>;
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="flex gap-2">
@@ -132,13 +172,14 @@ export default function PostFeed() {
               <div className="flex border-b border-t mt-2">
                 <button 
                   className="mt-1 mb-1"
-                  onClick={() => handleUpdateScore(post.id, post.score + 1)}
+                  onClick={() => handleUpdateScore(post.id, post.score, 1)}
                 >
-                  <ArrowBigUp className="ml-2 w-8 h-8 pr-2 border-r"></ArrowBigUp>
+                  <ArrowBigUp className={`ml-2 w-8 h-8 pr-2 border-r 
+                    ${profile.data.posts_liked.includes(Number(post.id)) ? "text-yellow-300" : ""}`}></ArrowBigUp>
                 </button>
                 <button 
                   className=""
-                  onClick={() => handleUpdateScore(post.id, post.score - 1)}
+                  onClick={() => handleUpdateScore(post.id, post.score, -1)}
                 >
                   <ArrowBigDown className="w-8 h-8 pl-2 "></ArrowBigDown>
                 </button>

@@ -1,3 +1,4 @@
+import { bigint } from "drizzle-orm/pg-core";
 import { pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum("role", ["student", "teacher", "admin"]);
@@ -11,7 +12,8 @@ export const profilesTable = pgTable("profiles", {
   updatedAt: timestamp("updated_at")
     .defaultNow()
     .notNull()
-    .$onUpdate(() => new Date())
+    .$onUpdate(() => new Date()),
+  posts_liked: bigint("posts_liked", { mode: "number" }).array()
 });
 
 export type InsertProfile = typeof profilesTable.$inferInsert;
