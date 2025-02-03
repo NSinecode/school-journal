@@ -123,18 +123,18 @@ export default function PostFeed() {
             <div key={post.id} className="p-4 rounded shadow">
               <div className="flex gap-2 w-full">
                 <UserRound className="w-4 h-4"></UserRound>
-                <p className="text-sm font-bold">{post.author_id}</p>
-                <span className="text-sm text-blue-400">{
+                <p className="text-xs font-bold">{post.author_id}</p>
+                <span className="text-xs text-blue-400">{
                     post.created_at.replaceAll("-", ".").replaceAll("T", " ").slice(0, -5)
                 }</span>
               </div>
-              <h3 className="font-bold text-white whitespace-pre-line">{post.message}</h3>
+              <h3 className="font-bold text-white whitespace-pre-line mt-2">{post.message}</h3>
               <div className="flex border-b border-t mt-2">
                 <button 
                   className="mt-1 mb-1"
                   onClick={() => handleUpdateScore(post.id, post.score + 1)}
                 >
-                  <ArrowBigUp className="w-8 h-8 pr-2 border-r"></ArrowBigUp>
+                  <ArrowBigUp className="ml-2 w-8 h-8 pr-2 border-r"></ArrowBigUp>
                 </button>
                 <button 
                   className=""
