@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { createTestAction } from "@/actions/tests-actions"
 import { useAuth } from "@clerk/nextjs"
+import { getUserRole } from '@/actions/profiles-actions'
 
 interface Question {
   title: string
@@ -16,6 +17,7 @@ interface Question {
 export default function CreatePage() {
   const router = useRouter()
   const { userId } = useAuth()
+  const [isTeacher, setIsTeacher] = useState(false)
   const [questions, setQuestions] = useState<Question[]>([])
   const [isPublishing, setIsPublishing] = useState(false)
   const [currentQuestion, setCurrentQuestion] = useState<Question>({
@@ -25,6 +27,21 @@ export default function CreatePage() {
     topic: ''
   })
   const [testName, setTestName] = useState('')
+
+  useEffect(() => {
+    const checkRole = async () => {
+      const role = await getUserRole()
+      if (role !== 'teacher') {
+        router.push('/test')
+      } else {
+        setIsTeacher(true)
+      }
+    }
+    
+    checkRole()
+  }, [router])
+
+  if (!isTeacher) return null
 
   const handleAnswerChange = (index: number, value: string) => {
     const newAnswers = [...currentQuestion.answers]
