@@ -20,6 +20,7 @@ export default function PostFeed() {
   const [shake, setShake] = useState(false);
   const [profile, setProfile] = useState();
   const [loading, setLoading] = useState(true);
+  const [replyId, setReplyId] = useState(0);
 
   useEffect(() => {
     async function fetchUserId() {
@@ -45,7 +46,6 @@ export default function PostFeed() {
         const res = await getProfileByUserIdAction(userId);
         if (res.status === "success") {
           if (isSignedIn && res?.data) {
-            console.log(res.data);
             setProfile(res.data);
             setLoading(false);
           }
@@ -108,18 +108,37 @@ export default function PostFeed() {
       setTimeout(() => setShake(false), 500);
       return;
     }
-      const optimisticPost = {
-        id: tempId,
-        message: newMessage,
-        author_id: userId,
-        created_at: new Date().toISOString(),
-        score: 0
-      };
+      if (!replyId) {
+        const optimisticPost = {
+          id: tempId,
+          message: newMessage,
+          author_id: userId,
+          created_at: new Date().toISOString(),
+          score: 0
+        };
+        setPosts((prevPosts) => [...prevPosts, optimisticPost]);
+        await createMessageAction({author_id: userId, message: newMessage});
+      } else {
+        const optimisticPost = {
+          id: tempId,
+          message: newMessage,
+          author_id: userId,
+          created_at: new Date().toISOString(),
+          score: 0,
+          replied_to: replyId,
+        };
+        setPosts((prevPosts) => [...prevPosts, optimisticPost]);
+        console.log(await createMessageAction({author_id: userId, message: newMessage, replied_to: replyId}));
+        setReplyId(0);
+      }
     
-      setPosts((prevPosts) => [...prevPosts, optimisticPost]);
-      await createMessageAction({author_id: userId, message: newMessage});
       setIsModalOpen(false);
       setNewMessage("");
+  }
+
+  const reply = async (id) => {
+    setReplyId(id);
+    setIsModalOpen(true);
   }
 
   const handleRemovePost = async (id) => {
@@ -191,9 +210,12 @@ export default function PostFeed() {
             <Post 
               key={ post.id } 
               post = { post }
+
               handleUpdateScore = { handleUpdateScore } 
               handleAddMessage = { handleAddMessage }
               handleRemovePost = { handleRemovePost }
+              handleReply={ reply }
+
               profile = { profile } 
               userId = { userId }
             />
@@ -210,7 +232,7 @@ export default function PostFeed() {
               shake ? "animate-shake" : ""
             }`}
           >
-            <h2 className="text-lg font-bold mb-4">New post</h2>
+            <h2 className="text-lg font-bold mb-4">{replyId ? "New reply" : "New post"}</h2>
             <textarea
               type="text"
               value={newMessage}

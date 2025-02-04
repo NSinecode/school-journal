@@ -12,6 +12,21 @@ export const getMessages = async (): Promise<SelectMessage[]> => {
     throw new Error("Failed to get messages");
   }
 };
+export const getMessage = async (id: number) => {
+  try {
+    const message = await db.query.messages.findFirst({
+      where: eq(messagesTable.id, id)
+    });
+    if (!message) {
+      throw new Error("message not found");
+    }
+    return message;
+  } catch (error) {
+    console.error("Error getting message by ID:", error);
+    throw new Error("Failed to get message");
+  }
+};
+
 export const createMessage = async (data: InsertMessage) => {
   try {
     const [newMessage] = await db.insert(messagesTable).values(data).returning();
