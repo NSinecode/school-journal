@@ -76,7 +76,7 @@ export default function CreatePage() {
     try {
       const result = await createTestAction(test)
       if (result.status === "success") {
-        router.push("/test")
+        router.push("/test/choose-test")
       }
       setIsPublishing(false)
     } catch (error) {
