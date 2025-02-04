@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { createTestAction } from "@/actions/tests-actions"
 import { useAuth } from "@clerk/nextjs"
 import { getUserRole } from '@/actions/profiles-actions'
+import { TrashIcon } from "lucide-react"
 
 interface Question {
   title: string
@@ -84,6 +85,12 @@ export default function CreatePage() {
     }
   }
 
+  const handleDeleteQuestion = (index: number) => {
+    const newQuestions = [...questions];
+    newQuestions.splice(index, 1);
+    setQuestions(newQuestions);
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Create Questions</h1>
@@ -144,17 +151,47 @@ export default function CreatePage() {
           <div className="mb-6">
             <h2 className="text-xl font-bold mb-2">Added Questions:</h2>
             {questions.map((q, i) => (
-              <div key={i} className="p-2 border rounded mb-2">
-                <p><strong>Question:</strong> {q.title}</p>
-                <p><strong>Topic:</strong> {q.topic}</p>
-                <p><strong>Answers:</strong></p>
-                <ul className="list-disc pl-6">
-                  {q.answers.map((a, j) => (
-                    <li key={j} className={j === q.correctAnswer ? 'font-bold' : ''}>
-                      {a}
-                    </li>
-                  ))}
-                </ul>
+              <div key={i} className="space-y-4">
+                <div className="rounded-lg border p-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p><strong>Question:</strong> {q.title}</p>
+                      <p><strong>Topic:</strong> {q.topic}</p>
+                      <p><strong>Answers:</strong></p>
+                      <ul className="list-disc pl-6">
+                        {q.answers.map((a, j) => (
+                          <li key={j} className={j === q.correctAnswer ? 'font-bold' : ''}>
+                            {a}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <div>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => handleDeleteQuestion(i)}
+                        >
+                          <TrashIcon />
+                          Delete Question
+                        </Button>
+                      </div>
+                      <div className="mt-2">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => {
+                            setCurrentQuestion(q)
+                            handleDeleteQuestion(i)
+                          }}
+                        >
+                          Edit Question
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
