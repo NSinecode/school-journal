@@ -1,14 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { UserRound } from 'lucide-react';
-import { ArrowBigUp } from 'lucide-react';
-import { createMessageAction, updateMessageAction } from "@/actions/messages-actions";
+import { createMessageAction, updateMessageAction, deleteMessageAction } from "@/actions/messages-actions";
 import { getProfileByUserIdAction, updateProfileAction } from "@/actions/profiles-actions";
 import { ArrowBigDown } from 'lucide-react';
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { revalidatePath } from "next/cache";
+
+import { CornerUpLeft } from 'lucide-react';
+import { Trash2 } from "lucide-react";
+import { UserRound } from 'lucide-react';
+import { ArrowBigUp } from 'lucide-react';
 
 
 export default function PostFeed() {
@@ -64,17 +66,44 @@ export default function PostFeed() {
 
   const handleUpdateScore = async (id, score, value) => {
     const path = "/forum";
-    if (!profile.data.posts_liked.includes(Number(id))) { 
+    const isLiked = profile.data.posts_liked.includes(Number(id));
+    const isDisliked = profile.data.posts_disliked.includes(Number(id));
+    if (!isLiked && !isDisliked) { 
       setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + value } : post)));
-      
-      const updatedPostsLiked = [...(profile.data.posts_liked || []), id];
-      setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path));
+      if (value > 0) {
+        const updatedPostsLiked = [...(profile.data.posts_liked || []), id];
+        setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path));
+      } else {
+        const updatedPostsDisliked = [...(profile.data.posts_disliked || []), id];
+        setProfile(await updateProfileAction(userId, { posts_disliked: updatedPostsDisliked}, path));
+      }
       await updateMessageAction(id, {score: score + value})
-    } else {
-      const updatedPostsLiked = profile.data.posts_liked.filter(pid => pid !== Number(id));
-      setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path));
-      setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score - 1 } : post)));
-      await updateMessageAction(id, {score: score -1 })
+    } else if (isLiked) {
+      if (value > 0) {
+        const updatedPostsLiked = profile.data.posts_liked.filter(pid => pid !== Number(id));
+        setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path));
+        setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score - 1 } : post)));
+        await updateMessageAction(id, {score: score - 1})
+      } else {
+        const updatedPostsLiked = profile.data.posts_liked.filter(pid => pid !== Number(id));
+        const updatedPostsDisliked = [...(profile.data.posts_disliked || []), id];
+        setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score - 2 } : post)));
+        await updateMessageAction(id, {score: score - 2});
+        setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked, posts_disliked: updatedPostsDisliked }, path));
+      }
+    } else if (isDisliked) {
+      if (value < 0) {
+        const updatedPostsDisliked = profile.data.posts_disliked.filter(pid => pid !== Number(id));
+        setProfile(await updateProfileAction(userId, { posts_disliked: updatedPostsDisliked}, path));
+        setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + 1 } : post)));
+        await updateMessageAction(id, {score: score + 1})
+      } else {
+        const updatedPostsDisliked = profile.data.posts_disliked.filter(pid => pid !== Number(id));
+        const updatedPostsLiked = [...(profile.data.posts_liked || []), id];
+        setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + 2 } : post)));
+        await updateMessageAction(id, {score: score + 2});
+        setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked, posts_disliked: updatedPostsDisliked }, path));
+      }
     }
     router.refresh();
   }
@@ -101,7 +130,12 @@ export default function PostFeed() {
       setNewMessage("");
   }
 
+  const handleRemovePost = async (id) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
 
+    await deleteMessageAction(id);
+    router.refresh();
+  };
   
 
   useEffect(() => {
@@ -172,21 +206,36 @@ export default function PostFeed() {
               </div>
               <h3 className="font-bold text-white whitespace-pre-line mt-2">{post.message}</h3>
               <div className="flex border-b border-t mt-2">
-                <button 
-                  className="mt-1 mb-1"
-                  onClick={() => handleUpdateScore(post.id, post.score, 1)}
-                >
-                  <ArrowBigUp className={`ml-2 w-8 h-8 pr-2 border-r 
-                    ${profile.data.posts_liked.includes(Number(post.id)) ? "text-yellow-300" : ""}`}></ArrowBigUp>
-                </button>
-                <button 
-                  className=""
-                  onClick={() => handleUpdateScore(post.id, post.score, -1)}
-                >
-                  <ArrowBigDown className="w-8 h-8 pl-2 "></ArrowBigDown>
-                </button>
-                <h3 className={`mt-2 pl-3 
-                  ${ post.score >= 0 ? "text-green-300" : "text-red-300"}`}>{ post.score }</h3>
+                <div className="flex">
+                  <button 
+                    className="mt-1 mb-1"
+                    onClick={() => handleUpdateScore(post.id, post.score, 1)}
+                  >
+                    <ArrowBigUp className={`ml-2 w-8 h-8 pr-2 border-r 
+                      ${profile.data.posts_liked.includes(Number(post.id)) ? "text-yellow-300" : ""}`}></ArrowBigUp>
+                  </button>
+                  <button 
+                    className=""
+                    onClick={() => handleUpdateScore(post.id, post.score, -1)}
+                  >
+                    <ArrowBigDown className={`ml-2 w-8 h-8 pr-2
+                      ${profile.data.posts_disliked.includes(Number(post.id)) ? "text-red-300" : ""}`}></ArrowBigDown>
+                  </button>
+                  <h3 className={`mt-2 pl-3 
+                    ${ post.score >= 0 ? "text-green-300" : "text-red-300"}`}>{ post.score }</h3>
+                </div>
+                <div className="w-full flex justify-end">
+                  <button>
+                    <CornerUpLeft className="w-5 h-5 pr-1"/>
+                  </button>
+                  { userId == post.author_id && (
+                    <button
+                      onClick={() => handleRemovePost(post.id)}
+                    >
+                      <Trash2 className="w-5 h-5 border-l mr-2 pl-1"/>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))
