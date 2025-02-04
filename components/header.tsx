@@ -5,6 +5,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { CheckSquare, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,7 +19,14 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Link href="/" className="flex items-center space-x-2">
-            <CheckSquare className="h-6 w-6" />
+            <Image 
+              src="/logo.png"
+              alt="School Journal Logo"
+              width={32}
+              height={32}
+              className="object-contain"
+              priority
+            />
             <h1 className="text-xl font-bold">School Journal</h1>
           </Link>
         </div>
