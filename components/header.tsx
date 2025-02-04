@@ -22,7 +22,7 @@ export default function Header() {
             <h1 className="text-xl font-bold">School Journal</h1>
           </Link>
         </div>
-        <nav className="hidden md:flex space-x-4">
+        <nav className="hidden md:flex space-x-4 justify-center flex-1">
           <Link
             href="/"
             className="hover:underline"
@@ -75,7 +75,7 @@ export default function Header() {
       </div>
       {isMenuOpen && (
         <nav className="md:hidden p-4">
-          <ul className="space-y-2">
+          <ul className="space-y-2 text-center">
             <li>
               <Link
                 href="/"
@@ -93,7 +93,7 @@ export default function Header() {
               >
                 Courses
               </Link>
-          </li>
+            </li>
             <li>
               <Link
                 href="/forum"
