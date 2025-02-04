@@ -41,7 +41,7 @@ export default function TestPage() {
       
       const result = await getTestsAction()
       if (result.status === 'success' && result.data) {
-        const selectedTest = result.data.find((test: Test) => test.id === Number(testId))
+        const selectedTest = result.data.find((test: Test) => Number(test.id) === Number(testId))
         if (selectedTest) {
           setQuestions(selectedTest.body || [])
           setTestTitle(selectedTest.title)
