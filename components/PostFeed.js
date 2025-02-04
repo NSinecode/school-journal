@@ -3,14 +3,9 @@
 import { useState, useEffect } from 'react';
 import { createMessageAction, updateMessageAction, deleteMessageAction } from "@/actions/messages-actions";
 import { getProfileByUserIdAction, updateProfileAction } from "@/actions/profiles-actions";
-import { ArrowBigDown } from 'lucide-react';
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-
-import { CornerUpLeft } from 'lucide-react';
-import { Trash2 } from "lucide-react";
-import { UserRound } from 'lucide-react';
-import { ArrowBigUp } from 'lucide-react';
+import Post from "./PostBody";
 
 
 export default function PostFeed() {
@@ -25,7 +20,6 @@ export default function PostFeed() {
   const [shake, setShake] = useState(false);
   const [profile, setProfile] = useState();
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     async function fetchUserId() {
@@ -51,7 +45,8 @@ export default function PostFeed() {
         const res = await getProfileByUserIdAction(userId);
         if (res.status === "success") {
           if (isSignedIn && res?.data) {
-            setProfile(res);
+            console.log(res.data);
+            setProfile(res.data);
             setLoading(false);
           }
         } else {
@@ -66,46 +61,46 @@ export default function PostFeed() {
 
   const handleUpdateScore = async (id, score, value) => {
     const path = "/forum";
-    const isLiked = profile.data.posts_liked.includes(Number(id));
-    const isDisliked = profile.data.posts_disliked.includes(Number(id));
+    const isLiked = profile.posts_liked.includes(Number(id));
+    const isDisliked = profile.posts_disliked.includes(Number(id));
     if (!isLiked && !isDisliked) { 
       setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + value } : post)));
       if (value > 0) {
-        const updatedPostsLiked = [...(profile.data.posts_liked || []), id];
-        setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path));
+        const updatedPostsLiked = [...(profile.posts_liked || []), id];
+        setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path)).data);
       } else {
-        const updatedPostsDisliked = [...(profile.data.posts_disliked || []), id];
-        setProfile(await updateProfileAction(userId, { posts_disliked: updatedPostsDisliked}, path));
+        const updatedPostsDisliked = [...(profile.posts_disliked || []), id];
+        setProfile((await updateProfileAction(userId, { posts_disliked: updatedPostsDisliked}, path)).data);
       }
       await updateMessageAction(id, {score: score + value})
     } else if (isLiked) {
       if (value > 0) {
-        const updatedPostsLiked = profile.data.posts_liked.filter(pid => pid !== Number(id));
-        setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path));
+        const updatedPostsLiked = profile.posts_liked.filter(pid => pid !== Number(id));
+        setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path)).data);
         setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score - 1 } : post)));
         await updateMessageAction(id, {score: score - 1})
       } else {
-        const updatedPostsLiked = profile.data.posts_liked.filter(pid => pid !== Number(id));
-        const updatedPostsDisliked = [...(profile.data.posts_disliked || []), id];
+        const updatedPostsLiked = profile.posts_liked.filter(pid => pid !== Number(id));
+        const updatedPostsDisliked = [...(profile.posts_disliked || []), id];
         setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score - 2 } : post)));
         await updateMessageAction(id, {score: score - 2});
-        setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked, posts_disliked: updatedPostsDisliked }, path));
+        setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked, posts_disliked: updatedPostsDisliked }, path)).data);
       }
     } else if (isDisliked) {
       if (value < 0) {
-        const updatedPostsDisliked = profile.data.posts_disliked.filter(pid => pid !== Number(id));
-        setProfile(await updateProfileAction(userId, { posts_disliked: updatedPostsDisliked}, path));
+        const updatedPostsDisliked = profile.posts_disliked.filter(pid => pid !== Number(id));
+        setProfile((await updateProfileAction(userId, { posts_disliked: updatedPostsDisliked}, path)).data);
         setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + 1 } : post)));
         await updateMessageAction(id, {score: score + 1})
       } else {
-        const updatedPostsDisliked = profile.data.posts_disliked.filter(pid => pid !== Number(id));
-        const updatedPostsLiked = [...(profile.data.posts_liked || []), id];
+        const updatedPostsDisliked = profile.posts_disliked.filter(pid => pid !== Number(id));
+        const updatedPostsLiked = [...(profile.posts_liked || []), id];
         setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + 2 } : post)));
         await updateMessageAction(id, {score: score + 2});
-        setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked, posts_disliked: updatedPostsDisliked }, path));
+        setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked, posts_disliked: updatedPostsDisliked }, path)).data);
       }
     }
-    router.refresh();
+    router.push("/forum");
   }
   
   const handleAddMessage = async () => {
@@ -196,48 +191,15 @@ export default function PostFeed() {
       <div className="space-y-4">
         {filteredPosts.length > 0 ? (
           filteredPosts.map(post => (
-            <div key={post.id} className="p-4 rounded shadow">
-              <div className="flex gap-2 w-full">
-                <UserRound className="w-4 h-4"></UserRound>
-                <p className="text-xs font-bold">{post.author_id}</p>
-                <span className="text-xs text-blue-400">{
-                    post.created_at.replaceAll("-", ".").replaceAll("T", " ").slice(0, -5)
-                }</span>
-              </div>
-              <h3 className="font-bold text-white whitespace-pre-line mt-2">{post.message}</h3>
-              <div className="flex border-b border-t mt-2">
-                <div className="flex">
-                  <button 
-                    className="mt-1 mb-1"
-                    onClick={() => handleUpdateScore(post.id, post.score, 1)}
-                  >
-                    <ArrowBigUp className={`ml-2 w-8 h-8 pr-2 border-r 
-                      ${profile.data.posts_liked.includes(Number(post.id)) ? "text-yellow-300" : ""}`}></ArrowBigUp>
-                  </button>
-                  <button 
-                    className=""
-                    onClick={() => handleUpdateScore(post.id, post.score, -1)}
-                  >
-                    <ArrowBigDown className={`ml-2 w-8 h-8 pr-2
-                      ${profile.data.posts_disliked.includes(Number(post.id)) ? "text-red-300" : ""}`}></ArrowBigDown>
-                  </button>
-                  <h3 className={`mt-2 pl-3 
-                    ${ post.score >= 0 ? "text-green-300" : "text-red-300"}`}>{ post.score }</h3>
-                </div>
-                <div className="w-full flex justify-end">
-                  <button>
-                    <CornerUpLeft className="w-5 h-5 pr-1"/>
-                  </button>
-                  { userId == post.author_id && (
-                    <button
-                      onClick={() => handleRemovePost(post.id)}
-                    >
-                      <Trash2 className="w-5 h-5 border-l mr-2 pl-1"/>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
+            <Post 
+              key={ post.id } 
+              post = { post }
+              handleUpdateScore = { handleUpdateScore } 
+              handleAddMessage = { handleAddMessage }
+              handleRemovePost = { handleRemovePost }
+              profile = { profile } 
+              userId = { userId }
+            />
           ))
         ) : (
           <p className="text-center text-gray-500">Connection error</p>
