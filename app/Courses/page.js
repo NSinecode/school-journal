@@ -88,8 +88,8 @@ export default function Courses() {
       setTimeout(() => setShake(false), 500); // Останавливаем тряску
       return;
     }
-    const newTagReady = newTags.replaceAll(", ", "/");
-    console.log(newTagReady);
+    const newTagReady = newTags.replaceAll(", ", "/"); 
+    
     const optimisticCourse = {
       id: tempId,
       title: newTitle,

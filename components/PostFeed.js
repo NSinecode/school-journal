@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { UserRound } from 'lucide-react';
-import { ArrowBigUp } from 'lucide-react';
-import { createMessageAction, updateMessageAction } from "@/actions/messages-actions";
-import { ArrowBigDown } from 'lucide-react';
+import { createMessageAction, updateMessageAction, deleteMessageAction } from "@/actions/messages-actions";
+import { getProfileByUserIdAction, updateProfileAction } from "@/actions/profiles-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import Post from "./PostBody";
 
 
 export default function PostFeed() {
+  const router = useRouter();
   const { isSignedIn } = useAuth();
   const [posts, setPosts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,6 +18,8 @@ export default function PostFeed() {
   const [newMessage, setNewMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [shake, setShake] = useState(false);
+  const [profile, setProfile] = useState();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUserId() {
@@ -34,13 +37,69 @@ export default function PostFeed() {
     }
 
     fetchUserId();
-}, [isSignedIn]);
-  const handleUpdateScore = async (id, newScore) => {
-    setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: newScore } : post)));
+  }, [isSignedIn]);
+  
+  useEffect(() => {
+    async function fetchProfile() {
+      if (userId != "FUCKIN GOD") {
+        const res = await getProfileByUserIdAction(userId);
+        if (res.status === "success") {
+          if (isSignedIn && res?.data) {
+            console.log(res.data);
+            setProfile(res.data);
+            setLoading(false);
+          }
+        } else {
+          console.error("Не удалось получить профиль")
+        }
+      } else {
+        setLoading(false);
+      }
+    }
+    fetchProfile();
+  }, [userId], [isSignedIn]);
 
-    await updateMessageAction(id, {score: newScore})
-  }
-
+  const handleUpdateScore = async (id, score, value) => {
+    const path = "/forum";
+    const postsLiked = profile.posts_liked || [];
+    const postsDisliked = profile.posts_disliked || [];
+    const isLiked = postsLiked.includes(Number(id));
+    const isDisliked = postsDisliked.includes(Number(id));
+  
+    let newScore = score;
+    let updatedLiked = [...postsLiked];
+    let updatedDisliked = [...postsDisliked];
+  
+    if (!isLiked && !isDisliked) {
+      newScore += value;
+      value > 0 ? updatedLiked.push(id) : updatedDisliked.push(id);
+    } else if (isLiked) {
+      if (value > 0) {
+        newScore -= 1;
+        updatedLiked = updatedLiked.filter(pid => pid !== Number(id));
+      } else {
+        newScore -= 2;
+        updatedLiked = updatedLiked.filter(pid => pid !== Number(id));
+        updatedDisliked.push(id);
+      }
+    } else if (isDisliked) {
+      if (value < 0) {
+        newScore += 1;
+        updatedDisliked = updatedDisliked.filter(pid => pid !== Number(id));
+      } else {
+        newScore += 2;
+        updatedDisliked = updatedDisliked.filter(pid => pid !== Number(id));
+        updatedLiked.push(id);
+      }
+    }
+  
+    setPosts((prevPosts) => prevPosts.map(post => post.id === id ? { ...post, score: newScore } : post));
+    setProfile((await updateProfileAction(userId, { posts_liked: updatedLiked, posts_disliked: updatedDisliked }, path)).data);
+    await updateMessageAction(id, { score: newScore });
+    router.refresh();
+  };
+  
+  
   const handleAddMessage = async () => {
     const tempId = parseInt(Math.abs(Math.cos(Date.now()) * 100), 10);
     if (newMessage.trim() === "") {
@@ -63,7 +122,12 @@ export default function PostFeed() {
       setNewMessage("");
   }
 
+  const handleRemovePost = async (id) => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
 
+    await deleteMessageAction(id);
+    router.refresh();
+  };
   
 
   useEffect(() => {
@@ -95,6 +159,10 @@ export default function PostFeed() {
     post.message.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  if (loading) {
+    return <div>Загрузка...</div>;
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="flex gap-2">
@@ -120,32 +188,15 @@ export default function PostFeed() {
       <div className="space-y-4">
         {filteredPosts.length > 0 ? (
           filteredPosts.map(post => (
-            <div key={post.id} className="p-4 rounded shadow">
-              <div className="flex gap-2 w-full">
-                <UserRound className="w-4 h-4"></UserRound>
-                <p className="text-xs font-bold">{post.author_id}</p>
-                <span className="text-xs text-blue-400">{
-                    post.created_at.replaceAll("-", ".").replaceAll("T", " ").slice(0, -5)
-                }</span>
-              </div>
-              <h3 className="font-bold text-white whitespace-pre-line mt-2">{post.message}</h3>
-              <div className="flex border-b border-t mt-2">
-                <button 
-                  className="mt-1 mb-1"
-                  onClick={() => handleUpdateScore(post.id, post.score + 1)}
-                >
-                  <ArrowBigUp className="ml-2 w-8 h-8 pr-2 border-r"></ArrowBigUp>
-                </button>
-                <button 
-                  className=""
-                  onClick={() => handleUpdateScore(post.id, post.score - 1)}
-                >
-                  <ArrowBigDown className="w-8 h-8 pl-2 "></ArrowBigDown>
-                </button>
-                <h3 className={`mt-2 pl-3 
-                  ${ post.score >= 0 ? "text-green-300" : "text-red-300"}`}>{ post.score }</h3>
-              </div>
-            </div>
+            <Post 
+              key={ post.id } 
+              post = { post }
+              handleUpdateScore = { handleUpdateScore } 
+              handleAddMessage = { handleAddMessage }
+              handleRemovePost = { handleRemovePost }
+              profile = { profile } 
+              userId = { userId }
+            />
           ))
         ) : (
           <p className="text-center text-gray-500">Connection error</p>
