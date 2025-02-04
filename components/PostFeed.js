@@ -68,11 +68,13 @@ export default function PostFeed() {
       setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + value } : post)));
       
       const updatedPostsLiked = [...(profile.data.posts_liked || []), id];
-      await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path);
+      setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path));
       await updateMessageAction(id, {score: score + value})
     } else {
       const updatedPostsLiked = profile.data.posts_liked.filter(pid => pid !== Number(id));
-      await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path)
+      setProfile(await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path));
+      setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score - 1 } : post)));
+      await updateMessageAction(id, {score: score -1 })
     }
     router.refresh();
   }
