@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from "@/components/ui/button"
 import { getTestsAction } from '@/actions/tests-actions'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
@@ -10,9 +9,10 @@ interface Test {
   id: number
   title: string
   description: string
-  body: any[]
+  body: JSON[]
   name: string
 }
+
 
 export default function ChooseTestPage() {
   const [tests, setTests] = useState<Test[]>([])

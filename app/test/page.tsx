@@ -11,6 +11,12 @@ interface Question {
   topic: string
 }
 
+interface Test {
+  id: number
+  title: string
+  body: Question[]
+}
+
 export default function TestPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
@@ -35,7 +41,7 @@ export default function TestPage() {
       
       const result = await getTestsAction()
       if (result.status === 'success' && result.data) {
-        const selectedTest = result.data.find((test: any) => test.id === Number(testId))
+        const selectedTest = result.data.find((test: Test) => test.id === Number(testId))
         if (selectedTest) {
           setQuestions(selectedTest.body || [])
           setTestTitle(selectedTest.title)
