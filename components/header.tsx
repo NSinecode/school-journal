@@ -47,6 +47,12 @@ export default function Header() {
           >
             Create Test
           </Link>
+          <Link
+            href="/test/choose-test"
+            className="hover:underline"
+          >
+            All Tests
+          </Link>
         </nav>
         <div className="flex items-center space-x-4">
           <SignedOut>
@@ -104,6 +110,15 @@ export default function Header() {
                 onClick={toggleMenu}
               >
                 Create Test
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/test/choose-test" 
+                className="block hover:underline"
+                onClick={toggleMenu}
+              >
+                All Tests
               </Link>
             </li>
           </ul>

@@ -30,9 +30,9 @@ export default function Home() {
               {isSignedIn ? (
                 <Button
                   className="flex-1"
-                  onClick={() => window.location.href = '/profile'}
+                  onClick={() => window.location.href = '/statistics'}
                 >
-                  Профиль
+                  Статистика
                 </Button>
               ) : (
                 <>
