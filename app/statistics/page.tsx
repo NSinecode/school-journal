@@ -46,7 +46,7 @@ export default async function StatisticsPage() {
               <h2 className="text-xl font-semibold mb-2 text-white">Teacher Statistics</h2>
               <p className="text-gray-300">Classes Hosted: Coming soon</p>
               <p className="text-gray-300">Courses Created: Coming soon</p>
-              <p className="text-gray-300">Students' Challenging Topics: Coming soon</p>
+              <p className="text-gray-300">Students&apos; Challenging Topics: Coming soon</p>
             </div>
           )}
         </div>
