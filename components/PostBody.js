@@ -24,14 +24,14 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
                     onClick={() => handleUpdateScore(post.id, post.score, 1)}
                   >
                     <ArrowBigUp className={`ml-2 w-8 h-8 pr-2 border-r 
-                      ${console.log(profile), profile.posts_liked.includes(Number(post.id)) ? "text-yellow-300" : ""}`}></ArrowBigUp>
+                      ${profile.posts_liked.includes(Number(post.id)) ? "text-yellow-300" : ""}`}></ArrowBigUp>
                   </button>
                   <button 
                     className=""
                     onClick={() => handleUpdateScore(post.id, post.score, -1)}
                   >
                     <ArrowBigDown className={`ml-2 w-8 h-8 pr-2
-                      ${console.log(profile), profile.posts_disliked.includes(Number(post.id)) ? "text-red-300" : ""}`}></ArrowBigDown>
+                      ${profile.posts_disliked.includes(Number(post.id)) ? "text-red-300" : ""}`}></ArrowBigDown>
                   </button>
                   <h3 className={`mt-2 pl-3 
                     ${ post.score >= 0 ? "text-green-300" : "text-red-300"}`}>{ post.score }</h3>

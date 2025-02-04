@@ -61,40 +61,42 @@ export default function PostFeed() {
 
   const handleUpdateScore = async (id, score, value) => {
     const path = "/forum";
-    const isLiked = profile.posts_liked.includes(Number(id));
-    const isDisliked = profile.posts_disliked.includes(Number(id));
+    const postsLiked = profile.posts_liked;
+    const postsDisliked = profile.posts_disliked;
+    const isLiked = postsLiked.includes(Number(id));
+    const isDisliked = postsDisliked.includes(Number(id));
     if (!isLiked && !isDisliked) { 
       setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + value } : post)));
       if (value > 0) {
-        const updatedPostsLiked = [...(profile.posts_liked || []), id];
+        const updatedPostsLiked = [...(postsLiked || []), id];
         setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path)).data);
       } else {
-        const updatedPostsDisliked = [...(profile.posts_disliked || []), id];
+        const updatedPostsDisliked = [...(postsDisliked || []), id];
         setProfile((await updateProfileAction(userId, { posts_disliked: updatedPostsDisliked}, path)).data);
       }
       await updateMessageAction(id, {score: score + value})
     } else if (isLiked) {
       if (value > 0) {
-        const updatedPostsLiked = profile.posts_liked.filter(pid => pid !== Number(id));
+        const updatedPostsLiked = postsLiked.filter(pid => pid !== Number(id));
         setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path)).data);
         setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score - 1 } : post)));
         await updateMessageAction(id, {score: score - 1})
       } else {
-        const updatedPostsLiked = profile.posts_liked.filter(pid => pid !== Number(id));
-        const updatedPostsDisliked = [...(profile.posts_disliked || []), id];
+        const updatedPostsLiked = postsLiked.filter(pid => pid !== Number(id));
+        const updatedPostsDisliked = [...(postsDisliked || []), id];
         setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score - 2 } : post)));
         await updateMessageAction(id, {score: score - 2});
         setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked, posts_disliked: updatedPostsDisliked }, path)).data);
       }
     } else if (isDisliked) {
       if (value < 0) {
-        const updatedPostsDisliked = profile.posts_disliked.filter(pid => pid !== Number(id));
+        const updatedPostsDisliked = postsDisliked.filter(pid => pid !== Number(id));
         setProfile((await updateProfileAction(userId, { posts_disliked: updatedPostsDisliked}, path)).data);
         setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + 1 } : post)));
         await updateMessageAction(id, {score: score + 1})
       } else {
-        const updatedPostsDisliked = profile.posts_disliked.filter(pid => pid !== Number(id));
-        const updatedPostsLiked = [...(profile.posts_liked || []), id];
+        const updatedPostsDisliked = postsDisliked.filter(pid => pid !== Number(id));
+        const updatedPostsLiked = [...(postsLiked || []), id];
         setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + 2 } : post)));
         await updateMessageAction(id, {score: score + 2});
         setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked, posts_disliked: updatedPostsDisliked }, path)).data);
