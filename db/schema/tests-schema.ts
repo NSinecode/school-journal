@@ -5,6 +5,7 @@ export const testsTable = pgTable("tests", {
   id: serial("id").primaryKey(),
   created_at: timestamp("created_at").default(sql`now()`).notNull(),
   user_id: text("user_id").notNull(),
+  name: text("name").notNull(),
   body: jsonb("body").notNull(),
 });
 

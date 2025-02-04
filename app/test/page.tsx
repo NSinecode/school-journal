@@ -2,13 +2,19 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
-import { createTestAction, getTestsAction } from '@/actions/tests-actions'
+import { getTestsAction } from '@/actions/tests-actions'
 
 interface Question {
   title: string
   answers: string[]
   correctAnswer: number
   topic: string
+}
+
+interface Test {
+  id: number
+  title: string
+  body: Question[]
 }
 
 export default function TestPage() {
@@ -20,25 +26,36 @@ export default function TestPage() {
   const [showSummary, setShowSummary] = useState(false)
   const [questions, setQuestions] = useState<Question[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [testId, setTestId] = useState<string | null>(null)
+  const [testTitle, setTestTitle] = useState<string>('')
+
+  useEffect(() => {
+    // Get test ID from URL
+    const params = new URLSearchParams(window.location.search)
+    setTestId(params.get('id'))
+  }, [])
 
   useEffect(() => {
     async function loadQuestions() {
+      if (!testId) return
+      
       const result = await getTestsAction()
       if (result.status === 'success' && result.data) {
-        // Log to see the structure
-        console.log('API Response:', result.data[0]?.body)
-        // Access questions directly if body is the questions array
-        setQuestions(result.data[0]?.body || [])
-        setIsLoading(false)
-        
-        // Clear previous test data when loading new questions
-        localStorage.removeItem('quizScore')
-        localStorage.removeItem('answeredQuestions')
-        localStorage.removeItem('userAnswers')
+        const selectedTest = result.data.find((test: Test) => Number(test.id) === Number(testId))
+        if (selectedTest) {
+          setQuestions(selectedTest.body || [])
+          setTestTitle(selectedTest.title)
+          setIsLoading(false)
+          
+          // Clear previous test data
+          localStorage.removeItem('quizScore')
+          localStorage.removeItem('answeredQuestions')
+          localStorage.removeItem('userAnswers')
+        }
       }
     }
     loadQuestions()
-  }, [])
+  }, [testId])
 
   useEffect(() => {
     // Set selected answer when navigating between questions
@@ -156,7 +173,10 @@ export default function TestPage() {
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lightgray-600">Question {currentQuestion + 1} of {questions.length}</h2>
+        <div>
+          <h1 className="text-2xl font-bold text-white mb-2">{testTitle}</h1>
+          <h2 className="text-lightgray-600">Question {currentQuestion + 1} of {questions.length}</h2>
+        </div>
         <div className="text-white">
           Score: {score}
         </div>

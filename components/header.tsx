@@ -22,7 +22,7 @@ export default function Header() {
             <h1 className="text-xl font-bold">School Journal</h1>
           </Link>
         </div>
-        <nav className="hidden md:flex space-x-4">
+        <nav className="hidden md:flex space-x-4 justify-center flex-1">
           <Link
             href="/"
             className="hover:underline"
@@ -40,6 +40,18 @@ export default function Header() {
             className="hover:underline"
           >
             Forum
+          </Link>
+          <Link
+            href="/test/create"
+            className="hover:underline"
+          >
+            Create Test
+          </Link>
+          <Link
+            href="/test/choose-test"
+            className="hover:underline"
+          >
+            All Tests
           </Link>
         </nav>
         <div className="flex items-center space-x-4">
@@ -63,7 +75,7 @@ export default function Header() {
       </div>
       {isMenuOpen && (
         <nav className="md:hidden p-4">
-          <ul className="space-y-2">
+          <ul className="space-y-2 text-center">
             <li>
               <Link
                 href="/"
@@ -81,7 +93,7 @@ export default function Header() {
               >
                 Courses
               </Link>
-          </li>
+            </li>
             <li>
               <Link
                 href="/forum"
@@ -89,6 +101,24 @@ export default function Header() {
                 onClick={toggleMenu}
               >
                 Forum
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/test/create"
+                className="block hover:underline"
+                onClick={toggleMenu}
+              >
+                Create Test
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/test/choose-test" 
+                className="block hover:underline"
+                onClick={toggleMenu}
+              >
+                All Tests
               </Link>
             </li>
           </ul>
