@@ -61,49 +61,44 @@ export default function PostFeed() {
 
   const handleUpdateScore = async (id, score, value) => {
     const path = "/forum";
-    const postsLiked = profile.posts_liked;
-    const postsDisliked = profile.posts_disliked;
+    const postsLiked = profile.posts_liked || [];
+    const postsDisliked = profile.posts_disliked || [];
     const isLiked = postsLiked.includes(Number(id));
     const isDisliked = postsDisliked.includes(Number(id));
-    if (!isLiked && !isDisliked) { 
-      setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + value } : post)));
-      if (value > 0) {
-        const updatedPostsLiked = [...(postsLiked || []), id];
-        setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path)).data);
-      } else {
-        const updatedPostsDisliked = [...(postsDisliked || []), id];
-        setProfile((await updateProfileAction(userId, { posts_disliked: updatedPostsDisliked}, path)).data);
-      }
-      await updateMessageAction(id, {score: score + value})
+  
+    let newScore = score;
+    let updatedLiked = [...postsLiked];
+    let updatedDisliked = [...postsDisliked];
+  
+    if (!isLiked && !isDisliked) {
+      newScore += value;
+      value > 0 ? updatedLiked.push(id) : updatedDisliked.push(id);
     } else if (isLiked) {
       if (value > 0) {
-        const updatedPostsLiked = postsLiked.filter(pid => pid !== Number(id));
-        setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked}, path)).data);
-        setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score - 1 } : post)));
-        await updateMessageAction(id, {score: score - 1})
+        newScore -= 1;
+        updatedLiked = updatedLiked.filter(pid => pid !== Number(id));
       } else {
-        const updatedPostsLiked = postsLiked.filter(pid => pid !== Number(id));
-        const updatedPostsDisliked = [...(postsDisliked || []), id];
-        setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score - 2 } : post)));
-        await updateMessageAction(id, {score: score - 2});
-        setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked, posts_disliked: updatedPostsDisliked }, path)).data);
+        newScore -= 2;
+        updatedLiked = updatedLiked.filter(pid => pid !== Number(id));
+        updatedDisliked.push(id);
       }
     } else if (isDisliked) {
       if (value < 0) {
-        const updatedPostsDisliked = postsDisliked.filter(pid => pid !== Number(id));
-        setProfile((await updateProfileAction(userId, { posts_disliked: updatedPostsDisliked}, path)).data);
-        setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + 1 } : post)));
-        await updateMessageAction(id, {score: score + 1})
+        newScore += 1;
+        updatedDisliked = updatedDisliked.filter(pid => pid !== Number(id));
       } else {
-        const updatedPostsDisliked = postsDisliked.filter(pid => pid !== Number(id));
-        const updatedPostsLiked = [...(postsLiked || []), id];
-        setPosts((prevPosts) => prevPosts.map((post) => (post.id === id ? { ...post, score: score + 2 } : post)));
-        await updateMessageAction(id, {score: score + 2});
-        setProfile((await updateProfileAction(userId, { posts_liked: updatedPostsLiked, posts_disliked: updatedPostsDisliked }, path)).data);
+        newScore += 2;
+        updatedDisliked = updatedDisliked.filter(pid => pid !== Number(id));
+        updatedLiked.push(id);
       }
     }
-    router.push("/forum");
-  }
+  
+    setPosts((prevPosts) => prevPosts.map(post => post.id === id ? { ...post, score: newScore } : post));
+    setProfile((await updateProfileAction(userId, { posts_liked: updatedLiked, posts_disliked: updatedDisliked }, path)).data);
+    await updateMessageAction(id, { score: newScore });
+    router.refresh();
+  };
+  
   
   const handleAddMessage = async () => {
     const tempId = parseInt(Math.abs(Math.cos(Date.now()) * 100), 10);
