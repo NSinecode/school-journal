@@ -51,6 +51,9 @@ export default function TestPage() {
           localStorage.removeItem('quizScore')
           localStorage.removeItem('answeredQuestions')
           localStorage.removeItem('userAnswers')
+        } else {
+          // Test not found - redirect back
+          window.location.href = '/test/choose-test'
         }
       }
     }
@@ -160,12 +163,19 @@ export default function TestPage() {
           ))}
         </div>
 
-        <Button
-          className="mt-6"
-          onClick={() => setShowSummary(false)}
-        >
-          Return to Questions
-        </Button>
+        <div className="flex gap-4 mt-6">
+          <Button
+            onClick={() => setShowSummary(false)}
+          >
+            Return to Questions
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => window.location.href = '/test/choose-test'}
+          >
+            Choose Another Test
+          </Button>
+        </div>
       </div>
     )
   }
@@ -232,7 +242,7 @@ export default function TestPage() {
           }}
           disabled={!answeredQuestions.has(currentQuestion) && selectedAnswer === null}
         >
-          {currentQuestion === questions.length - 1 ? 'Finish Quiz' : 'Next'}
+          {currentQuestion === questions.length - 1 ? 'Finish Test' : 'Next'}
         </Button>
       </div>
     </div>
