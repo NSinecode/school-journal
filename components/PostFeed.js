@@ -72,7 +72,11 @@ export default function PostFeed() {
   
     if (!isLiked && !isDisliked) {
       newScore += value;
-      value > 0 ? updatedLiked.push(id) : updatedDisliked.push(id);
+      if (value > 0) {
+        updatedLiked.push(id);
+      } else {
+        updatedDisliked.push(id);
+      }
     } else if (isLiked) {
       if (value > 0) {
         newScore -= 1;
