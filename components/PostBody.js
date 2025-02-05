@@ -5,6 +5,7 @@ import { ArrowBigUp } from 'lucide-react';
 import { ArrowBigDown } from 'lucide-react';
 import { getMessageAction } from '@/actions/messages-actions';
 import { useEffect, useState } from 'react';
+import { MessageSquareText } from 'lucide-react';
 
 export default function Post( { post, handleUpdateScore, handleRemovePost, profile, userId, handleReply }) {
     const [repPost, setRepPost] = useState();
@@ -12,7 +13,6 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
       async function fetchPost() {
           if (post.replied_to) 
             setRepPost(await getMessageAction(post.replied_to));
-          console.log(repPost);
         }
       fetchPost();
     }, []);
@@ -28,7 +28,7 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
               </div>
               <h3 className="font-bold text-white whitespace-pre-line mt-2">{post.message}</h3>
               {post.replied_to && repPost ? (
-                <div className="p-3 border-l">
+                <div className="p-4 border-l">
                   <div className="flex gap-2 w-full">
                     <UserRound className="w-4 h-4"></UserRound>
                     <p className="text-xs font-bold">{repPost.data.author_id}</p>
@@ -60,6 +60,9 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
                     onClick={() => handleReply(post.id)}
                   >
                     <CornerUpLeft className="w-5 h-5 pr-1"/>
+                  </button>
+                  <button>
+                    <MessageSquareText className="w-6 h-6 pr-1 pl-1 border-l"/>
                   </button>
                   { userId == post.author_id && (
                     <button
