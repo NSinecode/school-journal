@@ -1,6 +1,6 @@
 "use server";
 
-import { getMessages, createMessage, deleteMessage, updateMessage } from "@/db/queries/messages_queries";
+import { getMessages, createMessage, deleteMessage, updateMessage, getMessage } from "@/db/queries/messages_queries";
 import { InsertMessage } from "@/db/schema/messages-schema";
 import { ActionState } from "@/types";
 import { revalidatePath } from "next/cache";
@@ -12,6 +12,15 @@ export async function getMessagesAction(): Promise<ActionState> {
   } catch (error) {
     console.error("Error getting messages:", error);
     return { status: "error", message: "Failed to get messages" };
+  }
+}
+export async function getMessageAction(id: number): Promise<ActionState> {
+  try {
+    const message = await getMessage(id);
+    return { status: "success", message: "message retrieved successfully", data: message };
+  } catch (error) {
+    console.error("Error getting message by ID:", error);
+    return { status: "error", message: "Failed to get message" };
   }
 }
 

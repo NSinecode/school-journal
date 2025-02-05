@@ -35,10 +35,10 @@ export async function getAllProfilesAction(): Promise<ActionState> {
   }
 }
 
-export async function updateProfileAction(userId: string, data: Partial<InsertProfile>): Promise<ActionState> {
+export async function updateProfileAction(userId: string, data: Partial<InsertProfile>, path: string): Promise<ActionState> {
   try {
     const updatedProfile = await updateProfile(userId, data);
-    revalidatePath("/profile");
+    revalidatePath(path);
     return { status: "success", message: "Profile updated successfully", data: updatedProfile };
   } catch (error) {
     return { status: "error", message: "Failed to update profile" };
