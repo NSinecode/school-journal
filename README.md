@@ -8,7 +8,7 @@
 - Forum 
 
 ## UI
-- ✅Cross platform 
+- ✅Cross platform  
 - Production   
    - Minimize delay on inputs
    - Minimize server requests
