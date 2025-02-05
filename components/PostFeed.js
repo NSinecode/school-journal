@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createMessageAction, updateMessageAction, deleteMessageAction } from "@/actions/messages-actions";
+import { createMessageAction, updateMessageAction, deleteMessageAction, getMessageAction } from "@/actions/messages-actions";
 import { getProfileByUserIdAction, updateProfileAction } from "@/actions/profiles-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Post from "./PostBody";
+import { Space_Grotesk } from 'next/font/google';
 
 
 export default function PostFeed() {
@@ -122,6 +123,7 @@ export default function PostFeed() {
         };
         setPosts((prevPosts) => [...prevPosts, optimisticPost]);
         await createMessageAction({author_id: userId, message: newMessage});
+        router.refresh();
       } else {
         const optimisticPost = {
           id: tempId,
@@ -132,7 +134,11 @@ export default function PostFeed() {
           replied_to: replyId,
         };
         setPosts((prevPosts) => [...prevPosts, optimisticPost]);
-        console.log(await createMessageAction({author_id: userId, message: newMessage, replied_to: replyId}));
+        const newReply = await createMessageAction({author_id: userId, message: newMessage, replied_to: replyId});
+        const repPost = await getMessageAction(replyId);
+        const newReplies = [...repPost.data.reply_id, newReply.data.id];
+        await updateMessageAction(replyId, {reply_id: newReplies});
+        router.refresh();
         setReplyId(0);
       }
     
@@ -145,10 +151,17 @@ export default function PostFeed() {
     setIsModalOpen(true);
   }
 
-  const handleRemovePost = async (id) => {
+  const handleRemovePost = async (id, repId) => {
     setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
-
-    await deleteMessageAction(id);
+    if (!repId) {
+      await deleteMessageAction(id);
+    } else {
+      const newRepss = await getMessageAction(repId);
+      const newReps = newRepss.data.reply_id.filter(idp => idp !== Number(id));
+      console.log(newReps);
+      console.log(await updateMessageAction(repId, {reply_id: newReps}));
+      await deleteMessageAction(id);
+    }
     router.refresh();
   };
   

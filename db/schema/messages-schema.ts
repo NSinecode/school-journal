@@ -1,4 +1,4 @@
-import { pgTable, text, serial, bigint, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, bigint, timestamp, PgArray } from "drizzle-orm/pg-core";
 
 export const messagesTable = pgTable("messages", {
   id: serial("id").primaryKey(),
@@ -6,7 +6,7 @@ export const messagesTable = pgTable("messages", {
   message: text("message").notNull(),
   score: bigint("score", { mode: "number" }).default(0),
   created_at: timestamp("created_at").defaultNow(),
-  reply_id: bigint("reply_id", { mode: "number" }).array(),
+  reply_id: bigint("reply_id", { mode: "number" }).array().default([]),
   replied_to: bigint("replied_to", { mode: "number" }),
 });
 
