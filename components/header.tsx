@@ -19,14 +19,16 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Link href="/" className="flex items-center space-x-2">
-            <Image 
-              src="/logo.png"
-              alt="School Journal Logo"
-              width={32}
-              height={32}
-              className="object-contain"
-              priority
-            />
+            <div className="w-8 h-8 relative bg-transparent">
+              <Image 
+                src="/images/IMG_1671.PNG"
+                alt="School Journal Logo"
+                fill
+                sizes="32px"
+                className="!relative !h-[32px] !w-[32px]"
+                priority
+              />
+            </div>
             <h1 className="text-xl font-bold">School Journal</h1>
           </Link>
         </div>
