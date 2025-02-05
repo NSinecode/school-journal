@@ -1,5 +1,5 @@
 ## Most important to do 
-- ✅Registration, authentication, different division into three groups(student, teacher, admin)
+- ✅Registration, authentication, different division into three groups(student, teacher, admin) 
 - Create function class with lectures, like presentations, video lectures and text materials
 - ✅Tag and category system 
 - Interactive components like tests and tasks 
