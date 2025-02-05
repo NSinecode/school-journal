@@ -6,7 +6,6 @@ import { getProfileByUserIdAction, updateProfileAction } from "@/actions/profile
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Post from "./PostBody";
-import { Space_Grotesk } from 'next/font/google';
 
 
 export default function PostFeed() {
@@ -123,7 +122,6 @@ export default function PostFeed() {
         };
         setPosts((prevPosts) => [...prevPosts, optimisticPost]);
         await createMessageAction({author_id: userId, message: newMessage});
-        router.refresh();
       } else {
         const optimisticPost = {
           id: tempId,
@@ -133,12 +131,14 @@ export default function PostFeed() {
           score: 0,
           replied_to: replyId,
         };
-        setPosts((prevPosts) => [...prevPosts, optimisticPost]);
         const newReply = await createMessageAction({author_id: userId, message: newMessage, replied_to: replyId});
-        const repPost = await getMessageAction(replyId);
+        let repPost = await getMessageAction(replyId);
         const newReplies = [...repPost.data.reply_id, newReply.data.id];
-        await updateMessageAction(replyId, {reply_id: newReplies});
-        router.refresh();
+        repPost = await updateMessageAction(replyId, {reply_id: newReplies});
+        setPosts(posts.map(post => 
+          post.id === replyId ? { ...post, reply_id: repPost.data.reply_id } : post
+        ));
+        setPosts((prevPosts) => [...prevPosts, optimisticPost]);
         setReplyId(0);
       }
     
@@ -152,16 +152,19 @@ export default function PostFeed() {
   }
 
   const handleRemovePost = async (id, repId) => {
-    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+    let repliedPost;
     if (!repId) {
       await deleteMessageAction(id);
     } else {
-      const newRepss = await getMessageAction(repId);
-      const newReps = newRepss.data.reply_id.filter(idp => idp !== Number(id));
-      console.log(newReps);
-      console.log(await updateMessageAction(repId, {reply_id: newReps}));
+      repliedPost = await getMessageAction(repId);
+      const newReps = repliedPost.data.reply_id.filter(idp => idp !== Number(id));
+      repliedPost = await updateMessageAction(repId, {reply_id: newReps});
       await deleteMessageAction(id);
     }
+    setPosts(posts.map(post => 
+      post.id === repId ? { ...post, reply_id: repliedPost.data.reply_id } : post
+    ));
+    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
     router.refresh();
   };
   
@@ -238,7 +241,7 @@ export default function PostFeed() {
             />
           ))
         ) : (
-          <p className="text-center text-gray-500">Connection error</p>
+          <p className="text-center text-gray-500">No posts founded</p>
         )}
       </div>
 

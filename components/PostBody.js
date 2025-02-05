@@ -42,14 +42,14 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
                     className="mt-1 mb-1"
                     onClick={() => handleUpdateScore(post.id, post.score, 1)}
                   >
-                    <ArrowBigUp className={`ml-2 w-8 h-8 pr-2 border-r transition-all duration-100
+                    <ArrowBigUp className={`ml-2 w-8 h-8 pr-2 border-r transition-all duration-200
                       ${profile.posts_liked.includes(Number(post.id)) ? "text-green-300" : ""}`}/>
                   </button>
                   <button 
                     className=""
                     onClick={() => handleUpdateScore(post.id, post.score, -1)}
                   >
-                    <ArrowBigDown className={`ml-2 w-8 h-8 pr-2 transition-all duration-100
+                    <ArrowBigDown className={`ml-2 w-8 h-8 pr-2 transition-all duration-200
                       ${profile.posts_disliked.includes(Number(post.id)) ? "text-red-300" : ""}`}/>
                   </button>
                   <h3 className={`mt-2 pl-3 
