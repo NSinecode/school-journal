@@ -6,8 +6,10 @@ import { ArrowBigDown } from 'lucide-react';
 import { getMessageAction } from '@/actions/messages-actions';
 import { useEffect, useState } from 'react';
 import { MessageSquareText } from 'lucide-react';
+import { useRouter } from "next/navigation";
 
 export default function Post( { post, handleUpdateScore, handleRemovePost, profile, userId, handleReply }) {
+    const router = useRouter();
     const [repPost, setRepPost] = useState();
     useEffect(() => {
       async function fetchPost() {
@@ -62,7 +64,9 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
                     <CornerUpLeft className="w-5 h-5 pr-1 hover:text-gray-400"/>
                   </button>
                   <div className="flex">
-                    <button>
+                    <button
+                      onClick={() => router.push(`/forum/post?id=${post.id}`)}
+                    >
                       <MessageSquareText className="w-6 h-6 pr-1 pl-1 border-l hover:text-gray-400"/>
                     </button>
                     {post.reply_id && post.reply_id.length > 0 ? (

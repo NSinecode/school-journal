@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import Post from "./PostBody";
 
 
-export default function PostFeed() {
+export default function PostFeed({isPost}) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
   const [posts, setPosts] = useState([]);
@@ -204,25 +204,27 @@ export default function PostFeed() {
 
   return (
     <div className="max-w-2xl mx-auto p-4">
-      <div className="flex gap-2">
-        {/* Кнопка добавления поста */}
-        <SignedIn>
-          <button 
-            className="flex-1 w-full bg-blue-500 text-white py-2 rounded mb-4 hover:bg-blue-600 p-3"
-            onClick={() => setIsModalOpen(true)}
-          >
-            New
-          </button>
-        </SignedIn>
-        {/* Поисковая строка */}
-        <input
-            type="text"
-            placeholder="Post search"
-            className="flex-4 w-full p-2 border rounded mb-4"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>  
+      {isPost ? (
+        <div className="flex gap-2">
+          {/* Кнопка добавления поста */}
+          <SignedIn>
+            <button 
+              className="flex-1 w-full bg-blue-500 text-white py-2 rounded mb-4 hover:bg-blue-600 p-3"
+              onClick={() => setIsModalOpen(true)}
+            >
+              New
+            </button>
+          </SignedIn>
+          {/* Поисковая строка */}
+          <input
+              type="text"
+              placeholder="Post search"
+              className="flex-4 w-full p-2 border rounded mb-4"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>  
+      ) : null}
       {/* Лента постов */}
       <div className="space-y-4">
         {filteredPosts.length > 0 ? (
