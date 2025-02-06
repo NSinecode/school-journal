@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { getTestsAction } from '@/actions/tests-actions'
+import { useSession } from '@clerk/nextjs'
+import { saveTestCompletionAction } from '@/actions/tests-actions'
 
 interface Question {
   title: string
@@ -18,10 +20,12 @@ interface Test {
 }
 
 export default function TestPage() {
+  const { session } = useSession()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [score, setScore] = useState(0)
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set())
+
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({})
   const [showSummary, setShowSummary] = useState(false)
   const [questions, setQuestions] = useState<Question[]>([])
@@ -48,9 +52,6 @@ export default function TestPage() {
           setIsLoading(false)
           
           // Clear previous test data
-          localStorage.removeItem('quizScore')
-          localStorage.removeItem('answeredQuestions')
-          localStorage.removeItem('userAnswers')
         } else {
           // Test not found - redirect back
           window.location.href = '/test/choose-test'
@@ -65,6 +66,17 @@ export default function TestPage() {
     setSelectedAnswer(userAnswers[currentQuestion] ?? null)
   }, [currentQuestion, userAnswers])
 
+  useEffect(() => {
+    // Restore state from localStorage if it exists
+    const savedScore = localStorage.getItem('quizScore')
+    const savedAnswered = localStorage.getItem('answeredQuestions') 
+    const savedUserAnswers = localStorage.getItem('userAnswers')
+
+    if (savedScore) setScore(parseInt(savedScore))
+    if (savedAnswered) setAnsweredQuestions(new Set(JSON.parse(savedAnswered)))
+    if (savedUserAnswers) setUserAnswers(JSON.parse(savedUserAnswers))
+  }, []) // Only run once on mount
+
   const handleAnswerSelect = (index: number) => {
     setSelectedAnswer(index)
     // Automatically submit answer when selected
@@ -77,7 +89,8 @@ export default function TestPage() {
       
       const newAnswered = new Set(answeredQuestions).add(currentQuestion)
       setAnsweredQuestions(newAnswered)
-      localStorage.setItem('answeredQuestions', JSON.stringify([...newAnswered]))
+      // Convert Set to Array before storing
+      localStorage.setItem('answeredQuestions', JSON.stringify(Array.from(newAnswered)))
 
       const newUserAnswers = { ...userAnswers, [currentQuestion]: index }
       setUserAnswers(newUserAnswers)
@@ -97,6 +110,19 @@ export default function TestPage() {
     return selectedAnswer === index 
       ? "bg-red-500 text-white hover:bg-red-500" 
       : "text-white hover:text-white hover:bg-white/10"
+  }
+
+  const handleFinishTest = async () => {
+    if (!session?.user?.id || !testId) return
+    
+    // Save completion data
+    const completion = {
+      user_id: session.user.id,
+      choices: userAnswers  // Keep original Record<number, number> format
+    }
+    
+    await saveTestCompletionAction(Number(testId), completion)
+    setShowSummary(true)
   }
 
   // Add loading state handling
@@ -231,9 +257,8 @@ export default function TestPage() {
         <Button
           onClick={() => {
             if (currentQuestion === questions.length - 1) {
-              // Only show summary if all questions are answered
               if (answeredQuestions.size === questions.length) {
-                setShowSummary(true)
+                handleFinishTest()
               }
             } else {
               setCurrentQuestion(Math.min(questions.length - 1, currentQuestion + 1))

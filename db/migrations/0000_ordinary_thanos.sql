@@ -41,5 +41,5 @@ CREATE TABLE "tests" (
 	"user_id" TEXT NOT NULL,
 	"name" TEXT NOT NULL,
 	"body" JSONB NOT NULL,
-	"completions" JSONB NOT NULL,
+	"completion" JSONB NOT NULL,
 );

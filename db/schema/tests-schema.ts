@@ -7,7 +7,9 @@ export const testsTable = pgTable("tests", {
   user_id: text("user_id").notNull(),
   name: text("name").notNull(),
   body: jsonb("body").notNull(),
+  completion: jsonb("completion").notNull(),
 });
+
 
 export type InsertTest = typeof testsTable.$inferInsert;
 export type SelectTest = typeof testsTable.$inferSelect;

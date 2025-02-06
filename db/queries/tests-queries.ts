@@ -29,3 +29,11 @@ export const deleteTest = async (id: number) => {
     throw new Error("Failed to delete test");
   }
 };
+
+export async function updateTestCompletion(testId: number, completionStr: string) {
+  return await db
+    .update(testsTable)
+    .set({ completion: completionStr })
+    .where(eq(testsTable.id, testId))
+    .returning();
+}
