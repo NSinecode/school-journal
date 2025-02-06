@@ -8,7 +8,8 @@ import { useRouter } from "next/navigation";
 import Post from "./PostBody";
 
 
-export default function PostFeed({isPost}) {
+
+export default function PostFeed({isPost, pstId}) {
   const router = useRouter();
   const { isSignedIn } = useAuth();
   const [posts, setPosts] = useState([]);
@@ -21,6 +22,7 @@ export default function PostFeed({isPost}) {
   const [profile, setProfile] = useState();
   const [loading, setLoading] = useState(true);
   const [replyId, setReplyId] = useState(0);
+  
 
   useEffect(() => {
     async function fetchUserId() {
@@ -183,7 +185,9 @@ export default function PostFeed({isPost}) {
     fetchPosts();
   }, []);
 
-  const sortedPostsByTime = posts.sort((a, b) => {
+  const postIsPost = isPost ? posts : posts.filter(post => post.replied_to === pstId);
+
+  const sortedPostsByTime = postIsPost.sort((a, b) => {
     const dateA = new Date(a.created_at).getTime();
     const dateB = new Date(b.created_at).getTime();
     return dateB - dateA; 
@@ -198,8 +202,9 @@ export default function PostFeed({isPost}) {
     post.message.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+
   if (loading) {
-    return <div>Загрузка...</div>;
+    return <div className="max-w-2xl mx-auto p-4">Loading...</div>;
   }
 
   return (
@@ -240,6 +245,8 @@ export default function PostFeed({isPost}) {
 
               profile = { profile } 
               userId = { userId }
+
+              isPostPage = { !isPost }
             />
           ))
         ) : (
@@ -282,3 +289,5 @@ export default function PostFeed({isPost}) {
     </div>
   );
 }
+
+export { handleRemovePost, handleAddMessage, handleUpdateScore };

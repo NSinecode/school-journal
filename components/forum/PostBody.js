@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { MessageSquareText } from 'lucide-react';
 import { useRouter } from "next/navigation";
 
-export default function Post( { post, handleUpdateScore, handleRemovePost, profile, userId, handleReply }) {
+export default function Post( { post, handleUpdateScore, handleRemovePost, profile, userId, handleReply, isPostPage }) {
     const router = useRouter();
     const [repPost, setRepPost] = useState();
     useEffect(() => {
@@ -19,17 +19,20 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
       fetchPost();
     }, []);
 
+    const comBtn = async () => {
+      router.push(`/forum/post?id=${post.id}`);
+    } 
     return (
         <div key={post.id} className="p-4 rounded shadow">
               <div className="flex gap-2 w-full">
                 <UserRound className="w-4 h-4"></UserRound>
                 <p className="text-xs font-bold">{post.author_id}</p>
                 <span className="text-xs text-blue-400">{
-                    post.created_at.replaceAll("-", ".").replaceAll("T", " ").slice(0, -5)
+                    new Date(post.created_at).toISOString().replaceAll("-", ".").replaceAll("T", " ").slice(0, -5)
                 }</span>
               </div>
               <h3 className="font-bold text-white whitespace-pre-line mt-2">{post.message}</h3>
-              {post.replied_to && repPost ? (
+              {post.replied_to && repPost && !isPostPage ? (
                 <div className="p-4 border-l border-blue-500 mt-2">
                   <div className="flex gap-2 w-full">
                     <UserRound className="w-4 h-4"></UserRound>
@@ -65,7 +68,7 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
                   </button>
                   <div className="flex">
                     <button
-                      onClick={() => router.push(`/forum/post?id=${post.id}`)}
+                      onClick={ comBtn }
                     >
                       <MessageSquareText className="w-6 h-6 pr-1 pl-1 border-l hover:text-gray-400"/>
                     </button>
@@ -73,7 +76,7 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
                       <p className="p-1 mt-1">{ post.reply_id.length }</p>
                     ) : null}
                   </div>
-                  { userId == post.author_id && (
+                  { ((userId == post.author_id || profile.role == "admin") && post.author_id != "FUCKIN GOD") && (
                     <button
                       onClick={() => handleRemovePost(post.id, post.replied_to)}
                     >
