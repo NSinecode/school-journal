@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createMessageAction, updateMessageAction, deleteMessageAction, getMessageAction } from "@/actions/messages-actions";
 import { getProfileByUserIdAction, updateProfileAction } from "@/actions/profiles-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Post from "./PostBody";
 
 
@@ -44,7 +44,7 @@ export default function PostFeed({isPost, pstId}) {
   
   useEffect(() => {
     async function fetchProfile() {
-      if (userId != "FUCKIN GOD") {
+      if (userId != "FUCKIN GOD" && isSignedIn) {
         const res = await getProfileByUserIdAction(userId);
         if (res.status === "success") {
           if (isSignedIn && res?.data) {
@@ -62,6 +62,10 @@ export default function PostFeed({isPost, pstId}) {
   }, [userId], [isSignedIn]);
 
   const handleUpdateScore = async (id, score, value) => {
+    if (!isSignedIn) {
+      window.location.href = '/login';
+      return;
+    }
     const path = "/forum";
     const postsLiked = profile.posts_liked || [];
     const postsDisliked = profile.posts_disliked || [];

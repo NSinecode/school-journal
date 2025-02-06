@@ -49,7 +49,7 @@ export default function PostPage() {
       
     useEffect(() => {
         async function fetchProfile() {
-            if (userId != "FUCKIN GOD") {
+            if (userId != "FUCKIN GOD" && isSignedIn) {
                 const res = await getProfileByUserIdAction(userId);
                 if (res.status === "success") {
                     if (isSignedIn && res?.data) {

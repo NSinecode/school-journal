@@ -7,9 +7,11 @@ import { getMessageAction } from '@/actions/messages-actions';
 import { useEffect, useState } from 'react';
 import { MessageSquareText } from 'lucide-react';
 import { useRouter } from "next/navigation";
+import { SignedIn, useAuth } from "@clerk/nextjs";
 
 export default function Post( { post, handleUpdateScore, handleRemovePost, profile, userId, handleReply, isPostPage }) {
     const router = useRouter();
+    const { isSignedIn } = useAuth();
     const [repPost, setRepPost] = useState();
     useEffect(() => {
       async function fetchPost() {
@@ -48,24 +50,26 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
                     onClick={() => handleUpdateScore(post.id, post.score, 1)}
                   >
                     <ArrowBigUp className={`ml-2 w-8 h-8 pr-2 border-r transition-all duration-200
-                      ${profile.posts_liked.includes(Number(post.id)) ? "text-green-300" : ""}`}/>
+                      ${isSignedIn && profile.posts_liked.includes(Number(post.id)) ? "text-green-300" : ""}`}/>
                   </button>
                   <button 
                     className=""
                     onClick={() => handleUpdateScore(post.id, post.score, -1)}
                   >
                     <ArrowBigDown className={`ml-2 w-8 h-8 pr-2 transition-all duration-200
-                      ${profile.posts_disliked.includes(Number(post.id)) ? "text-red-300" : ""}`}/>
+                      ${isSignedIn && profile.posts_disliked.includes(Number(post.id)) ? "text-red-300" : ""}`}/>
                   </button>
                   <h3 className={`mt-2 pl-3 
                     ${ post.score >= 0 ? "text-green-300" : "text-red-300"}`}>{ post.score }</h3>
                 </div>
                 <div className="w-full flex justify-end">
-                  <button
-                    onClick={() => handleReply(post.id)}
-                  >
-                    <CornerUpLeft className="w-5 h-5 pr-1 hover:text-gray-400"/>
-                  </button>
+                  <SignedIn>
+                    <button
+                      onClick={() => handleReply(post.id)}
+                    >
+                      <CornerUpLeft className="w-5 h-5 pr-1 hover:text-gray-400"/>
+                    </button>
+                  </SignedIn>
                   <div className="flex">
                     <button
                       onClick={ comBtn }
@@ -76,7 +80,7 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
                       <p className="p-1 mt-1">{ post.reply_id.length }</p>
                     ) : null}
                   </div>
-                  { ((userId == post.author_id || profile.role == "admin") && post.author_id != "FUCKIN GOD") && (
+                  { isSignedIn && ((userId == post.author_id || profile.role == "admin") && post.author_id != "FUCKIN GOD") && (
                     <button
                       onClick={() => handleRemovePost(post.id, post.replied_to)}
                     >
