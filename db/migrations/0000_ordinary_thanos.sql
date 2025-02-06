@@ -32,7 +32,9 @@ CREATE TABLE "messages" (
 	"author_id" TEXT NOT NULL, 
 	"message" TEXT NOT NULL,
 	"score" BIGINT DEFAULT 0 NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"reply_id" BIGINT[] DEFAULT '{}' NOT NULL,
+	"replied_to" BIGINT,
 )
 
 CREATE TABLE "tests" (
