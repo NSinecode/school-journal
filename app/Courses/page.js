@@ -6,7 +6,7 @@ import { createCourseAction } from "@/actions/courses-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
-import SearchBar from "../../components/SearchBar";
+import SearchBar from "../../components/courses/SearchBar";
 
 export default function Courses() {
   const { isSignedIn } = useAuth();

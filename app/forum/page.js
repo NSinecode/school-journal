@@ -1,5 +1,5 @@
 
-import PostFeed from "../../components/PostFeed";
+import PostFeed from "../../components/forum/PostFeed";
 
 export default function Forum() {
 

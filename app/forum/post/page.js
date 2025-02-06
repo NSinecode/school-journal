@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getProfileByUserIdAction, updateProfileAction } from "@/actions/profiles-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import Post from "@/components/PostBody";
+import Post from "@/components/forum/PostBody";
 import { number } from "zod";
 
 
@@ -50,6 +50,7 @@ export default function PostPage() {
 
     return(
         <div className="max-w-2xl mx-auto p-4">
+            <h1>{ postId }</h1>
         </div>
     );
 }

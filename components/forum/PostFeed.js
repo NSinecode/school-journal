@@ -100,7 +100,7 @@ export default function PostFeed({isPost}) {
     setPosts((prevPosts) => prevPosts.map(post => post.id === id ? { ...post, score: newScore } : post));
     setProfile((await updateProfileAction(userId, { posts_liked: updatedLiked, posts_disliked: updatedDisliked }, path)).data);
     await updateMessageAction(id, { score: newScore });
-    router.refresh();
+    // router.refresh();
   };
   
   
