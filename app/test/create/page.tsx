@@ -70,7 +70,8 @@ export default function CreatePage() {
       name: testName,
       body: questions,
       user_id: userId,
-      created_at: new Date()
+      created_at: new Date(),
+      completion: {}
     }
 
     try {
