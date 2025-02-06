@@ -3,13 +3,13 @@ export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
 import { createCourseAction } from "@/actions/courses-actions";
-import { SignedIn } from "@clerk/nextjs";
+import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Head from "next/head";
-import SearchBar from "../../components/SearchBar";
-import { Description } from "@radix-ui/react-dialog";
+import SearchBar from "../../components/courses/SearchBar";
 
 export default function Courses() {
+  const { isSignedIn } = useAuth();
   const router = useRouter();
   const [courses, setCourses] = useState([]);
   const [userId, setUserId] = useState("");
@@ -22,22 +22,24 @@ export default function Courses() {
   const [isError, setIsError] = useState(false);
   const [isErrorTag, setIsErrorTag] = useState(false);
   const [shake, setShake] = useState(false);
-
-  useEffect(() => {
+    useEffect(() => {
     async function fetchUserId() {
-      try {
-        const res = await fetch("/api/user");
-        if (!res.ok) throw new Error("Ошибка при получении userId");
-        
-        const data = await res.json();
-        setUserId(data.userId);
-      } catch (err) {
-        console.error("❌ Ошибка загрузки userId:", err);
+      if (isSignedIn) {
+        try {
+          const res = await fetch("/api/user");
+          if (!res.ok) throw new Error("Ошибка при получении userId");
+            
+          const data = await res.json();
+          setUserId(data.userId);
+        } catch (err) {
+          console.error("❌ Ошибка загрузки userId:", err);
+        }
       }
     }
 
     fetchUserId();
-  }, []);
+  }, [isSignedIn]);
+  
   
   useEffect(() => {
       async function fetchCourses() {
@@ -86,8 +88,8 @@ export default function Courses() {
       setTimeout(() => setShake(false), 500); // Останавливаем тряску
       return;
     }
-    const newTagReady = newTags.replaceAll(", ", "/");
-    console.log(newTagReady);
+    const newTagReady = newTags.replaceAll(", ", "/"); 
+    
     const optimisticCourse = {
       id: tempId,
       title: newTitle,

@@ -2,9 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { CheckSquare, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,10 +18,21 @@ export default function Header() {
     <header className="border-b bg-background">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <CheckSquare className="h-6 w-6" />
-          <h1 className="text-xl font-bold">Todo App</h1>
+          <Link href="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 relative bg-transparent">
+              <Image 
+                src="/images/IMG_1671.PNG"
+                alt="School Journal Logo"
+                fill
+                sizes="32px"
+                className="!relative !h-[32px] !w-[32px]"
+                priority
+              />
+            </div>
+            <h1 className="text-xl font-bold">School Journal</h1>
+          </Link>
         </div>
-        <nav className="hidden md:flex space-x-4">
+        <nav className="hidden md:flex space-x-4 justify-center flex-1">
           <Link
             href="/"
             className="hover:underline"
@@ -33,14 +45,24 @@ export default function Header() {
           >
             Courses
           </Link>
-          <SignedIn>
-            <Link
-              href="/todo"
-              className="hover:underline"
-            >
-              Todos
-            </Link>
-          </SignedIn>
+          <Link
+            href="/forum"
+            className="hover:underline"
+          >
+            Forum
+          </Link>
+          <Link
+            href="/test/create"
+            className="hover:underline"
+          >
+            Create Test
+          </Link>
+          <Link
+            href="/test/choose-test"
+            className="hover:underline"
+          >
+            All Tests
+          </Link>
         </nav>
         <div className="flex items-center space-x-4">
           <SignedOut>
@@ -63,7 +85,7 @@ export default function Header() {
       </div>
       {isMenuOpen && (
         <nav className="md:hidden p-4">
-          <ul className="space-y-2">
+          <ul className="space-y-2 text-center">
             <li>
               <Link
                 href="/"
@@ -75,23 +97,40 @@ export default function Header() {
             </li>
             <li>
               <Link
-                href="/courses"
+                href="/Courses"
                 className="hover:underline"
+                onClick={toggleMenu}
               >
                 Courses
               </Link>
-          </li>
-            <SignedIn>
-              <li>
-                <Link
-                  href="/todo"
-                  className="block hover:underline"
-                  onClick={toggleMenu}
-                >
-                  Todos
-                </Link>
-              </li>
-            </SignedIn>
+            </li>
+            <li>
+              <Link
+                href="/forum"
+                className="block hover:underline"
+                onClick={toggleMenu}
+              >
+                Forum
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/test/create"
+                className="block hover:underline"
+                onClick={toggleMenu}
+              >
+                Create Test
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/test/choose-test" 
+                className="block hover:underline"
+                onClick={toggleMenu}
+              >
+                All Tests
+              </Link>
+            </li>
           </ul>
         </nav>
       )}

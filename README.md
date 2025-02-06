@@ -1,15 +1,15 @@
 ## Most important to do 
-- Registration, authentication, different division into three groups(student, teacher, admin)
+- ✅Registration, authentication, different division into three groups(student, teacher, admin) 
 - Create function class with lectures, like presentations, video lectures and text materials
-- Tag and category system 
+- ✅Tag and category system 
 - Interactive components like tests and tasks 
 - Exam preparation module (mock tests)
 - Statistics 
-- Forum
+- Forum 
 
 ## UI
-- Cross platform 
-- Production 
+- ✅Cross platform  
+- Production   
    - Minimize delay on inputs
    - Minimize server requests
    - Cash system 

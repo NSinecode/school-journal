@@ -9,6 +9,7 @@ import { getUserRole } from "@/actions/profiles-actions";
 export default function AccountRolePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [hasRole, setHasRole] = useState(true);
 
   useEffect(() => {
     const checkRole = async () => {
@@ -17,6 +18,8 @@ export default function AccountRolePage() {
         router.push("/upcoming-courses");
       } else if (role === "teacher") {
         router.push("/courses");
+      } else {
+        setHasRole(false);
       }
     };
     
@@ -32,13 +35,17 @@ export default function AccountRolePage() {
         throw new Error(result.message);
       }
       
-      router.push(role === "teacher" ? "/courses" : "/upcoming-courses");
+      router.push(role === "teacher" ? "/Courses" : "/upcoming-courses");
     } catch (error) {
       console.error("Error setting role:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (hasRole) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-8 p-4">

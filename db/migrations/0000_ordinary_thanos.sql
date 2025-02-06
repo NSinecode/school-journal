@@ -26,3 +26,22 @@ CREATE TABLE "courses" (
 	"description" TEXT,
 	"tags" TEXT,
 );
+
+CREATE TABLE "messages" (
+	"id" SERIAL PRIMARY KEY,
+	"author_id" TEXT NOT NULL, 
+	"message" TEXT NOT NULL,
+	"score" BIGINT DEFAULT 0 NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"reply_id" BIGINT[] DEFAULT '{}' NOT NULL,
+	"replied_to" BIGINT,
+)
+
+CREATE TABLE "tests" (
+	"id" SERIAL PRIMARY KEY,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"user_id" TEXT NOT NULL,
+	"name" TEXT NOT NULL,
+	"body" JSONB NOT NULL,
+	"completion" JSONB NOT NULL,
+);

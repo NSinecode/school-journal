@@ -1,7 +1,5 @@
 "use client";
 
-//import { useEffect, useState } from "react";
-
 interface AuthLayoutProps {
     children: React.ReactNode;
   }
