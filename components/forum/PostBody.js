@@ -7,6 +7,7 @@ import { getMessageAction } from '@/actions/messages-actions';
 import { useEffect, useState } from 'react';
 import { MessageSquareText } from 'lucide-react';
 import { useRouter } from "next/navigation";
+import { SignedIn } from "@clerk/nextjs"
 
 export default function Post( { post, handleUpdateScore, handleRemovePost, profile, userId, handleReply, isPostPage }) {
     const router = useRouter();
@@ -61,11 +62,13 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
                     ${ post.score >= 0 ? "text-green-300" : "text-red-300"}`}>{ post.score }</h3>
                 </div>
                 <div className="w-full flex justify-end">
-                  <button
-                    onClick={() => handleReply(post.id)}
-                  >
-                    <CornerUpLeft className="w-5 h-5 pr-1 hover:text-gray-400"/>
-                  </button>
+                  <SignedIn>
+                    <button
+                      onClick={() => handleReply(post.id)}
+                    >
+                      <CornerUpLeft className="w-5 h-5 pr-1 hover:text-gray-400"/>
+                    </button>
+                  </SignedIn>
                   <div className="flex">
                     <button
                       onClick={ comBtn }

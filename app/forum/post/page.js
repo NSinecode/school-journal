@@ -4,7 +4,7 @@ import { createMessageAction, updateMessageAction, deleteMessageAction, getMessa
 import { getProfileByUserIdAction, updateProfileAction } from "@/actions/profiles-actions";
 import Post from "@/components/forum/PostBody";
 import PostFeed from "@/components/forum/PostFeed";
-import { SignedIn, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 

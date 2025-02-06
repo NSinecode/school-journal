@@ -289,5 +289,3 @@ export default function PostFeed({isPost, pstId}) {
     </div>
   );
 }
-
-export { handleRemovePost, handleAddMessage, handleUpdateScore };
