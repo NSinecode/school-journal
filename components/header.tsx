@@ -40,7 +40,7 @@ export default function Header() {
             Home
           </Link>
           <Link
-            href="/Courses"
+            href="/courses"
             className="hover:underline"
           >
             Courses
@@ -97,7 +97,7 @@ export default function Header() {
             </li>
             <li>
               <Link
-                href="/Courses"
+                href="/courses"
                 className="hover:underline"
                 onClick={toggleMenu}
               >
