@@ -1,6 +1,4 @@
-import { Trash2 } from "lucide-react";
-import { Pencil } from "lucide-react";
-import { Bookmark } from "lucide-react";
+import { Trash2, Bookmark, Pencil, ArrowRight } from "lucide-react";
 
 export default function CourseCard({ course, uId, dClick, isExp, isExpanded }) {
 
@@ -40,7 +38,7 @@ export default function CourseCard({ course, uId, dClick, isExp, isExpanded }) {
             <div className="flex justify-between gap-1 absolute right-1 bottom-1">
                 {uId != course.author_id ?(
                     <button
-                    className="bg-gray-500 bottom-1 rounded-lg p-1"
+                    className={`bottom-1 rounded-lg p-1 ${true ? "bg-yellow-400" : "bg-gray-500"}`}
                     >
                         <Bookmark className="h-4 w-4"></Bookmark>
                     </button>
@@ -63,6 +61,11 @@ export default function CourseCard({ course, uId, dClick, isExp, isExpanded }) {
                         <Trash2 className="h-4 w-4" />
                     </button>
                 ) : null }
+                <button
+                  className="bg-blue-400 bottom-1 rounded-lg p-1"
+                >
+                  <ArrowRight className="h-4 w-4"/>
+                </button>
             </div>
             ) : null }
         </div>
