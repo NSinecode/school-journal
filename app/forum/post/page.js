@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { createMessageAction, updateMessageAction, deleteMessageAction, getMessageAction } from "@/actions/messages-actions";
-import { getProfileByUserIdAction, updateProfileAction } from "@/actions/profiles-actions";
+import { getProfileByUserIdAction } from "@/actions/profiles-actions";
 import Post from "@/components/forum/PostBody";
 import PostFeed from "@/components/forum/PostFeed";
 import { useAuth } from "@clerk/nextjs";
