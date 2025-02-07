@@ -7,11 +7,37 @@ import { getMessageAction } from '@/actions/messages-actions';
 import { useEffect, useState } from 'react';
 import { MessageSquareText } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import { SignedIn } from "@clerk/nextjs"
+import { SignedIn, useAuth } from "@clerk/nextjs";
 
-export default function Post( { post, handleUpdateScore, handleRemovePost, profile, userId, handleReply, isPostPage }) {
+export default function Post( { postB, profile, handleRemovePost, userId, handleReply, isPostPage }) {
     const router = useRouter();
+    const { isSignedIn } = useAuth();
     const [repPost, setRepPost] = useState();
+    const [post, setPost] = useState(postB);
+    const [isLiked, setIsLiked] = useState(profile.posts_liked.includes(Number(postB.id)));
+    const [isDisliked, setIsDisliked] = useState(profile.posts_disliked.includes(Number(postB.id)));
+
+    const handleUpdateScore = async (value) => {
+      const response = await fetch("/api/updateScore", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: post.id,
+          score: post.score,
+          value: value,
+          profile: profile,
+          isLiked: isLiked,
+          isDisliked: isDisliked,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setPost(data.post.data);
+      }
+      router.refresh();
+    };
+    
     useEffect(() => {
       async function fetchPost() {
           if (post.replied_to) 
@@ -46,17 +72,17 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
                 <div className="flex">
                   <button 
                     className="mt-1 mb-1"
-                    onClick={() => handleUpdateScore(post.id, post.score, 1)}
+                    onClick={() => {setIsLiked(!isLiked); setIsDisliked(false); handleUpdateScore(1); setIsLiked(!isLiked); setIsDisliked(false)}}
                   >
                     <ArrowBigUp className={`ml-2 w-8 h-8 pr-2 border-r transition-all duration-200
-                      ${profile.posts_liked.includes(Number(post.id)) ? "text-green-300" : ""}`}/>
+                      ${isSignedIn && isLiked ? "text-green-300" : ""}`}/>
                   </button>
                   <button 
                     className=""
-                    onClick={() => handleUpdateScore(post.id, post.score, -1)}
+                    onClick={() => {setIsDisliked(!isDisliked); setIsLiked(false); handleUpdateScore(-1)}}
                   >
                     <ArrowBigDown className={`ml-2 w-8 h-8 pr-2 transition-all duration-200
-                      ${profile.posts_disliked.includes(Number(post.id)) ? "text-red-300" : ""}`}/>
+                      ${isSignedIn && isDisliked ? "text-red-300" : ""}`}/>
                   </button>
                   <h3 className={`mt-2 pl-3 
                     ${ post.score >= 0 ? "text-green-300" : "text-red-300"}`}>{ post.score }</h3>
@@ -79,7 +105,7 @@ export default function Post( { post, handleUpdateScore, handleRemovePost, profi
                       <p className="p-1 mt-1">{ post.reply_id.length }</p>
                     ) : null}
                   </div>
-                  { ((userId == post.author_id || profile.role == "admin") && post.author_id != "FUCKIN GOD") && (
+                  { isSignedIn && ((userId == post.author_id || profile.role == "admin") && post.author_id != "FUCKIN GOD") && (
                     <button
                       onClick={() => handleRemovePost(post.id, post.replied_to)}
                     >

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createMessageAction, updateMessageAction, deleteMessageAction, getMessageAction } from "@/actions/messages-actions";
-import { getProfileByUserIdAction, updateProfileAction } from "@/actions/profiles-actions";
+import { getProfileByUserIdAction } from "@/actions/profiles-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Post from "./PostBody";
@@ -10,8 +10,8 @@ import Post from "./PostBody";
 
 
 export default function PostFeed({isPost, pstId}) {
-  const router = useRouter();
   const { isSignedIn } = useAuth();
+  const router = useRouter();
   const [posts, setPosts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,51 +59,7 @@ export default function PostFeed({isPost, pstId}) {
       }
     }
     fetchProfile();
-  }, [userId], [isSignedIn]);
-
-  const handleUpdateScore = async (id, score, value) => {
-    const path = "/forum";
-    const postsLiked = profile.posts_liked || [];
-    const postsDisliked = profile.posts_disliked || [];
-    const isLiked = postsLiked.includes(Number(id));
-    const isDisliked = postsDisliked.includes(Number(id));
-  
-    let newScore = score;
-    let updatedLiked = [...postsLiked];
-    let updatedDisliked = [...postsDisliked];
-  
-    if (!isLiked && !isDisliked) {
-      newScore += value;
-      if (value > 0) {
-        updatedLiked.push(id);
-      } else {
-        updatedDisliked.push(id);
-      }
-    } else if (isLiked) {
-      if (value > 0) {
-        newScore -= 1;
-        updatedLiked = updatedLiked.filter(pid => pid !== Number(id));
-      } else {
-        newScore -= 2;
-        updatedLiked = updatedLiked.filter(pid => pid !== Number(id));
-        updatedDisliked.push(id);
-      }
-    } else if (isDisliked) {
-      if (value < 0) {
-        newScore += 1;
-        updatedDisliked = updatedDisliked.filter(pid => pid !== Number(id));
-      } else {
-        newScore += 2;
-        updatedDisliked = updatedDisliked.filter(pid => pid !== Number(id));
-        updatedLiked.push(id);
-      }
-    }
-  
-    setPosts((prevPosts) => prevPosts.map(post => post.id === id ? { ...post, score: newScore } : post));
-    setProfile((await updateProfileAction(userId, { posts_liked: updatedLiked, posts_disliked: updatedDisliked }, path)).data);
-    await updateMessageAction(id, { score: newScore });
-    // router.refresh();
-  };
+  }, [userId]);
   
   
   const handleAddMessage = async () => {
@@ -236,9 +192,8 @@ export default function PostFeed({isPost, pstId}) {
           filteredPosts.map(post => (
             <Post 
               key={ post.id } 
-              post = { post }
+              postB = { post }
 
-              handleUpdateScore = { handleUpdateScore } 
               handleAddMessage = { handleAddMessage }
               handleRemovePost = { handleRemovePost }
               handleReply={ reply }
