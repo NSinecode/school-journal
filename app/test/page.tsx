@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { getTestsAction } from '@/actions/tests-actions'
 import { useSession } from '@clerk/nextjs'
 import { saveTestCompletionAction } from '@/actions/tests-actions'
+import { getProfileByUserId } from '@/db/queries/profiles-queries'
+import { updateProfileAction } from '@/actions/profiles-actions'
 
 interface Question {
   title: string
@@ -12,6 +14,7 @@ interface Question {
   correctAnswer: number
   topic: string
 }
+
 
 interface Test {
   id: number
@@ -115,12 +118,27 @@ export default function TestPage() {
   const handleFinishTest = async () => {
     if (!session?.user?.id || !testId) return
     
+    const userId = session.user.id
+    const profile = await getProfileByUserId(userId)
+    
+    // Check if test was already completed
+    if (profile?.tests_completed?.includes(Number(testId))) {
+      setShowSummary(true)
+      return
+    }
+
     // Save completion data
     const completion = {
-      user_id: session.user.id,
-      choices: userAnswers  // Keep original Record<number, number> format
+      user_id: userId,
+      choices: userAnswers
     }
-    
+
+    // Update user's completed tests
+    if (profile) {
+      const updatedTests = [...(profile.tests_completed || []), Number(testId)]
+      await updateProfileAction(userId, { tests_completed: updatedTests }, '/test')
+    }
+
     await saveTestCompletionAction(Number(testId), completion)
     setShowSummary(true)
   }
