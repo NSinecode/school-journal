@@ -30,6 +30,10 @@ export default function TestPage({test_id, goToPres}) {
           setQuestions(selectedTest.body || [])
           setTestTitle(selectedTest.title)
           setIsLoading(false)
+          
+          localStorage.removeItem('quizScore');
+          localStorage.removeItem('answeredQuestions');
+          localStorage.removeItem('userAnswers');
         } else {
           // Test not found - redirect back
         }

@@ -3,5 +3,5 @@ import { getCourses } from "@/db/queries/courses_queries"; // ✅ Путь к т
 
 export async function GET() {
   const courses = await getCourses();
-   return NextResponse.json(courses);
+  return NextResponse.json(courses);
 }

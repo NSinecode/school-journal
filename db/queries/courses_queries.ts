@@ -8,8 +8,8 @@ export const getCourses = async (): Promise<SelectCourse[]> => {
   try {
     return db.select().from(coursesTable);
   } catch (error) {
-    console.error("Error getting todos:", error);
-    throw new Error("Failed to get todos");
+    console.error("Error getting courses:", error);
+    throw new Error("Failed to get courses");
   }
 };
 export const getCourse = async (id: number) => {

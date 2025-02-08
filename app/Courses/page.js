@@ -6,6 +6,7 @@ import { createCourseAction } from "@/actions/courses-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { getTestsAction } from '@/actions/tests-actions'
+import { getProfileByUserIdAction } from "@/actions/profiles-actions";
 
 import Head from "next/head";
 import SearchBar from "../../components/courses/SearchBar";
@@ -16,23 +17,26 @@ export default function Courses() {
   const router = useRouter();
   const [courses, setCourses] = useState([]);
   const [userId, setUserId] = useState("");
+  const [profile, setProfile] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newTags, setNewTags] = useState("");
+  const [selectedTest, setSelectedTest] = useState();
+  const [fileUrl, setFileUrl] = useState('');
+  const [video, setVideo] = useState('');
 
   const [isError, setIsError] = useState(false);
   const [isErrorTag, setIsErrorTag] = useState(false);
   const [shake, setShake] = useState(false);
 
   const [tests, setTests] = useState([]);
-  const [selectedTest, setSelectedTest] = useState();
 
-  const [fileUrl, setFileUrl] = useState('');
   const [isLoaded, setIsLoaded] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+  useEffect(() => {
     async function fetchUserId() {
       if (isSignedIn) {
         try {
@@ -49,6 +53,25 @@ export default function Courses() {
 
     fetchUserId();
   }, [isSignedIn]);
+  useEffect(() => {
+    async function fetchProfile() {
+        if (userId != "FUCKIN GOD" && isSignedIn) {
+            const res = await getProfileByUserIdAction(userId);
+            if (res.status === "success") {
+                if (isSignedIn && res?.data) {
+                    setProfile(res.data);
+                    setLoading(false);
+                }
+            } else {
+                console.error("Не удалось получить профиль")
+            }
+        } else {
+            setLoading(false);
+            setProfile(null);
+        }
+    }
+    fetchProfile();
+  }, [userId], [isSignedIn]);
 
   useEffect(() => {
       async function loadTests() {
@@ -120,15 +143,17 @@ export default function Courses() {
       tags: newTagReady,
       test_id: Number(selectedTest),
       presentation: fileUrl,
+      video_url: video
     };
 
     setCourses((prevCourses) => [...prevCourses, optimisticCourse]);
-    await createCourseAction({title: newTitle, author_id: userId, description: newDescription, tags: newTagReady, test_id: selectedTest, presentation: fileUrl});
+    await createCourseAction({title: newTitle, author_id: userId, description: newDescription, tags: newTagReady, test_id: selectedTest, presentation: fileUrl, video_url: video});
     setIsModalOpen(false);
     setNewTitle("");
     setNewDescription("");
     setSelectedTest(null);
     setIsLoaded(false);
+    setVideo('');
     router.refresh();
   };
 
@@ -147,6 +172,9 @@ export default function Courses() {
     router.refresh();
   };
 
+  if(loading) {
+    return <h1>Loading...</h1>
+  }
 
   return (
     <>
@@ -156,13 +184,15 @@ export default function Courses() {
       <div>
         <h1 className="flex flex-col items-center p-5">Courses searching</h1>
         <SignedIn>
+          {profile && profile.role == "teacher" ? (
           <div className="flex justify-center">
             <button onClick={toggleModal} className="flex justify-center p-2 bg-blue-500 text-white rounded-lg mb-4">
               Create course
             </button>
           </div>
+          ) : null}
         </SignedIn>
-        <SearchBar courses = { courses } userId = { userId } delClick={ handleClick }/>
+        <SearchBar courses = { courses } userId = { userId } delClick={ handleClick } profile={ profile }/>
         {/* Модальное окно */}
         {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -211,6 +241,15 @@ export default function Courses() {
               }`}
               placeholder="Enter the tags through a commma"
             />
+            <input
+              type="text"
+              value={video}
+              onChange={(e) => {
+                setVideo(e.target.value);
+              }}
+              className="w-full p-2 border rounded mt-3 border-gray-300"
+              placeholder="Enter the video URL"
+            />
             <input 
               value={tests.find((test) => test.id.toString() === selectedTest)?.name || ""}
               onChange={handleChange}
@@ -232,7 +271,7 @@ export default function Courses() {
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-700 rounded">
                 Cancel
               </button>
-              <button onClick={handleAddCourse} disabled={!isLoaded} className="px-4 py-2 bg-blue-500 text-white rounded">
+              <button onClick={handleAddCourse} disabled={!isLoaded} className="px-4 py-2 bg-blue-500 disabled:opacity-50 text-white rounded">
                 Create
               </button>
             </div>

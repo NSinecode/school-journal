@@ -10,6 +10,7 @@ export const coursesTable = pgTable("courses", {
   tags: text("tags"),
   presentation: text("presentation"),
   test_id: bigint("test_id", {mode: "number"}),
+  video_url: text("video_url"),
 });
 
 export type InsertCourse = typeof coursesTable.$inferInsert;

@@ -52,6 +52,9 @@ export default function TestPage() {
           setIsLoading(false)
           
           // Clear previous test data
+          localStorage.removeItem('quizScore');
+          localStorage.removeItem('answeredQuestions');
+          localStorage.removeItem('userAnswers');
         } else {
           // Test not found - redirect back
           window.location.href = '/test/choose-test'

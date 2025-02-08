@@ -26,7 +26,8 @@ CREATE TABLE "courses" (
 	"description" TEXT,
 	"tags" TEXT,
 	"presentation" TEXT,
-	"test_id" BIGINT
+	"test_id" BIGINT,
+	"video_url" TEXT
 );
 
 CREATE TABLE "messages" (
