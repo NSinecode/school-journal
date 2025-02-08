@@ -27,7 +27,6 @@ export default function PostPage() {
         const params = new URLSearchParams(window.location.search)
         const id = params.get("id");
         const num = Number(id);
-        console.log(num);
         setPostId(num);
     }, [])
     useEffect(() => {

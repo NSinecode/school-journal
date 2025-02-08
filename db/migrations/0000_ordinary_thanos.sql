@@ -25,6 +25,8 @@ CREATE TABLE "courses" (
 	"author_id" TEXT NOT NULL,
 	"description" TEXT,
 	"tags" TEXT,
+	"presentation" TEXT,
+	"test_id" BIGINT
 );
 
 CREATE TABLE "messages" (

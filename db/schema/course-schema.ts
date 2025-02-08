@@ -1,4 +1,4 @@
-import { pgTable, text, serial } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, bigint } from "drizzle-orm/pg-core";
 
 export const coursesTable = pgTable("courses", {
   id: serial("id").primaryKey(),
@@ -8,6 +8,8 @@ export const coursesTable = pgTable("courses", {
   author_id: text("author_id").notNull(),
   description: text("description"),
   tags: text("tags"),
+  presentation: text("presentation"),
+  test_id: bigint("test_id", {mode: "number"}),
 });
 
 export type InsertCourse = typeof coursesTable.$inferInsert;

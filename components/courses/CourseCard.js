@@ -1,7 +1,8 @@
 import { Trash2, Bookmark, Pencil, ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CourseCard({ course, uId, dClick, isExp, isExpanded }) {
-
+  const router = useRouter();
   return (
     <div
       key={ course.id }
@@ -63,6 +64,7 @@ export default function CourseCard({ course, uId, dClick, isExp, isExpanded }) {
                 ) : null }
                 <button
                   className="bg-blue-400 bottom-1 rounded-lg p-1"
+                  onClick={() => router.push(`/courses/course?id=${course.id}`)}
                 >
                   <ArrowRight className="h-4 w-4"/>
                 </button>
