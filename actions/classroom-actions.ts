@@ -5,6 +5,9 @@ import { InsertClassroom } from "@/db/schema/classroom-schema";
 import { ActionState } from "@/types";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
+import { eq } from "drizzle-orm";
+import { classroomTable } from "@/db/schema/classroom-schema";
+import { db } from "@/db/db";
 
 
 export async function getClassroomsAction(): Promise<ActionState> {
@@ -99,5 +102,18 @@ export async function updateClassroomAction(
       status: "error", 
       message: "Failed to update classroom" 
     };
+  }
+}
+
+export async function getTeacherClassrooms(teacherId: string) {
+  try {
+    const classrooms = await db
+      .select()
+      .from(classroomTable)
+      .where(eq(classroomTable.teacher_id, teacherId));
+    return classrooms;
+  } catch (error) {
+    console.error('Error fetching classrooms:', error);
+    return [];
   }
 }
