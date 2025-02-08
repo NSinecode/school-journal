@@ -1,6 +1,7 @@
 import { getTeacherClassrooms } from "@/actions/classroom-actions";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
+import InviteButton from './InviteButton';
 
 type Props = {
   searchParams: Promise<{ id?: number }>
@@ -38,10 +39,12 @@ export default async function ClassroomDetailsPage({
             <div className="text-white">{classroom.id}</div>
             <div className="text-white/60">Created:</div>
             <div className="text-white">{new Date(classroom.created_at).toLocaleDateString()}</div>
-            <div className="text-white/60">Last Updated:</div>
-            <div className="text-white">{new Date(classroom.updated_at).toLocaleDateString()}</div>
             <div className="text-white/60">Teacher ID:</div>
             <div className="text-white">{classroom.teacher_id}</div>
+          </div>
+          
+          <div className="mt-4">
+            <InviteButton classroomId={classroom.id} />
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 "use server";
 
-import { getClassrooms, createClassroom, deleteClassroom, updateClassroom } from "@/db/queries/classroom-queries";
+import { getClassrooms, createClassroom, deleteClassroom, updateClassroom, updateClassroomStudents } from "@/db/queries/classroom-queries";
 import { InsertClassroom } from "@/db/schema/classroom-schema";
 import { ActionState } from "@/types";
 import { revalidatePath } from "next/cache";
@@ -115,5 +115,29 @@ export async function getTeacherClassrooms(teacherId: string) {
   } catch (error) {
     console.error('Error fetching classrooms:', error);
     return [];
+  }
+}
+
+export async function addStudentToClassroom(
+  classroomId: number, 
+  studentId: string
+): Promise<ActionState> {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const updatedClassroom = await updateClassroomStudents(classroomId, studentId);
+    revalidatePath("/classrooms");
+    return { 
+      status: "success", 
+      message: "Successfully joined classroom",
+      data: updatedClassroom[0]
+    };
+  } catch (error) {
+    console.error("Error adding student to classroom:", error);
+    return { 
+      status: "error", 
+      message: error instanceof Error ? error.message : "Failed to join classroom"
+    };
   }
 }

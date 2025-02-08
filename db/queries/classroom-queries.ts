@@ -55,16 +55,34 @@ export const deleteClassroom = async (id: number) => {
   }
 };
 
-export const updateClassroomStudents = async (classroomId: number, students: string[]) => {
+export const updateClassroomStudents = async (classroomId: number, studentId: string) => {
   try {
+    const classroom = await db
+      .select()
+      .from(classroomTable)
+      .where(eq(classroomTable.id, classroomId))
+      .limit(1);
+
+    if (!classroom || classroom.length === 0) {
+      throw new Error("Classroom not found");
+    }
+
+    const currentStudents = classroom[0].students || [];
+    if (currentStudents.includes(studentId)) {
+      throw new Error("Student already in classroom");
+    }
+
     return await db
       .update(classroomTable)
-      .set({ students })
+      .set({ 
+        students: [...currentStudents, studentId],
+        updated_at: new Date()
+      })
       .where(eq(classroomTable.id, classroomId))
       .returning();
   } catch (error) {
     console.error("Error updating classroom students:", error);
-    throw new Error("Failed to update classroom students");
+    throw error;
   }
 };
 
