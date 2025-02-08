@@ -7,13 +7,18 @@ import { getUserRole } from '@/actions/profiles-actions'
 import { getTeacherClassrooms } from '@/actions/classroom-actions'
 import { Button } from "@/components/ui/button"
 
+interface Classroom {
+id: string
+  name: string
+  students?: string[]
+}
+
 export default function ChooseClassroomPage() {
   const router = useRouter()
   const { userId } = useAuth()
   const [isTeacher, setIsTeacher] = useState(false)
-  const [classrooms, setClassrooms] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [classrooms, setClassrooms] = useState<Classroom[]>([])
+  const [loading] = useState(true)
   const [searchId, setSearchId] = useState('')
 
   useEffect(() => {
@@ -25,10 +30,14 @@ export default function ChooseClassroomPage() {
         setIsTeacher(true)
         if (userId) {
           const teacherClassrooms = await getTeacherClassrooms(userId)
-          setClassrooms(teacherClassrooms)
+          setClassrooms(teacherClassrooms.map(classroom => ({
+            id: classroom.id.toString(),
+            name: classroom.name,
+            students: classroom.students
+          })))
         }
       }
-      setLoading(false)
+
     }
     
     checkRoleAndLoadClassrooms()

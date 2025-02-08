@@ -2,14 +2,13 @@ import { getTeacherClassrooms } from "@/actions/classroom-actions";
 import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 
-interface PageProps {
-  searchParams: { id?: number };
+type Props = {
+  searchParams: Promise<{ id?: number }>
 }
-
 
 export default async function ClassroomDetailsPage({ 
   searchParams 
-}: PageProps) {
+}: Props) {
   const { userId } = await auth();
   if (!userId) return notFound();
   
