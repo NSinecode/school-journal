@@ -45,3 +45,13 @@ CREATE TABLE "tests" (
 	"body" JSONB NOT NULL,
 	"completion" JSONB NOT NULL,
 );
+CREATE TABLE classroom (
+	"id" SERIAL PRIMARY KEY,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"teacher_id" TEXT NOT NULL,
+	"students" TEXT[] DEFAULT '{}' NOT NULL,
+	"name" TEXT NOT NULL,
+);
+
+

@@ -40,15 +40,6 @@ export const updateProfile = async (userId: string, data: Partial<InsertProfile>
   }
 };
 
-export const updateProfileByStripeCustomerId = async (stripeCustomerId: string, data: Partial<InsertProfile>) => {
-  try {
-    const [updatedProfile] = await db.update(profilesTable).set(data).where(eq(profilesTable.stripeCustomerId, stripeCustomerId)).returning();
-    return updatedProfile;
-  } catch (error) {
-    console.error("Error updating profile by stripe customer ID:", error);
-    throw new Error("Failed to update profile");
-  }
-};
 export const deleteProfile = async (userId: string) => {
   try {
     await db.delete(profilesTable).where(eq(profilesTable.userId, userId));
