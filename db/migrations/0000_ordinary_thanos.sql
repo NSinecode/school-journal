@@ -5,7 +5,8 @@ CREATE TABLE "profiles" (
 	"stripe_customer_id" text,
 	"stripe_subscription_id" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL
+	"updated_at" timestamp DEFAULT now() NOT NULL, 
+	"marked_courses" TEXT[] DEFAULT '{}' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "todos" (

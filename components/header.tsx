@@ -45,12 +45,14 @@ export default function Header() {
           >
             Courses
           </Link>
-          <Link
-            href="/forum"
-            className="hover:underline"
-          >
-            Forum
-          </Link>
+          <SignedIn>
+            <Link
+              href="/forum"
+              className="hover:underline"
+            >
+              Forum
+            </Link>
+          </SignedIn>
           <Link
             href="/test/create"
             className="hover:underline"
@@ -104,15 +106,17 @@ export default function Header() {
                 Courses
               </Link>
             </li>
-            <li>
-              <Link
-                href="/forum"
-                className="block hover:underline"
-                onClick={toggleMenu}
-              >
-                Forum
-              </Link>
-            </li>
+            <SignedIn>
+              <li>
+                <Link
+                  href="/forum"
+                  className="block hover:underline"
+                  onClick={toggleMenu}
+                >
+                  Forum
+                </Link>
+              </li>
+            </SignedIn>
             <li>
               <Link
                 href="/test/create"

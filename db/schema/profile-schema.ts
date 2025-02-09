@@ -14,7 +14,8 @@ export const profilesTable = pgTable("profiles", {
     .notNull()
     .$onUpdate(() => new Date()),
   posts_liked: bigint("posts_liked", { mode: "number" }).array(),
-  posts_disliked: bigint("posts_disliked", { mode: "number" }).array()
+  posts_disliked: bigint("posts_disliked", { mode: "number" }).array(),
+  marked_courses: text("marked_courses").array().default([])
 });
 
 export type InsertProfile = typeof profilesTable.$inferInsert;

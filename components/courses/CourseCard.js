@@ -1,8 +1,34 @@
 import { Trash2, Bookmark, Pencil, ArrowRight } from "lucide-react";
+import { useState,useEffect } from "react";
+import { updateProfileAction } from "@/actions/profiles-actions";
+import { SignedIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
-export default function CourseCard({ course, uId, dClick, isExp, isExpanded }) {
+export default function CourseCard({ course, uId, dClick, isExp, isExpanded, profile }) {
   const router = useRouter();
+  const flag = profile ? profile.marked_courses.includes(course.id) : false;
+  const [isMarked, setIsMarked] = useState(false);
+
+  useEffect(() => {
+      function setMarked() {
+        setIsMarked(flag);
+      }
+      setMarked()
+  }, [flag]);
+
+  const handleMark = async () => {
+    if (profile) {
+      if (!isMarked) {
+        const newMC = [...profile.marked_courses, course.id];
+        await updateProfileAction(profile.userId, {marked_courses: newMC});
+      } else {
+        const newMC = profile.marked_courses.filter((id) => id != course.id);
+        await updateProfileAction(profile.userId, {marked_courses: newMC});
+      }
+      router.refresh();
+    }
+  }
+
   return (
     <div
       key={ course.id }
@@ -37,13 +63,20 @@ export default function CourseCard({ course, uId, dClick, isExp, isExpanded }) {
             <h3 className="card-title">{course.title}</h3>
             {isExpanded ? (
             <div className="flex justify-between gap-1 absolute right-1 bottom-1">
-                {uId != course.author_id ?(
-                    <button
-                    className={`bottom-1 rounded-lg p-1 ${true ? "bg-yellow-400" : "bg-gray-500"}`}
-                    >
-                        <Bookmark className="h-4 w-4"></Bookmark>
-                    </button>
-                ) : null }
+                <SignedIn>
+                  {uId != course.author_id ?(
+                      <button
+                        className={`bottom-1 rounded-lg p-1 transition-colors duration-400 ${profile && isMarked ? "bg-yellow-400" : "bg-gray-500"}`}
+                        onClick={(e) => {
+                          handleMark();
+                          setIsMarked(!isMarked);
+                          e.stopPropagation();
+                        }}
+                        >
+                          <Bookmark className="h-4 w-4"></Bookmark>
+                      </button>
+                  ) : null }
+                </SignedIn>
                 {uId == course.author_id ? (
                     <button
                       className="bg-gray-500 bottom-1 rounded-lg p-1"

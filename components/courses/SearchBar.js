@@ -1,12 +1,14 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { SignedIn } from "@clerk/nextjs";
 import CourseCard from "./CourseCard";
 
 export default function SearchBar( { courses, userId, delClick, profile } ) {
   const [filters, setFilters] = useState({
     authorMe: false,
     authorOther: false,
-    withVideo: false
+    withVideo: false,
+    marked: false
   });
   const filtersRend = filters;
   const [query, setQuery] = useState("");
@@ -53,9 +55,9 @@ export default function SearchBar( { courses, userId, delClick, profile } ) {
   const filteredCoursesAuthor = isFilterActive
     ? filteredCoursesTags.filter((course) => (filters.authorMe == (course.author_id == userId)) || (filters.authorOther == (course.author_id != userId))) // фильтруем по категории
     : filteredCoursesTags; // если все чекбоксы `false`, показываем все
-
-  const filteredCoursesVideo = filters.withVideo 
-    ? filteredCoursesAuthor.filter((course) => (course.video_url != null) == filters.withVideo)
+  
+  const filteredCoursesOther = filters.withVideo || filters.marked
+    ? filteredCoursesAuthor.filter((course) => (filters.withVideo && ((course.video_url != null) == filters.withVideo)) || (filters.marked && ((profile && profile.marked_courses.includes(String(course.id))) == filters.marked)))
     : filteredCoursesAuthor;
 
   return (
@@ -102,33 +104,35 @@ export default function SearchBar( { courses, userId, delClick, profile } ) {
 
             {/* Столбец с фильтрами */}
             <div className="flex flex-col gap-2">
-              <div>
-                <h4 className="font-semibold mb-2">Author</h4>
-                <label className="block mb-2">
-                  <input 
-                    type="checkbox" 
-                    className="mr-2" 
-                    name="authorMe"
-                    checked={ filtersRend.authorMe }
-                    onChange={ handleCheckboxChange }
-                  />
-                  Me
-                </label>
-                <label className="block mb-2">
-                  <input 
-                    type="checkbox" 
-                    className="mr-2" 
-                    name="authorOther"
-                    checked={ filtersRend.authorOther }
-                    onChange={ handleCheckboxChange }
-                  />
-                  Other
-                </label>
-              </div>
+              <SignedIn>
+                <div>
+                  <h4 className="font-semibold mb-2">Author</h4>
+                  <label className="block mb-2">
+                    <input 
+                      type="checkbox" 
+                      className="mr-2" 
+                      name="authorMe"
+                      checked={ filtersRend.authorMe }
+                      onChange={ handleCheckboxChange }
+                    />
+                    Me
+                  </label>
+                  <label className="block mb-2">
+                    <input 
+                      type="checkbox" 
+                      className="mr-2" 
+                      name="authorOther"
+                      checked={ filtersRend.authorOther }
+                      onChange={ handleCheckboxChange }
+                    />
+                    Other
+                  </label>
+                </div>
+              </SignedIn>
 
               {/* Столбец с фильтрами */}
               <div>
-                <h4 className="font-semibold mb-2">Type</h4>
+                <h4 className="font-semibold mb-2">Other</h4>
                 <label className="block mb-2">
                 <input 
                     type="checkbox" 
@@ -139,6 +143,18 @@ export default function SearchBar( { courses, userId, delClick, profile } ) {
                   />
                   With video
                 </label>
+                <SignedIn>
+                  <label className="block mb-2">
+                  <input 
+                      type="checkbox" 
+                      className="mr-2" 
+                      name="marked"
+                      checked={ filtersRend.marked }
+                      onChange={ handleCheckboxChange }
+                    />
+                    Marked
+                  </label>
+                </SignedIn>
               </div>
             </div>
           </div>
@@ -153,8 +169,8 @@ export default function SearchBar( { courses, userId, delClick, profile } ) {
         )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10 grid-rows-auto transition-all duration-300">
-          {filteredCoursesVideo && filteredCoursesVideo.length > 0 ? (
-              filteredCoursesVideo.map((course) => course.id ? (
+          {filteredCoursesOther && filteredCoursesOther.length > 0 ? (
+              filteredCoursesOther.map((course) => course.id ? (
                 <CourseCard 
                   key={course.id} 
                   course={course} 
@@ -162,6 +178,7 @@ export default function SearchBar( { courses, userId, delClick, profile } ) {
                   dClick={ delClick }
                   isExpanded={expandedId === course.id}
                   isExp={ handleExpand }
+                  profile={profile}
                 />
               ) : null)
           ) : (
