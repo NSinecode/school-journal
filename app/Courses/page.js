@@ -1,6 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 
+import { X } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { createCourseAction } from "@/actions/courses-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
@@ -23,6 +24,7 @@ export default function Courses() {
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newTags, setNewTags] = useState("");
+  const [tagsArr, setTagsArr] = useState([]);
   const [selectedTest, setSelectedTest] = useState();
   const [fileUrl, setFileUrl] = useState('');
   const [video, setVideo] = useState('');
@@ -98,27 +100,42 @@ export default function Courses() {
         }
       }
       fetchCourses();
-    }, []);
+  }, []);
 
-    const handleClick = async (delId) => {
-      if (!delId) return; // Если id не задано, ничего не делаем
-      console.log(delId);
-      try {
-        const res = await fetch("/api/delCourse", {
-          method: "POST", // или POST, если необходимо отправить данные в теле
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ delId }),
-        });
+  const handleTagsAdd = async (event) => {
+    if(event.key == "Enter") {
+      if (newTags.includes("/") || 
+        tagsArr.some(tag => newTags.split(" ").includes(tag))
+      ) {
+        setIsErrorTag(true);
+        setShake(true);
+        setTimeout(() => setShake(false), 500); // Останавливаем тряску
+        return;
+      } 
+      setTagsArr([...tagsArr, ...newTags.split(" ")]);
+      setNewTags("");
+    }
+  }
+
+  const handleClick = async (delId) => {
+    if (!delId) return; // Если id не задано, ничего не делаем
+    console.log(delId);
+    try {
+      const res = await fetch("/api/delCourse", {
+        method: "POST", // или POST, если необходимо отправить данные в теле
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ delId }),
+      });
   
-        if (!res.ok) throw new Error("Ошибка при получении данных");
+      if (!res.ok) throw new Error("Ошибка при получении данных");
         
-        setCourses((prevCourses) => prevCourses.filter((course) => (course.id != delId)))
-      } catch (error) {
-        console.error("Ошибка при запросе:", error);
-      }
-    };
+      setCourses((prevCourses) => prevCourses.filter((course) => (course.id != delId)))
+    } catch (error) {
+      console.error("Ошибка при запросе:", error);
+    }
+  };
 
   const handleAddCourse = async () => {
     const tempId = parseInt(Math.abs(Math.cos(Date.now()) * 100), 10);
@@ -133,7 +150,7 @@ export default function Courses() {
       setTimeout(() => setShake(false), 500); // Останавливаем тряску
       return;
     }
-    const newTagReady = newTags.replaceAll(", ", "/"); 
+    const newTagReady = tagsArr.join("/"); 
     
     const optimisticCourse = {
       id: tempId,
@@ -229,6 +246,7 @@ export default function Courses() {
               autoComplete="off" 
               autoCorrect="off" 
               value={newTags}
+              onKeyPress={handleTagsAdd}
               onChange={(e) => {
                 setNewTags(e.target.value);
                 if (e.target.value.includes("/")) 
@@ -239,8 +257,31 @@ export default function Courses() {
               className={`w-full p-2 border rounded mt-3 ${
                 isErrorTag ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter the tags through a commma"
+              placeholder="Enter the tags through a space or enter"
             />
+            <div
+              className="grid grid-cols-3 gap-2 mt-2"
+            >
+              {tagsArr.length > 0 ? (
+                tagsArr.map((tag) => tag ? (
+                  <div
+                    key={tag}
+                    className="flex gap-1 rounded-xl bg-blue-600 opacity-70 p-1"
+                  >
+                    <div
+                      className="flex justify-start"
+                    >
+                      <button onClick={() => setTagsArr(tagsArr.filter((tAg) => tAg != tag))}>
+                        <X className="w-5 h-5"/>
+                      </button>
+                    </div>
+                    <p 
+                      className="w-full text-ellipsis overflow-hidden"
+                    >#{tag}</p>
+                  </div>
+                ) : null)
+              ) : null}
+            </div>
             <input
               type="text"
               value={video}
