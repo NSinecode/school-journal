@@ -119,8 +119,9 @@ export default function Courses() {
 
   const handleClick = async (delId) => {
     if (!delId) return; // Если id не задано, ничего не делаем
-    console.log(delId);
     try {
+      let presToDel = (courses.find((course) => course.id == delId)).presentation.split("/");
+      presToDel = presToDel[9].split("?")[0];
       const res = await fetch("/api/delCourse", {
         method: "POST", // или POST, если необходимо отправить данные в теле
         headers: {
@@ -128,6 +129,12 @@ export default function Courses() {
         },
         body: JSON.stringify({ delId }),
       });
+      const { error } = await supabase
+        .storage
+        .from('course presentations')
+        .remove([`uploads/${presToDel}`]);
+      
+      if (error) throw new Error("Ошибка при получении удалении презентации");
   
       if (!res.ok) throw new Error("Ошибка при получении данных");
         
