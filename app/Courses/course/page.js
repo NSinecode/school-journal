@@ -103,7 +103,7 @@ export default function CoursePage() {
                 <button 
                   className={`rounded p-2 ${pageNumber >= numPages ? "bg-yellow-500" : "bg-gray-600 "}`}
                   disabled={pageNumber < numPages}
-                  onClick={() => setPage(2)}
+                  onClick={() => setPage(3)}
                 >
                   Go to test
                 </button>

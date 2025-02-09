@@ -203,7 +203,7 @@ export default function Courses() {
         <SignedIn>
           {profile && profile.role == "teacher" ? (
           <div className="flex justify-center">
-            <button onClick={toggleModal} className="flex justify-center p-2 bg-blue-500 text-white rounded-lg mb-4">
+            <button onClick={toggleModal} className="flex justify-center p-2 bg-blue-500 text-white rounded-lg mb-4 hover:bg-blue-600 transition relative">
               Create course
             </button>
           </div>

@@ -80,13 +80,6 @@ export default function CourseCard({ course, uId, dClick, isExp, isExpanded, pro
                 {uId == course.author_id ? (
                     <button
                       className="bg-gray-500 bottom-1 rounded-lg p-1"
-                    >
-                        <Pencil className="h-4 w-4"></Pencil>
-                    </button>
-                ) : null }
-                {uId == course.author_id ? (
-                    <button
-                      className="bg-gray-500 bottom-1 rounded-lg p-1"
                       onClick={(e) => {
                         e.stopPropagation();
                         dClick(course.id);
@@ -96,7 +89,7 @@ export default function CourseCard({ course, uId, dClick, isExp, isExpanded, pro
                     </button>
                 ) : null }
                 <button
-                  className="bg-blue-400 bottom-1 rounded-lg p-1"
+                  className="bg-blue-500 bottom-1 rounded-lg p-1"
                   onClick={() => router.push(`/courses/course?id=${course.id}`)}
                 >
                   <ArrowRight className="h-4 w-4"/>
