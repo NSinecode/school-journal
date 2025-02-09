@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { createClassroomAction } from "@/actions/classroom-actions"
 import { useAuth } from "@clerk/nextjs"
 import { getUserRole } from '@/actions/profiles-actions'
-import { TrashIcon } from "lucide-react"
+
 
 export default function CreateClassroomPage() {
   const router = useRouter()
