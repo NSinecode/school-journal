@@ -9,7 +9,7 @@ export default function InvitePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-  const [isChecking, setIsChecking] = useState(true);
+  const [setIsChecking] = useState(true);
 
   useEffect(() => {
     async function handleInvite() {
