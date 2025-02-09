@@ -7,7 +7,7 @@ export const testsTable = pgTable("tests", {
   user_id: text("user_id").notNull(),
   name: text("name").notNull(),
   body: jsonb("body").notNull(),
-  completion: jsonb("completion").notNull(),
+  completion: jsonb("completion").default('[]'),
 });
 
 

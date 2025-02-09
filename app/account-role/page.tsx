@@ -15,9 +15,9 @@ export default function AccountRolePage() {
     const checkRole = async () => {
       const role = await getUserRole();
       if (role === "student") {
-        router.push("/upcoming-courses");
+        router.push("/statitics");
       } else if (role === "teacher") {
-        router.push("/courses");
+        router.push("/statistics");
       } else {
         setHasRole(false);
       }
