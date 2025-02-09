@@ -13,7 +13,7 @@ export default function ClassroomDetailsPage({
   searchParams 
 }: Props) {
   const { userId } = useAuth();
-  const [classroom, setClassroom] = useState<any>(null);
+  const [classroom, setClassroom] = useState<Classroom>(null);
   
   useEffect(() => {
     async function loadData() {
