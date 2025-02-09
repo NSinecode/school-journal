@@ -1,4 +1,4 @@
-import { Trash2, Bookmark, Pencil, ArrowRight } from "lucide-react";
+import { Trash2, Bookmark, ArrowRight } from "lucide-react";
 import { useState,useEffect } from "react";
 import { updateProfileAction } from "@/actions/profiles-actions";
 import { SignedIn } from "@clerk/nextjs";

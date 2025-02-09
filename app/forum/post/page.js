@@ -68,7 +68,6 @@ export default function PostPage() {
         async function fetchPost() {
             try {
                 if (postId != null && postId != undefined) {
-                    console.log(postId);
                     const res = await getMessageAction(postId);
                     if (!res) throw new Error("Не удалось загрузить пост");
                     setPost(res.data);

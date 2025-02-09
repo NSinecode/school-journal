@@ -1,21 +1,20 @@
-import { CornerUpLeft } from 'lucide-react';
-import { Trash2 } from "lucide-react";
-import { UserRound } from 'lucide-react';
-import { ArrowBigUp } from 'lucide-react';
-import { ArrowBigDown } from 'lucide-react';
+import { ArrowBigUp, ArrowBigDown, UserRound, Trash2, CornerUpLeft, MessageSquareText, Pencil } from 'lucide-react';
 import { getMessageAction } from '@/actions/messages-actions';
 import { useEffect, useState } from 'react';
-import { MessageSquareText } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 
-export default function Post( { postB, profile, handleRemovePost, userId, handleReply, isPostPage }) {
+export default function Post( { postB, profile, handleRemovePost, userId, handleReply, isPostPage, handleUpdatePost }) {
     const router = useRouter();
     const { isSignedIn } = useAuth();
     const [repPost, setRepPost] = useState();
     const [post, setPost] = useState(postB);
     const [isLiked, setIsLiked] = useState(profile.posts_liked.includes(Number(postB.id)));
     const [isDisliked, setIsDisliked] = useState(profile.posts_disliked.includes(Number(postB.id)));
+
+    useEffect(() => {
+      setPost(postB);
+    }, [postB]);
 
     const handleUpdateScore = async (value) => {
       const response = await fetch("/api/updateScore", {
@@ -92,7 +91,7 @@ export default function Post( { postB, profile, handleRemovePost, userId, handle
                     <button
                       onClick={() => handleReply(post.id)}
                     >
-                      <CornerUpLeft className="w-5 h-5 pr-1 hover:text-gray-400"/>
+                      <CornerUpLeft className="w-6 h-6 pr-1 hover:text-gray-400 pl-1"/>
                     </button>
                   </SignedIn>
                   <div className="flex">
@@ -105,6 +104,13 @@ export default function Post( { postB, profile, handleRemovePost, userId, handle
                       <p className="p-1 mt-1">{ post.reply_id.length }</p>
                     ) : null}
                   </div>
+                  { isSignedIn && ((userId == post.author_id || profile.role == "admin") && post.author_id != "FUCKIN GOD") && (
+                    <button
+                      onClick={() => handleUpdatePost(post.id, post.message)}
+                    >
+                      <Pencil className="w-6 h-6 pr-1 pl-1 hover:text-gray-400 border-l"/>
+                    </button>
+                  )}
                   { isSignedIn && ((userId == post.author_id || profile.role == "admin") && post.author_id != "FUCKIN GOD") && (
                     <button
                       onClick={() => handleRemovePost(post.id, post.replied_to)}

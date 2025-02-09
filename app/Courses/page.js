@@ -306,7 +306,7 @@ export default function Courses() {
               placeholder="Enter the video URL"
             />
             <input 
-              value={tests.find((test) => test.id.toString() === selectedTest)?.name || ""}
+              value={tests.find((test) => test.id.toString() === selectedTest)?.name}
               onChange={handleChange}
               list="test-list" 
               name="test" 
