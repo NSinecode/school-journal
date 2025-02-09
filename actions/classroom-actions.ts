@@ -117,3 +117,31 @@ export async function getTeacherClassrooms(teacherId: string) {
     return [];
   }
 }
+
+export async function addStudentToClassroom(classroomId: string) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const classroom = await db
+      .select()
+      .from(classroomTable)
+      .where(eq(classroomTable.id, parseInt(classroomId)))
+      .then(rows => rows[0]);
+
+    if (!classroom) {
+      return { status: "error", message: "Classroom not found" };
+    }
+
+    const updatedStudents = [...(classroom.students || []), userId];
+    
+    await db.update(classroomTable)
+      .set({ students: updatedStudents })
+      .where(eq(classroomTable.id, parseInt(classroomId)));
+
+    revalidatePath('/classroom');
+    return { status: "success", message: "Added to classroom" };
+  } catch (error) {
+    return { status: "error", message: "Failed to join classroom" };
+  }
+}

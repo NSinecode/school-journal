@@ -14,14 +14,12 @@ export default function CreateClassroomPage() {
   const [isTeacher, setIsTeacher] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
   const [classroomName, setClassroomName] = useState('')
-  const [students, setStudents] = useState<string[]>([])
-  const [currentStudent, setCurrentStudent] = useState('')
 
   useEffect(() => {
     const checkRole = async () => {
       const role = await getUserRole()
       if (role !== 'teacher') {
-        router.push('/classroom')
+        router.push('/classroom/choose')
       } else {
         setIsTeacher(true)
       }
@@ -31,19 +29,6 @@ export default function CreateClassroomPage() {
   }, [router])
 
   if (!isTeacher) return null
-
-  const handleAddStudent = () => {
-    if (currentStudent.trim()) {
-      setStudents([...students, currentStudent.trim()])
-      setCurrentStudent('')
-    }
-  }
-
-  const handleDeleteStudent = (index: number) => {
-    const newStudents = [...students]
-    newStudents.splice(index, 1)
-    setStudents(newStudents)
-  }
 
   const handleCreate = async () => {
     if (!classroomName || !userId) {
@@ -57,7 +42,7 @@ export default function CreateClassroomPage() {
       const classroomData = {
         name: classroomName,
         teacher_id: userId,
-        students: students || [],
+        students: [], // Empty array since we're not collecting students anymore
       };
 
       console.log('Sending data:', classroomData);
@@ -67,7 +52,7 @@ export default function CreateClassroomPage() {
       console.log('Result:', result);
 
       if (result.status === "success") {
-        router.push("/classroom");
+        router.push("/classroom/choose");
       } else {
         console.error('Failed:', result.message);
       }
@@ -90,35 +75,6 @@ export default function CreateClassroomPage() {
           onChange={(e) => setClassroomName(e.target.value)}
           className="w-full p-2 border rounded"
         />
-        
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Add student email"
-            value={currentStudent}
-            onChange={(e) => setCurrentStudent(e.target.value)}
-            className="flex-1 p-2 border rounded"
-          />
-          <Button onClick={handleAddStudent}>Add Student</Button>
-        </div>
-
-        {students.length > 0 && (
-          <div className="mt-4">
-            <h2 className="text-xl font-bold mb-2">Added Students:</h2>
-            {students.map((student, index) => (
-              <div key={index} className="flex justify-between items-center p-2 border rounded mb-2">
-                <span>{student}</span>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDeleteStudent(index)}
-                >
-                  <TrashIcon className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
         
         <Button 
           onClick={handleCreate}

@@ -18,7 +18,7 @@ export default function ChooseClassroomPage() {
   const { userId } = useAuth()
   const [isTeacher, setIsTeacher] = useState(false)
   const [classrooms, setClassrooms] = useState<Classroom[]>([])
-  const [loading] = useState(true)
+  const [loading, setLoading] = useState(true)
   const [searchId, setSearchId] = useState('')
 
   useEffect(() => {
@@ -36,8 +36,8 @@ export default function ChooseClassroomPage() {
             students: classroom.students
           })))
         }
+        setLoading(false)
       }
-
     }
     
     checkRoleAndLoadClassrooms()
