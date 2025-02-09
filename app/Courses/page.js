@@ -3,11 +3,11 @@ export const dynamic = "force-dynamic";
 
 import { X } from 'lucide-react';
 import { useState, useEffect } from "react";
-import { createCourseAction } from "@/actions/courses-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { getTestsAction } from '@/actions/tests-actions'
 import { getProfileByUserIdAction } from "@/actions/profiles-actions";
+import { supabase } from '@/lib/supabaseClient';
 
 import Head from "next/head";
 import SearchBar from "../../components/courses/SearchBar";
@@ -138,7 +138,6 @@ export default function Courses() {
   };
 
   const handleAddCourse = async () => {
-    const tempId = parseInt(Math.abs(Math.cos(Date.now()) * 100), 10);
     if (newTitle.trim() == "") {
       setIsError(true);
       setShake(true);
@@ -151,9 +150,18 @@ export default function Courses() {
       return;
     }
     const newTagReady = tagsArr.join("/"); 
-    
+
+    const { data, error } = await supabase
+      .from("courses") // Название таблицы
+      .insert({title: newTitle, author_id: userId, description: newDescription, tags: newTagReady, test_id: selectedTest, presentation: fileUrl, video_url: video}) // Вставляем данные
+      .select(); // Запрашиваем сразу ID
+    if (error) {
+      console.error("Ошибка при добавлении курса:", error);
+      return null;
+    }
+
     const optimisticCourse = {
-      id: tempId,
+      id: data?.[0]?.id,
       title: newTitle,
       author_id: userId,
       description: newDescription,
@@ -164,7 +172,6 @@ export default function Courses() {
     };
 
     setCourses((prevCourses) => [...prevCourses, optimisticCourse]);
-    await createCourseAction({title: newTitle, author_id: userId, description: newDescription, tags: newTagReady, test_id: selectedTest, presentation: fileUrl, video_url: video});
     setIsModalOpen(false);
     setNewTitle("");
     setNewDescription("");

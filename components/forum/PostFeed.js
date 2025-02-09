@@ -5,6 +5,7 @@ import { createMessageAction, updateMessageAction, deleteMessageAction, getMessa
 import { getProfileByUserIdAction } from "@/actions/profiles-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { supabase } from '@/lib/supabaseClient';
 import Post from "./PostBody";
 
 
@@ -63,45 +64,58 @@ export default function PostFeed({isPost, pstId}) {
   
   
   const handleAddMessage = async () => {
-    const tempId = parseInt(Math.abs(Math.cos(Date.now()) * 100), 10);
     if (newMessage.trim() === "") {
       setIsError(true);
       setShake(true);
       setTimeout(() => setShake(false), 500);
       return;
     }
-      if (!replyId) {
-        const optimisticPost = {
-          id: tempId,
-          message: newMessage,
-          author_id: userId,
-          created_at: new Date().toISOString(),
-          score: 0
-        };
-        setPosts((prevPosts) => [...prevPosts, optimisticPost]);
-        await createMessageAction({author_id: userId, message: newMessage});
-      } else {
-        const optimisticPost = {
-          id: tempId,
-          message: newMessage,
-          author_id: userId,
-          created_at: new Date().toISOString(),
-          score: 0,
-          replied_to: replyId,
-        };
-        const newReply = await createMessageAction({author_id: userId, message: newMessage, replied_to: replyId});
-        let repPost = await getMessageAction(replyId);
-        const newReplies = [...repPost.data.reply_id, newReply.data.id];
-        repPost = await updateMessageAction(replyId, {reply_id: newReplies});
-        setPosts(posts.map(post => 
-          post.id === replyId ? { ...post, reply_id: repPost.data.reply_id } : post
-        ));
-        setPosts((prevPosts) => [...prevPosts, optimisticPost]);
-        setReplyId(0);
+    if (!replyId) {
+      const { data, error } = await supabase
+        .from("messages") // Название таблицы
+        .insert({author_id: userId, message: newMessage}) // Вставляем данные
+        .select(); // Запрашиваем сразу ID
+      if (error) {
+        console.error("Ошибка при добавлении поста:", error);
+        return null;
       }
+      const optimisticPost = {
+        id: data?.[0]?.id,
+        message: newMessage,
+        author_id: userId,
+        created_at: new Date().toISOString(),
+        score: 0
+      };
+      setPosts((prevPosts) => [...prevPosts, optimisticPost]);
+    } else {
+      const { data, error } = await supabase
+        .from("messages") // Название таблицы
+        .insert({author_id: userId, message: newMessage, replied_to: replyId}) // Вставляем данные
+        .select(); // Запрашиваем сразу ID
+      if (error) {
+        console.error("Ошибка при добавлении поста:", error);
+        return null;
+      }
+      const optimisticPost = {
+        id: data?.[0]?.id,
+        message: newMessage,
+        author_id: userId,
+        created_at: new Date().toISOString(),
+        score: 0,
+        replied_to: replyId,
+      };
+      let repPost = await getMessageAction(replyId);
+      const newReplies = [...repPost.data.reply_id, data?.[0]?.id];
+      repPost = await updateMessageAction(replyId, {reply_id: newReplies});
+      setPosts(posts.map(post => 
+        post.id === replyId ? { ...post, reply_id: repPost.data.reply_id } : post
+      ));
+      setPosts((prevPosts) => [...prevPosts, optimisticPost]);
+      setReplyId(0);
+    }
     
-      setIsModalOpen(false);
-      setNewMessage("");
+    setIsModalOpen(false);
+    setNewMessage("");
   }
 
   const reply = async (id) => {
