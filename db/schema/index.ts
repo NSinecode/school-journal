@@ -4,3 +4,4 @@ export * from "./course-schema";
 export * from "./messages-schema";
 export * from "./tests-schema";
 export * from "./classroom-schema";
+export * from "./subjects-schema";

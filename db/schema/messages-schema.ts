@@ -1,4 +1,4 @@
-import { pgTable, text, serial, bigint, timestamp, PgArray } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, bigint, timestamp } from "drizzle-orm/pg-core";
 
 export const messagesTable = pgTable("messages", {
   id: serial("id").primaryKey(),

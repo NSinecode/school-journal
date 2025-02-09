@@ -4,7 +4,7 @@ export const coursesTable = pgTable("courses", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   image_url: text("image_url"),
-  subject: text("subject").array(),
+  subject: bigint("subject", {mode: "number"}).notNull(),
   author_id: text("author_id").notNull(),
   description: text("description"),
   tags: text("tags"),

@@ -7,6 +7,7 @@ import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { getTestsAction } from '@/actions/tests-actions'
 import { getProfileByUserIdAction } from "@/actions/profiles-actions";
+import { getSubjectsAction, createSubjectAction } from '@/actions/subjects-actions';
 import { supabase } from '@/lib/supabaseClient';
 
 import Head from "next/head";
@@ -19,21 +20,32 @@ export default function Courses() {
   const [courses, setCourses] = useState([]);
   const [userId, setUserId] = useState("");
   const [profile, setProfile] = useState();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRequestOpen, setIsRequestOpen] = useState(false);
 
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newTags, setNewTags] = useState("");
   const [tagsArr, setTagsArr] = useState([]);
   const [selectedTest, setSelectedTest] = useState();
+  const [testInput, setInputValue] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState();
   const [fileUrl, setFileUrl] = useState('');
   const [video, setVideo] = useState('');
 
   const [isError, setIsError] = useState(false);
   const [isErrorTag, setIsErrorTag] = useState(false);
+  const [isErrorTest, setIsErrorTest] = useState(false);
+  const [isErrorSub, setIsErrorSub] = useState(false);
+  const [isSubError, setIsSubError] = useState(false);
   const [shake, setShake] = useState(false);
 
   const [tests, setTests] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [subjectsAll, setSubjectsAll] = useState([]);
+
+  const [newSubject, setNewSubject] = useState("");
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -78,14 +90,26 @@ export default function Courses() {
   useEffect(() => {
       async function loadTests() {
         if (isModalOpen) {
-          const result = await getTestsAction()
+          const result = await getTestsAction();
           if (result.status === 'success' && result.data) {
             setTests(result.data)
           }
         }
       }
       loadTests()
-    }, [isModalOpen])
+  }, [isModalOpen])
+  useEffect(() => {
+    async function loadSubjects() {
+      if (isModalOpen) {
+        const result = await getSubjectsAction();
+        if (result.status === 'success' && result.data) {
+          setSubjects(result.data?.filter(subject => subject.is_confirmed));
+          setSubjectsAll(result.data);
+        }
+      }
+    }
+    loadSubjects()
+  }, [isModalOpen])
   
   
   useEffect(() => {
@@ -155,12 +179,22 @@ export default function Courses() {
       setShake(true);
       setTimeout(() => setShake(false), 500); // Останавливаем тряску
       return;
+    } else if (!tests.find(test => test.id == selectedTest)) {
+      setIsErrorTest(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500); // Останавливаем тряску
+      return;
+    } else if (!subjects.find(subject => subject.id == selectedSubject)) {
+      setIsErrorSub(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500); // Останавливаем тряску
+      return;
     }
     const newTagReady = tagsArr.join("/"); 
 
     const { data, error } = await supabase
       .from("courses") // Название таблицы
-      .insert({title: newTitle, author_id: userId, description: newDescription, tags: newTagReady, test_id: selectedTest, presentation: fileUrl, video_url: video}) // Вставляем данные
+      .insert({title: newTitle, author_id: userId, description: newDescription, tags: newTagReady, test_id: selectedTest, presentation: fileUrl, video_url: video, subject: Number(selectedSubject)}) // Вставляем данные
       .select(); // Запрашиваем сразу ID
     if (error) {
       console.error("Ошибка при добавлении курса:", error);
@@ -175,7 +209,8 @@ export default function Courses() {
       tags: newTagReady,
       test_id: Number(selectedTest),
       presentation: fileUrl,
-      video_url: video
+      video_url: video,
+      subject: Number(selectedSubject)
     };
 
     setCourses((prevCourses) => [...prevCourses, optimisticCourse]);
@@ -188,19 +223,51 @@ export default function Courses() {
     router.refresh();
   };
 
-  const handleChange = (event) => {
+  const handleSubjectRequest = async () => {
+    if (newSubject.trim() == "" || subjectsAll.find(subject => subject.name == newSubject)) {
+      setIsSubError(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500); // Останавливаем тряску
+      return;
+    }
+    await createSubjectAction({name: newSubject});
+    setIsRequestOpen(false);
+  }
+
+  const handleTestChange = (event) => {
     const selectedName = event.target.value;
     const test = tests.find((test) => test.name === selectedName);
     if (test) {
       setSelectedTest(test.id.toString());
+      setIsErrorTest(false);
     }
   };
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  }
+
+  const handleSubjectChange = (event) => {
+    const selectedName = event.target.value;
+    const subject = subjects.find((subject) => subject.name === selectedName);
+    if (subject) {
+      setSelectedSubject(subject.id.toString());
+    }
+  };
+  const subjDel = (event) => {
+    if (event.key == "Backspace") {
+      setSelectedSubject("");
+    }
+  }
 
   // Функция открытия и закрытия окна
   const toggleModal = () =>  { 
     setIsModalOpen(!isModalOpen);
     setIsError(false); 
     router.refresh();
+  };
+  const handleRequest = () => {
+    setIsModalOpen(false);
+    setIsRequestOpen(true);
   };
 
   if(loading) {
@@ -215,7 +282,7 @@ export default function Courses() {
       <div>
         <h1 className="flex flex-col items-center p-5">Courses searching</h1>
         <SignedIn>
-          {profile && profile.role == "teacher" ? (
+          {profile && (profile.role == "teacher" || profile.role == "admin") ? (
           <div className="flex justify-center">
             <button onClick={toggleModal} className="flex justify-center p-2 bg-blue-500 text-white rounded-lg mb-4 hover:bg-blue-600 transition relative">
               Create course
@@ -254,6 +321,31 @@ export default function Courses() {
               className="w-full p-2 border rounded mt-3 border-gray-300"
               placeholder="Enter the description"
             />
+            <div className="flex gap-2">
+              <button
+                className="flex justify-center mt-3 p-2 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition relative"
+                onClick={handleRequest}
+              >
+                Make a subject request
+              </button>
+              <input 
+                value={subjects.find((subject) => subject.id.toString() === selectedSubject)?.name || ""}
+                onChange={(e) => {
+                  handleSubjectChange(e);
+                  setIsErrorSub(false);
+                }}
+                onKeyDown={(e) => subjDel(e)}
+                list="subject-list" 
+                name="subject" 
+                className={`w-full p-2 border rounded mt-3 ${isErrorSub ? "border-red-500" : "border-gray-300"}`} 
+                placeholder="Choose subject"
+              />
+              <datalist id="subject-list">
+                {subjects.map((subject) => (
+                  <option key={subject.id} value={subject.name} />
+                ))}
+              </datalist>
+            </div>
             <input
               type="text" 
               spellCheck="false" 
@@ -306,11 +398,12 @@ export default function Courses() {
               placeholder="Enter the video URL"
             />
             <input 
-              value={tests.find((test) => test.id.toString() === selectedTest)?.name}
-              onChange={handleChange}
+              value={testInput}
+              onChange={handleInputChange}
+              onBlur={handleTestChange}
               list="test-list" 
               name="test" 
-              className="w-full p-2 border rounded mt-3 border-gray-300" 
+              className={`w-full p-2 border rounded mt-3 ${isErrorTest ? "border-red-500" : "border-gray-300"}`} 
               placeholder="Choose test"
             />
             <datalist id="test-list">
@@ -328,6 +421,36 @@ export default function Courses() {
               </button>
               <button onClick={handleAddCourse} disabled={!isLoaded} className="px-4 py-2 bg-blue-500 disabled:opacity-50 text-white rounded">
                 Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isRequestOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div
+            className={`bg-gray-800 p-6 w-[400px] rounded-lg shadow-lg transition-transform ${
+              shake ? "animate-shake" : ""
+            }`}
+          >
+            <input
+              type="text"
+              value={newSubject}
+              onChange={(e) => {
+                setNewSubject(e.target.value);
+                setIsSubError(false);
+              }}
+              className={`w-full p-2 border rounded ${
+                isSubError ? "border-red-500" : "border-gray-300"
+              }`}
+              placeholder="Enter the name"
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <button onClick={() => setIsRequestOpen(false)} className="px-4 py-2 bg-gray-700 rounded">
+                Cancel
+              </button>
+              <button onClick={handleSubjectRequest} className="px-4 py-2 bg-blue-500 disabled:opacity-50 text-white rounded">
+                Make request
               </button>
             </div>
           </div>

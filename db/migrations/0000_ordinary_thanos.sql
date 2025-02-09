@@ -24,7 +24,7 @@ CREATE TABLE "courses" (
 	"id" SERIAL PRIMARY KEY,
 	"title" TEXT NOT NULL, 
 	"image_url" TEXT,
-	"subject" TEXT[] NOT NULL,
+	"subject" BIGINT NOT NULL,
 	"author_id" TEXT NOT NULL,
 	"description" TEXT,
 	"tags" TEXT,
@@ -32,6 +32,12 @@ CREATE TABLE "courses" (
 	"test_id" BIGINT,
 	"video_url" TEXT
 );
+
+CREATE TABLE "subjects" (
+	"id" SERIAL PRIMARY KEY,
+	"name" TEXT NOT NULL,
+	"is_confirmed" BOOLEAN DEFAULT false NOT NULL
+)
 
 CREATE TABLE "messages" (
 	"id" SERIAL PRIMARY KEY,

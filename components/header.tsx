@@ -77,6 +77,14 @@ export default function Header() {
           >
             All Tests
           </Link>
+          {userRole === "admin" && (
+            <Link
+            href="/subjects"
+            className="hover:underline"
+          >
+            Subjects
+          </Link>
+          )}
         </nav>
         <div className="flex items-center space-x-4">
           <SignedOut>
@@ -118,24 +126,28 @@ export default function Header() {
                 Courses
               </Link>
             </li>
-            <li>
-              <Link
-                href="/forum"
-                className="block hover:underline"
-                onClick={toggleMenu}
-              >
-                Forum
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/test/create"
-                className="block hover:underline"
-                onClick={toggleMenu}
-              >
-                Create Test
-              </Link>
-            </li>
+            <SignedIn>
+              <li>
+                <Link
+                  href="/forum"
+                  className="block hover:underline"
+                  onClick={toggleMenu}
+                >
+                  Forum
+                </Link>
+              </li>
+            </SignedIn>
+            {userRole === "teacher" && (
+              <li>
+                <Link
+                  href="/test/create"
+                  className="block hover:underline"
+                  onClick={toggleMenu}
+                >
+                  Create Test
+                </Link>
+              </li>
+            )}
             <li>
               <Link
                 href="/test/choose-test" 
@@ -145,6 +157,17 @@ export default function Header() {
                 All Tests
               </Link>
             </li>
+            {userRole === "admin" && (
+              <li>
+                <Link
+                  href="/subjects" 
+                  className="block hover:underline"
+                  onClick={toggleMenu}
+                >
+                  Subjects
+                </Link>
+            </li>
+            )}
           </ul>
         </nav>
       )}
