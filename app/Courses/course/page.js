@@ -60,12 +60,14 @@ export default function CoursePage() {
             Video
           </button>
           ) : null}
-          <button 
-            className={`text-lg font-semibold pr-2 pl-2 rounded-t-lg transition-colors duration-500 ${Number(page) == Number(3) ? "bg-white text-black" : ""}`}
-            onClick={() => setPage(3)}
-          >
-            Test
-          </button>
+          {course.test_id ? (
+            <button 
+              className={`text-lg font-semibold pr-2 pl-2 rounded-t-lg transition-colors duration-500 ${Number(page) == Number(3) ? "bg-white text-black" : ""}`}
+              onClick={() => setPage(3)}
+            >
+              Test
+            </button>
+          ) : null}
         </div>
         {page === 1 ? (
           <div className="flex flex-col items-center">
@@ -99,15 +101,17 @@ export default function CoursePage() {
                   <ArrowBigRight className="h-6 w-8"/>
                 </button>
               </div>
-              <div className="flex justify-end">
-                <button 
-                  className={`rounded p-2 ${pageNumber >= numPages ? "bg-yellow-500" : "bg-gray-600 "}`}
-                  disabled={pageNumber < numPages}
-                  onClick={() => setPage(3)}
-                >
-                  Go to test
-                </button>
-              </div>
+              {course.test_id ? (
+                <div className="flex justify-end">
+                  <button 
+                    className={`rounded p-2 ${pageNumber >= numPages ? "bg-yellow-500" : "bg-gray-600 "}`}
+                    disabled={pageNumber < numPages}
+                    onClick={() => setPage(3)}
+                  >
+                    Go to test
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
         ) : null}
