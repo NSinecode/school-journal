@@ -15,8 +15,8 @@ export default function UploadForm({ onFileUpload, isLoaded }) {
     setUploading(true);
     
     const filePath = `uploads/${Date.now()}_${file.name}`;
-    const { data, error } = await supabase.storage
-      .from('course presentations') // Замени на название своего бакета
+    const { error } = await supabase.storage
+      .from('course presentations') 
       .upload(filePath, file);
 
     setUploading(false);
@@ -28,7 +28,7 @@ export default function UploadForm({ onFileUpload, isLoaded }) {
 
     const { data: signedUrlData, error: urlError } = await supabase
       .storage
-      .from('course presentations') // Название бакета
+      .from('course presentations') 
       .createSignedUrl(filePath, 60 * 60 * 24 * 30 * 6);
 
     if (urlError) {

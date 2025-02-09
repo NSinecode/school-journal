@@ -63,7 +63,7 @@ export default function SearchBar( { courses, userId, delClick, profile } ) {
   return (
     <div className="relative min-h-screen"> 
       <aside className="w-full max-w-md mx-auto">
-        <div className="grid flex items-center gap-4 z-10 pb-3 border-b shadow-md">
+        <div className="grid items-center gap-4 z-10 pb-3 border-b shadow-md">
           <div className="flex justify-between">
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
