@@ -83,3 +83,40 @@ export async function getUserRole() {
     return null;
   }
 }
+
+export async function getUserScore(userId: string) {
+  try {
+    const profile = await db.query.profiles.findFirst({
+      where: (profiles, { eq }) => eq(profiles.userId, userId)
+    });
+    
+    return profile?.score ?? 0;
+  } catch (error) {
+    console.error("Error fetching user score:", error);
+    return 0;
+  }
+}
+
+export async function updateUserScoreAction(userId: string, additionalScore: number): Promise<ActionState> {
+  try {
+    const profile = await getProfileByUserId(userId);
+    if (!profile) throw new Error("Profile not found");
+
+    const currentScore = profile.score || 0;
+    const updatedProfile = await updateProfile(userId, { 
+      score: currentScore + additionalScore 
+    });
+
+    revalidatePath("/test");
+    return { 
+      status: "success", 
+      message: "Score updated successfully", 
+      data: updatedProfile 
+    };
+  } catch (error) {
+    return { 
+      status: "error", 
+      message: "Failed to update score" 
+    };
+  }
+}

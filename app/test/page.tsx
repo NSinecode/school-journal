@@ -6,7 +6,7 @@ import { getTestsAction } from '@/actions/tests-actions'
 import { useSession } from '@clerk/nextjs'
 import { saveTestCompletionAction } from '@/actions/tests-actions'
 import { getProfileByUserId } from '@/db/queries/profiles-queries'
-import { updateProfileAction } from '@/actions/profiles-actions'
+import { updateProfileAction, updateUserScoreAction } from '@/actions/profiles-actions'
 
 interface Question {
   title: string
@@ -116,31 +116,65 @@ export default function TestPage() {
   }
 
   const handleFinishTest = async () => {
-    if (!session?.user?.id || !testId) return
+    if (!session?.user?.id || !testId) {
+      console.log('Missing session or testId:', { sessionUserId: session?.user?.id, testId });
+      return;
+    }
     
-    const userId = session.user.id
-    const profile = await getProfileByUserId(userId)
+    const userId = session.user.id;
+    const profile = await getProfileByUserId(userId);
     
     // Check if test was already completed
     if (profile?.tests_completed?.includes(Number(testId))) {
-      setShowSummary(true)
-      return
+      console.log('Test already completed');
+      setShowSummary(true);
+      localStorage.removeItem('quizScore');
+      localStorage.removeItem('answeredQuestions');
+      localStorage.removeItem('userAnswers');
+      return;
     }
+
+    // Get incorrect questions and their topics
+    const incorrectQuestions = questions.filter((q, idx) => userAnswers[idx] !== q.correctAnswer);
+    const difficultTopics = [...new Set(incorrectQuestions.map(q => q.topic))];
 
     // Save completion data
     const completion = {
       user_id: userId,
-      choices: userAnswers
+      choices: userAnswers,
+      score: score,
+      completed_at: new Date().toISOString()
+    };
+
+    try {
+      const result = await saveTestCompletionAction(Number(testId), completion);
+      console.log('Save completion result:', result);
+    } catch (error) {
+      console.error('Error saving completion:', error);
     }
 
-    // Update user's completed tests
+    // Update user's completed tests, score and difficult topics
     if (profile) {
-      const updatedTests = [...(profile.tests_completed || []), Number(testId)]
-      await updateProfileAction(userId, { tests_completed: updatedTests }, '/test')
+      const updatedTests = [...(profile.tests_completed || []), Number(testId)];
+      const existingTopics = profile.difficult_topics || [];
+      const updatedTopics = [...new Set([...existingTopics, ...difficultTopics])];
+
+      await updateProfileAction(
+        userId, 
+        { 
+          tests_completed: updatedTests,
+          difficult_topics: updatedTopics 
+        }, 
+        '/test'
+      );
+      await updateUserScoreAction(userId, score);
     }
 
-    await saveTestCompletionAction(Number(testId), completion)
-    setShowSummary(true)
+    // Clear localStorage when showing summary
+    localStorage.removeItem('quizScore');
+    localStorage.removeItem('answeredQuestions');
+    localStorage.removeItem('userAnswers');
+    setShowSummary(true);
   }
 
   // Add loading state handling

@@ -57,8 +57,36 @@ export async function saveTestCompletionAction(
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
 
-    const completionStr = JSON.stringify(completion);
-    const updatedTest = await updateTestCompletion(testId, completionStr);
+    const result = await getTestsAction();
+    if (result.status !== 'success' || !result.data) throw new Error("Failed to get tests");
+    
+    const test = result.data.find((test: any) => Number(test.id) === Number(testId));
+    if (!test) throw new Error("Test not found");
+    
+    let existingCompletions: TestCompletion[] = [];
+    
+    // Handle existing completions more robustly
+    if (test.completion) {
+      try {
+        const parsed = JSON.parse(test.completion as string);
+        existingCompletions = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        // If parsing fails, treat as empty array
+        existingCompletions = [];
+      }
+    }
+
+    // Update or add new completion
+    const userIndex = existingCompletions.findIndex(c => c.user_id === userId);
+    if (userIndex >= 0) {
+      existingCompletions[userIndex] = { ...completion, user_id: userId };
+    } else {
+      existingCompletions.push({ ...completion, user_id: userId });
+    }
+    
+    // Save as stringified array
+    const updatedTest = await updateTestCompletion(testId, JSON.stringify(existingCompletions));
+    
     revalidatePath("/Tests");
     return { 
       status: "success", 
@@ -66,10 +94,10 @@ export async function saveTestCompletionAction(
       data: updatedTest
     };
   } catch (error) {
-    console.error("Error saving test completion:", error);
+    console.error("Error in saveTestCompletionAction:", error);
     return { 
       status: "error", 
-      message: "Failed to save test completion" 
+      message: error instanceof Error ? error.message : "Failed to save test completion" 
     };
   }
 }

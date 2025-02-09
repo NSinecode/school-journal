@@ -3,14 +3,15 @@
 import { useState, useEffect } from 'react' 
 import { useRouter } from 'next/navigation'
 import { useAuth } from "@clerk/nextjs"
-import { getUserRole } from '@/actions/profiles-actions'
+import { getUserRole, getUserScore } from '@/actions/profiles-actions'
 import { getTeacherClassrooms } from '@/actions/classroom-actions'
 import { Button } from "@/components/ui/button"
 
 interface Classroom {
-id: string
+  id: string
   name: string
   students?: string[]
+  score?: number
 }
 
 export default function ChooseClassroomPage() {
@@ -30,10 +31,12 @@ export default function ChooseClassroomPage() {
         setIsTeacher(true)
         if (userId) {
           const teacherClassrooms = await getTeacherClassrooms(userId)
+          const score = await getUserScore(userId)
           setClassrooms(teacherClassrooms.map(classroom => ({
             id: classroom.id.toString(),
             name: classroom.name,
-            students: classroom.students
+            students: classroom.students,
+            score: score
           })))
         }
         setLoading(false)
@@ -80,7 +83,9 @@ export default function ChooseClassroomPage() {
             >
               <div>
                 <h2 className="text-xl font-semibold">{classroom.name}</h2>
-                <p className="text-gray-600">{classroom.students?.length || 0} students</p>
+                <p className="text-gray-600">
+                  {classroom.students?.length || 0} students | Score: {classroom.score}
+                </p>
               </div>
             </Button>
             <Button 
