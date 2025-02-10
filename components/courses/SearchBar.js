@@ -45,7 +45,6 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
       )
     );
   }
-  const isFilterActive = Object.values(filters).some((value) => value);
 
   
   useEffect(() => {
@@ -61,17 +60,21 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
   }, [isFilterOpen]);
 
   const tagss = tagString === "" ? null : tagString.toLowerCase().split(" ");
-
+  const activeSubjectIds = subjectsWithFlag
+    .filter(subject => subject.isSelected)
+    .map(subject => subject.id);
+  console.log(activeSubjectIds);
   let filteredCourses = courses.filter((course) => course.title.toLowerCase().includes(query.toLowerCase()));
   filteredCourses = tagss != null ? filteredCourses.filter((course) => tagss.every((tag) => {
     const match = course.tags.toLowerCase().includes(tag);
     return match;
   })) : filteredCourses;
   filteredCourses = filteredCourses.filter(course => 
-    (!filters.authorMe || (course.autor_id == userId) === filters.authorMe) &&
-    (!filters.authorOther || (course.autor_id != userId) === filters.authorOther) &&
+    (!filters.authorMe || (course.author_id == userId) === filters.authorMe) &&
+    (!filters.authorOther || (course.author_id != userId) === filters.authorOther) &&
     (!filters.marked || (profile.marked_courses.includes(course.id)) === filters.marked) &&
-    (!filters.withVideo || (course.video_url != null && course.video_url.trim() != "") === filters.withVideo)
+    (!filters.withVideo || (course.video_url != null && course.video_url.trim() != "") === filters.withVideo) && 
+    (activeSubjectIds.length === 0 || activeSubjectIds.includes(String(course.subject)))
   );
 
   return (
