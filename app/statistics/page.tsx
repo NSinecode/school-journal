@@ -8,7 +8,7 @@ import { SelectCourse } from "@/db/schema/course-schema";
 
 export default async function StatisticsPage() {
   const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  if (!userId) redirect("/login");
 
   const role = await getUserRole();
   const profileResponse = await getProfileByUserIdAction(userId);

@@ -7,9 +7,11 @@ CREATE TABLE "profiles" (
 	"marked_courses" TEXT[] DEFAULT '{}' NOT NULL,
 	"tests_completed" INT[] DEFAULT '{}' NOT NULL,
 	"score" BIGINT DEFAULT 0 NOT NULL,
-	"difficult_topics" TEXT[] DEFAULT '{}' NOT NULL
+	"difficult_topics" TEXT[] DEFAULT '{}' NOT NULL,
+	"my_classroom" BIGINT[] DEFAULT '{}' NOT NULL
 );
 --> statement-breakpoint
+
 
 CREATE TABLE "todos" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
@@ -65,6 +67,8 @@ CREATE TABLE classroom (
 	"teacher_id" TEXT NOT NULL,
 	"students" TEXT[] DEFAULT '{}' NOT NULL,
 	"name" TEXT NOT NULL,
+	"homework" BIGINT[] DEFAULT '{}' NOT NULL,
 );
+
 
 

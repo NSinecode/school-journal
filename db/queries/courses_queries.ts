@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { InsertCourse, SelectCourse, coursesTable } from "../schema/course-schema";
 
 export const getCourses = async (): Promise<SelectCourse[]> => {
@@ -41,5 +41,20 @@ export const deleteCourse = async (id: number) => {
   } catch (error) {
     console.error("Error deleting course:", error);
     throw new Error("Failed to delete course");
+  }
+};
+
+export const getCoursesById = async (ids: number[]): Promise<SelectCourse[]> => {
+  try {
+    if (ids.length === 0) return [];
+    return db
+      .select()
+      .from(coursesTable)
+      .where(
+        sql`${coursesTable.id} = ANY(${sql.raw(`ARRAY[${ids.map(id => id).join(',')}]`)})`
+      );
+  } catch (error) {
+    console.error("Error getting courses by ids:", error);
+    throw new Error("Failed to get courses");
   }
 };

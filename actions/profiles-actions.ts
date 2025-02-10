@@ -120,3 +120,30 @@ export async function updateUserScoreAction(userId: string, additionalScore: num
     };
   }
 }
+
+export async function addClassroomToUserAction(classroomId: string): Promise<ActionState> {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const profile = await getProfileByUserId(userId);
+    if (!profile) throw new Error("Profile not found");
+
+    const currentClassrooms = profile.my_classroom || [];
+    const updatedProfile = await updateProfile(userId, {
+      my_classroom: [...currentClassrooms, Number(classroomId)]
+    });
+
+    revalidatePath("/classroom");
+    return {
+      status: "success",
+      message: "Classroom added successfully",
+      data: updatedProfile
+    };
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Failed to add classroom"
+    };
+  }
+}

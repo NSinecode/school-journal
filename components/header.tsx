@@ -64,12 +64,26 @@ export default function Header() {
             </Link>
           </SignedIn>
           {userRole === 'teacher' && (
-            <Link
-              href="/test/create"
-              className="hover:underline"
-            >
-              Create Test
-            </Link>
+            <>
+              <Link
+                href="/test/create"
+                className="hover:underline"
+              >
+                Create Test
+              </Link>
+              <Link
+                href="/classroom/choose"
+                className="hover:underline"
+              >
+                Classrooms
+              </Link>
+              <Link
+                href="/classroom/create"
+                className="hover:underline"
+              >
+                Create Classroom
+              </Link>
+            </>
           )}
           <Link
             href="/test/choose-test"
@@ -144,15 +158,35 @@ export default function Header() {
               </li>
             </SignedIn>
             {userRole === "teacher" && (
-              <li>
-                <Link
-                  href="/test/create"
-                  className="block hover:underline"
-                  onClick={toggleMenu}
-                >
-                  Create Test
-                </Link>
-              </li>
+              <>
+                <li>
+                  <Link
+                    href="/test/create"
+                    className="block hover:underline"
+                    onClick={toggleMenu}
+                  >
+                    Create Test
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/classroom/choose"
+                    className="block hover:underline"
+                    onClick={toggleMenu}
+                  >
+                    Classrooms
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/classroom/create"
+                    className="block hover:underline"
+                    onClick={toggleMenu}
+                  >
+                    Create Classroom
+                  </Link>
+                </li>
+              </>
             )}
             <li>
               <Link

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-import { getUserRole } from '@/actions/profiles-actions';
+import { getUserRole, addClassroomToUserAction } from '@/actions/profiles-actions';
 import { addStudentToClassroom } from '@/actions/classroom-actions';
 
 export default function InvitePage() {
@@ -16,18 +16,25 @@ export default function InvitePage() {
       
       const role = await getUserRole();
       if (role !== 'student') {
-        router.push('/statistis');
+        router.push('/statistics');
         return;
       }
 
       const result = await addStudentToClassroom(id);
+      if (result.status === 'already_enrolled') {
+        router.push(`/classroom`);
+        return;
+      }
+      
       if (result.status === 'error') {
-        // You might want to redirect to an error page here
         router.push('/classroom?error=join-failed');
         return;
       }
 
-      router.push(`/classroom?id=${id}`);
+      // Add this classroom to user's my_classroom array
+      await addClassroomToUserAction(id);
+      
+      router.push(`/classroom`);
     }
 
     handleInvite();

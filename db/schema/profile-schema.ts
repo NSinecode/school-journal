@@ -17,7 +17,9 @@ export const profilesTable = pgTable("profiles", {
   tests_completed: bigint("tests_completed", { mode: "number" }).array(),
   score: bigint("score", { mode: "number" }).default(0),
   difficult_topics: text("difficult_topics").array().default([]),
+  my_classroom: bigint("my_classroom", { mode: "number" }).array().default([]),
 });
+
 
 export type InsertProfile = typeof profilesTable.$inferInsert;
 export type SelectProfile = typeof profilesTable.$inferSelect;

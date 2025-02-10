@@ -10,7 +10,7 @@ export const classroomTable = pgTable("classroom", {
   teacher_id: text("teacher_id").notNull(),
   students: text("students").array().default([]).notNull(),
   name: text("name").notNull(),
-
+  homework: text("homework").array().default([]).notNull()
 });
 
 export type InsertClassroom = typeof classroomTable.$inferInsert;

@@ -8,6 +8,7 @@ import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { classroomTable } from "@/db/schema/classroom-schema";
 import { db } from "@/db/db";
+import { getCoursesById } from "@/db/queries/courses_queries";
 
 
 export async function getClassroomsAction(): Promise<ActionState> {
@@ -133,6 +134,11 @@ export async function addStudentToClassroom(classroomId: string) {
       return { status: "error", message: "Classroom not found" };
     }
 
+    // Check if student is already in the classroom
+    if (classroom.students.includes(userId)) {
+      return { status: "already_enrolled", message: "Already enrolled in classroom" };
+    }
+
     const updatedStudents = [...(classroom.students || []), userId];
     
     await db.update(classroomTable)
@@ -143,5 +149,42 @@ export async function addStudentToClassroom(classroomId: string) {
     return { status: "success", message: "Added to classroom" };
   } catch (error) {
     return { status: "error", message: "Failed to join classroom" };
+  }
+}
+
+export async function getClassroomByIdAction(id: number) {
+  try {
+    const classroom = await db
+      .select()
+      .from(classroomTable)
+      .where(eq(classroomTable.id, id))
+      .then((rows) => rows[0]);
+    
+    if (!classroom) {
+      return {
+        status: 'error',
+        message: 'Classroom not found'
+      };
+    }
+
+    // Get course details for homework - add null check and validation
+    const homeworkIds = classroom.homework?.filter(id => !isNaN(parseInt(id)))
+      .map(id => parseInt(id)) || [];
+    
+    const courses = await getCoursesById(homeworkIds);
+    
+    return {
+      status: 'success',
+      data: {
+        ...classroom,
+        homeworkDetails: courses
+      }
+    };
+  } catch (error) {
+    console.error('Classroom fetch error:', error);
+    return {
+      status: 'error',
+      message: 'Failed to fetch classroom'
+    };
   }
 }
