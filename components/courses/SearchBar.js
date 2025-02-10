@@ -3,13 +3,17 @@ import { useState, useRef, useEffect } from "react";
 import { SignedIn } from "@clerk/nextjs";
 import CourseCard from "./CourseCard";
 
-export default function SearchBar( { courses, userId, delClick, profile } ) {
+export default function SearchBar( { courses, userId, delClick, profile, subjects } ) {
   const [filters, setFilters] = useState({
     authorMe: false,
     authorOther: false,
     withVideo: false,
     marked: false
   });
+  const [subjectsWithFlag, setSubjectsWithFlag] = useState(subjects.map(subject => ({
+    ...subject,
+    isSelected: false, 
+  })));
   const filtersRend = filters;
   const [query, setQuery] = useState("");
   const [tagString, setTags] = useState("");
@@ -17,8 +21,12 @@ export default function SearchBar( { courses, userId, delClick, profile } ) {
   const filterRef = useRef(null);
   const [expandedId, setExpandedId] = useState(null);
 
+  useEffect(() => {
+    console.log(subjectsWithFlag);
+  },[subjectsWithFlag])
+
   const handleExpand = (id) => {
-    setExpandedId((prev) => (prev === id ? null : id)); // Устанавливаем id карточки, которая расширена
+    setExpandedId((prev) => (prev === id ? null : id)); 
   };
 
   const handleCheckboxChange = (event) => {
@@ -28,9 +36,17 @@ export default function SearchBar( { courses, userId, delClick, profile } ) {
       [name]: checked,
     }));
   };
-  const isFilterActive = Object.values(filters).some((value) => value);
+  const handleSubjectChange = (event) =>{
+    const { name, checked } = event.target;
+    setSubjectsWithFlag(prevSubs => 
+      prevSubs.map(subject => 
+        subject.name == name ? {...subject, isSelected: checked} : subject
+      )
+    );
+  }
+  const isFilterActive = Object.values(filters).some((value) => value) || subjectsWithFlag.some(subject => subject.isSelected);
 
-  // Закрываем меню при клике вне его
+  
   useEffect(() => {
     function handleClickOutside() {
       // if (filterRef.current && !filterRef.current.contains(event.target)) {
@@ -52,9 +68,12 @@ export default function SearchBar( { courses, userId, delClick, profile } ) {
     return match;
   })) : filteredCoursesSearch;
 
+  // const filteredCoursesSubjects = isFilterActive 
+  //   ? filteredCoursesTags.filter((course) => )
+
   const filteredCoursesAuthor = isFilterActive
     ? filteredCoursesTags.filter((course) => (filters.authorMe == (course.author_id == userId)) || (filters.authorOther == (course.author_id != userId))) // фильтруем по категории
-    : filteredCoursesTags; // если все чекбоксы `false`, показываем все
+    : filteredCoursesTags; 
   
   const filteredCoursesOther = filters.withVideo || filters.marked
     ? filteredCoursesAuthor.filter((course) => (filters.withVideo && ((course.video_url != null) == filters.withVideo)) || (filters.marked && ((profile && profile.marked_courses.includes(String(course.id))) == filters.marked)))
@@ -88,18 +107,18 @@ export default function SearchBar( { courses, userId, delClick, profile } ) {
             {/* Столбец с фильтрами */}
             <div>
               <h4 className="font-semibold mb-2">Subject</h4>
-              <label className="block mb-2">
-                <input type="checkbox" className="mr-2" />
-                Programming
+              {subjectsWithFlag.map(subject => (
+              <label className="block mb-2" key={subject.id}>
+                <input 
+                  type="checkbox" 
+                  className="mr-2" 
+                  name={subject.name}
+                  checked={subject.isSelected}
+                  onChange={handleSubjectChange}
+                />
+                {subject.name}
               </label>
-              <label className="block mb-2">
-                <input type="checkbox" className="mr-2" />
-                Math
-              </label>
-              <label className="block mb-2">
-                <input type="checkbox" className="mr-2" />
-                English
-              </label>
+              ))}
             </div>
 
             {/* Столбец с фильтрами */}

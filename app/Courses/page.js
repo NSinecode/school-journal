@@ -100,16 +100,14 @@ export default function Courses() {
   }, [isModalOpen])
   useEffect(() => {
     async function loadSubjects() {
-      if (isModalOpen) {
-        const result = await getSubjectsAction();
-        if (result.status === 'success' && result.data) {
-          setSubjects(result.data?.filter(subject => subject.is_confirmed));
-          setSubjectsAll(result.data);
-        }
+      const result = await getSubjectsAction();
+      if (result.status === 'success' && result.data) {
+        setSubjects(result.data?.filter(subject => subject.is_confirmed));
+        setSubjectsAll(result.data);
       }
     }
     loadSubjects()
-  }, [isModalOpen])
+  }, [])
   
   
   useEffect(() => {
@@ -290,7 +288,7 @@ export default function Courses() {
           </div>
           ) : null}
         </SignedIn>
-        <SearchBar courses = { courses } userId = { userId } delClick={ handleClick } profile={ profile }/>
+        <SearchBar courses = { courses } userId = { userId } delClick={ handleClick } profile={ profile } subjects={ subjects }/>
         {/* Модальное окно */}
         {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
