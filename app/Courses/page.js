@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 
 import { X } from 'lucide-react';
 import { useState, useEffect } from "react";
+import ReactPlayer from "react-player";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { getTestsAction } from '@/actions/tests-actions'
@@ -39,6 +40,7 @@ export default function Courses() {
   const [isErrorTest, setIsErrorTest] = useState(false);
   const [isErrorSub, setIsErrorSub] = useState(false);
   const [isSubError, setIsSubError] = useState(false);
+  const [isVidError, setIsVidError] = useState(false);
   const [shake, setShake] = useState(false);
 
   const [tests, setTests] = useState([]);
@@ -184,6 +186,11 @@ export default function Courses() {
       return;
     } else if (!subjects.find(subject => subject.id == selectedSubject)) {
       setIsErrorSub(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500); // Останавливаем тряску
+      return;
+    } else if (!ReactPlayer.canPlay(video) && video.trim() != "") {
+      setIsVidError(true);
       setShake(true);
       setTimeout(() => setShake(false), 500); // Останавливаем тряску
       return;
@@ -391,8 +398,11 @@ export default function Courses() {
               value={video}
               onChange={(e) => {
                 setVideo(e.target.value);
+                setIsVidError(false);
               }}
-              className="w-full p-2 border rounded mt-3 border-gray-300"
+              className={`w-full p-2 border rounded mt-3 ${
+                isVidError ? "border-red-500" : "border-gray-300"
+              }`}
               placeholder="Введите URL видео"
             />
             <input 

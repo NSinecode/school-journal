@@ -168,6 +168,7 @@ export default function PostFeed({isPost, pstId}) {
 
   const handleRemovePost = async (id, repId) => {
     let repliedPost;
+    const postd = posts.find(post => post.id === id);
     if (!repId) {
       await deleteMessageAction(id);
     } else {
@@ -175,6 +176,15 @@ export default function PostFeed({isPost, pstId}) {
       const newReps = repliedPost.data.reply_id.filter(idp => idp !== Number(id));
       repliedPost = await updateMessageAction(repId, {reply_id: newReps});
       await deleteMessageAction(id);
+    }
+    if (postd.reply_id.length > 0) {
+      const repArr = postd.reply_id;
+      repArr.forEach(async id => {
+        await updateMessageAction(id, {replied_to: null});
+      });
+      setPosts(posts.map(post => 
+        repArr.includes(Number(post.id)) ? {...post, replied_to: null} : post
+      ));
     }
     setPosts(posts.map(post => 
       post.id === repId ? { ...post, reply_id: repliedPost.data.reply_id } : post
