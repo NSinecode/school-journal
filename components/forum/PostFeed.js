@@ -21,8 +21,6 @@ export default function PostFeed({isPost, pstId}) {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [updateId, setUpdateId] = useState(null);
-  const [updateMessage, setUpdateMessage] = useState("");
   const [userId, setUserId] = useState("");
   const [newMessage, setNewMessage] = useState("");
   const [isError, setIsError] = useState(false);
@@ -105,32 +103,8 @@ export default function PostFeed({isPost, pstId}) {
 
   
 
-  const handleUpdatePost = async (id, message) => {
-    setIsModalOpen(true);
-    setUpdateId(id);
-    setUpdateMessage(message);
-  }
-  const handleEditMessage = async () => {
-    if (updateMessage.trim() === "") {
-      setIsError(true);
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
-      return;
-    }
-    setPosts((prevPosts) => { 
-      const newPosts = prevPosts.map((post) => {
-        if (Number(post.id) === Number(updateId)) { 
-          return { ...post, message: updateMessage };
-        }
-        return post;
-      });
-      return newPosts;
-    });
-    await updateMessageAction(updateId, {message: updateMessage});
-    setUpdateId(null);
-    setUpdateMessage("");
-    setIsModalOpen(false);
-  }
+  
+  
   
   const handleAddMessage = async () => {
     if (newMessage.trim() === "") {
@@ -269,7 +243,6 @@ export default function PostFeed({isPost, pstId}) {
 
               handleAddMessage = { handleAddMessage }
               handleRemovePost = { handleRemovePost }
-              handleUpdatePost = { handleUpdatePost } 
               handleReply={ reply }
 
               profile = { profile } 
@@ -290,12 +263,12 @@ export default function PostFeed({isPost, pstId}) {
               shake ? "animate-shake" : ""
             }`}
           >
-            <h2 className="text-lg font-bold mb-4">{replyId ? "New reply" : (updateId ? "Edit post" : "New post")}</h2>
+            <h2 className="text-lg font-bold mb-4">{replyId ? "New reply" : "New post"}</h2>
             <textarea
               type="text"
-              value={updateId ? updateMessage : newMessage}
+              value={newMessage}
               onChange={(e) => {
-                updateId ? setUpdateMessage(e.target.value) : setNewMessage(e.target.value);
+                setNewMessage(e.target.value);
                 setIsError(false);
               }}
               className={`w-full p-2 border rounded mt-3 border-gray-300 ${
@@ -320,15 +293,9 @@ export default function PostFeed({isPost, pstId}) {
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-700 rounded">
                 Cancel
               </button>
-              {updateId ? (
-                <button onClick={handleEditMessage} className="px-4 py-2 bg-blue-500 text-white rounded">
-                  Confirm
-                </button>
-              ) : (
-                <button onClick={handleAddMessage} className="px-4 py-2 bg-blue-500 text-white rounded">
-                  Post
-                </button>
-              )}
+              <button onClick={handleAddMessage} className="px-4 py-2 bg-blue-500 text-white rounded">
+                Post
+              </button>
             </div>
           </div>
         </div>
