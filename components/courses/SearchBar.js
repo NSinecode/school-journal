@@ -216,7 +216,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
           </div>
         )}
         </div>
-        {profile && profile.role == "student" ? (
+        {profile && profile.role == "student" && homeworkCourses.length > 0 ? (
           <div>
             <h2 className="mt-2 text-3xl font-bold opacity-40">Домашнее задание</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10 grid-rows-auto transition-all duration-300">
