@@ -43,7 +43,7 @@ export default async function StatisticsPage() {
             <h2 className="text-xl font-semibold mb-2 text-white">Profile Information</h2>
             <p><span className="font-medium text-gray-300">Role:</span> {profile.role}</p>
             <p><span className="font-medium text-gray-300">Forum Messages:</span> {messageCount}</p>
-            <p><span className="font-medium text-gray-300">Karma:</span> {karma}</p>
+            <p><span className="font-medium text-gray-300">Карма:</span> {karma}</p>
           </div>
 
           {role === "student" && (
