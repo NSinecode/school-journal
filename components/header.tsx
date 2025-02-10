@@ -49,12 +49,14 @@ export default function Header() {
           >
             Главная
           </Link>
-          <Link
-            href="/Courses"
-            className="hover:underline"
-          >
-            Курсы
-          </Link>
+          <SignedIn>
+            <Link
+              href="/Courses"
+              className="hover:underline"
+            >
+              Курсы
+            </Link>
+          </SignedIn>
           <SignedIn>
             <Link
               href="/forum"
