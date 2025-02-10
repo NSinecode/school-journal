@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { getTestsAction } from '@/actions/tests-actions'
 import { useSession } from '@clerk/nextjs'
 import { saveTestCompletionAction } from '@/actions/tests-actions'
+import { getProfileByUserId } from '@/db/queries/profiles-queries'
+import { updateProfileAction, updateUserScoreAction } from '@/actions/profiles-actions'
 
 export default function TestPage({test_id, goToPres}) {
   const { session } = useSession()
@@ -30,10 +32,6 @@ export default function TestPage({test_id, goToPres}) {
           setQuestions(selectedTest.body || [])
           setTestTitle(selectedTest.title)
           setIsLoading(false)
-          
-          localStorage.removeItem('quizScore');
-          localStorage.removeItem('answeredQuestions');
-          localStorage.removeItem('userAnswers');
         } else {
           // Test not found - redirect back
         }
@@ -47,6 +45,7 @@ export default function TestPage({test_id, goToPres}) {
   }, [currentQuestion, userAnswers])
 
   useEffect(() => {
+    // Restore state from localStorage if it exists
     const savedScore = localStorage.getItem('quizScore')
     const savedAnswered = localStorage.getItem('answeredQuestions') 
     const savedUserAnswers = localStorage.getItem('userAnswers')
@@ -54,7 +53,7 @@ export default function TestPage({test_id, goToPres}) {
     if (savedScore) setScore(parseInt(savedScore))
     if (savedAnswered) setAnsweredQuestions(new Set(JSON.parse(savedAnswered)))
     if (savedUserAnswers) setUserAnswers(JSON.parse(savedUserAnswers))
-  }, [])
+  }, []) // Only run once on mount
 
   const handleAnswerSelect = (index) => {
     setSelectedAnswer(index)
@@ -90,16 +89,66 @@ export default function TestPage({test_id, goToPres}) {
   }
 
   const handleFinishTest = async () => {
-    if (!session?.user?.id || !testId) return
-    
-    const completion = {
-      user_id: session.user.id,
-      choices: userAnswers
+      if (!session?.user?.id || !testId) {
+        console.log('Missing session or testId:', { sessionUserId: session?.user?.id, testId });
+        return;
+      }
+      
+      const userId = session.user.id;
+      const profile = await getProfileByUserId(userId);
+      
+      // Check if test was already completed
+      if (profile?.tests_completed?.includes(Number(testId))) {
+        console.log('Test already completed');
+        setShowSummary(true);
+        localStorage.removeItem('quizScore');
+        localStorage.removeItem('answeredQuestions');
+        localStorage.removeItem('userAnswers');
+        return;
+      }
+  
+      // Get incorrect questions and their topics
+      const incorrectQuestions = questions.filter((q, idx) => userAnswers[idx] !== q.correctAnswer);
+      const difficultTopics = [...new Set(incorrectQuestions.map(q => q.topic))];
+  
+      // Save completion data
+      const completion = {
+        user_id: userId,
+        choices: userAnswers,
+        score: score,
+        completed_at: new Date().toISOString()
+      };
+  
+      try {
+        const result = await saveTestCompletionAction(Number(testId), completion);
+        console.log('Save completion result:', result);
+      } catch (error) {
+        console.error('Error saving completion:', error);
+      }
+  
+      // Update user's completed tests, score and difficult topics
+      if (profile) {
+        const updatedTests = [...(profile.tests_completed || []), Number(testId)];
+        const existingTopics = profile.difficult_topics || [];
+        const updatedTopics = [...new Set([...existingTopics, ...difficultTopics])];
+  
+        await updateProfileAction(
+          userId, 
+          { 
+            tests_completed: updatedTests,
+            difficult_topics: updatedTopics 
+          }, 
+          '/test'
+        );
+        await updateUserScoreAction(userId, score);
+      }
+  
+      // Clear localStorage when showing summary
+      localStorage.removeItem('quizScore');
+      localStorage.removeItem('answeredQuestions');
+      localStorage.removeItem('userAnswers');
+      setShowSummary(true);
     }
-    
-    await saveTestCompletionAction(Number(testId), completion)
-    setShowSummary(true)
-  }
 
   if (isLoading) {
     return <div className="p-8 text-white">Загрузка вопросов...</div>
