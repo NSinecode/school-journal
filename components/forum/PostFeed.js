@@ -131,9 +131,6 @@ export default function PostFeed({isPost, pstId}) {
     setUpdateMessage("");
     setIsModalOpen(false);
   }
-  useEffect(() => {
-    console.log("posts обновились:", posts);
-  }, [posts]);
   
   const handleAddMessage = async () => {
     if (newMessage.trim() === "") {

@@ -47,6 +47,7 @@ CREATE TABLE "messages" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"reply_id" BIGINT[] DEFAULT '{}' NOT NULL,
 	"replied_to" BIGINT,
+	"is_edited" BOOLEAN DEFAULT falsed NOT NULL,
 )
 
 CREATE TABLE "tests" (
