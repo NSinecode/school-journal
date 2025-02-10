@@ -145,15 +145,17 @@ export default function Header() {
                 Главная
               </Link>
             </li>
-            <li>
-              <Link
-                href="/Courses"
-                className="hover:underline"
-                onClick={toggleMenu}
-              >
-                Курсы
-              </Link>
-            </li>
+            <SignedIn>
+              <li>
+                <Link
+                  href="/Courses"
+                  className="hover:underline"
+                  onClick={toggleMenu}
+                >
+                  Курсы
+                </Link>
+              </li>
+            </SignedIn>
             <SignedIn>
               <li>
                 <Link

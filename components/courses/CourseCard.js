@@ -77,17 +77,19 @@ export default function CourseCard({ course, uId, dClick, isExp, isExpanded, pro
                       </button>
                   ) : null }
                 </SignedIn>
-                {uId == course.author_id || profile.role == "admin" ? (
-                    <button
-                      className="bg-gray-500 bottom-1 rounded-lg p-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        dClick(course.id);
-                      }}
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </button>
-                ) : null }
+                <SignedIn>
+                  {uId == course.author_id || profile.role == "admin" ? (
+                      <button
+                        className="bg-gray-500 bottom-1 rounded-lg p-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          dClick(course.id);
+                        }}
+                      >
+                          <Trash2 className="h-4 w-4" />
+                      </button>
+                  ) : null }
+                </SignedIn>
                 <button
                   className="bg-blue-500 bottom-1 rounded-lg p-1"
                   onClick={() => router.push(`/Courses/course?id=${course.id}`)}
