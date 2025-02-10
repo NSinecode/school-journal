@@ -33,7 +33,7 @@ export default function CreatePage() {
     const checkRole = async () => {
       const role = await getUserRole()
       if (role !== 'teacher') {
-        router.push('/test')
+        router.push('/test/choose-test')
       } else {
         setIsTeacher(true)
       }
