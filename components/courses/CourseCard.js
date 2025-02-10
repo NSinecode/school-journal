@@ -90,7 +90,7 @@ export default function CourseCard({ course, uId, dClick, isExp, isExpanded, pro
                 ) : null }
                 <button
                   className="bg-blue-500 bottom-1 rounded-lg p-1"
-                  onClick={() => router.push(`/courses/course?id=${course.id}`)}
+                  onClick={() => router.push(`/Courses/course?id=${course.id}`)}
                 >
                   <ArrowRight className="h-4 w-4"/>
                 </button>

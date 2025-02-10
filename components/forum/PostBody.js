@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from "next/navigation";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 
-export default function Post( { postB, profile, handleRemovePost, userId, handleReply, isPostPage, handleUpdatePost }) {
+export default function Post( { postB, profile, handleRemovePost, userId, handleReply, isPostPage }) {
     const router = useRouter();
     const { isSignedIn } = useAuth();
     const [repPost, setRepPost] = useState();
