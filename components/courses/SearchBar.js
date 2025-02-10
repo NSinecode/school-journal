@@ -63,20 +63,47 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
 
   const tagss = tagString === "" ? null : tagString.toLowerCase().split(" ");
 
-  let filteredCourses = courses.filter((course) => course.title.toLowerCase().includes(query.toLowerCase()));
-  filteredCourses = tagss != null ? filteredCourses.filter((course) => tagss.every((tag) => {
-    const match = course.tags.toLowerCase().includes(tag);
-    return match;
-  })) : filteredCourses;
-  filteredCourses = isFilterActive
-    ? filteredCourses.filter((course) => (filters.authorMe == (course.author_id == userId)) || (filters.authorOther == (course.author_id != userId)))
-    : filteredCourses;
-  filteredCourses = isFilterActive 
-    ? filteredCourses.filter(course => (course.video_url != null && course.video_url.trim() != "") == filters.withVideo)
-    : filteredCourses;
-  filteredCourses = isFilterActive
-    ? filteredCourses.filter(course => (profile.marked_courses.includes(course.id)) == filters.marked)
-    : filteredCourses;
+  const filterCourses = () => {
+    return courses.filter(course => {
+      // Title search
+      if (!course.title.toLowerCase().includes(query.toLowerCase())) return false;
+      
+      // Tags filter
+      if (tagss?.length && !tagss.every(tag => course.tags.toLowerCase().includes(tag))) {
+        return false;
+      }
+
+      // Only apply remaining filters if any filter is active
+      if (isFilterActive) {
+        // Author filter - if both are selected or neither is selected, show all courses
+        if (filters.authorMe !== filters.authorOther) {  // Only filter if exactly one is selected
+          const isAuthorMe = course.author_id == userId;
+          if (filters.authorMe && !isAuthorMe) return false;
+          if (filters.authorOther && isAuthorMe) return false;
+        }
+
+        // Video filter
+        if (filters.withVideo && (!course.video_url || !course.video_url.trim())) {
+          return false;
+        }
+
+        // Marked courses filter
+        if (filters.marked && !profile.marked_courses.includes(course.id)) {
+          return false;
+        }
+      }
+
+      // Subject filter
+      const selectedSubjects = subjectsWithFlag.filter(s => s.isSelected).map(s => s.name);
+      if (selectedSubjects.length && !selectedSubjects.includes(course.subject)) {
+        return false;
+      }
+
+      return true;
+    });
+  };
+
+  const filteredCourses = filterCourses();
 
   return (
     <div className="relative min-h-screen"> 
