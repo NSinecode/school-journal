@@ -85,6 +85,14 @@ export default function Header() {
               </Link>
             </>
           )}
+          {userRole === 'student' && (
+            <Link
+              href="/classroom"
+              className="hover:underline"
+            >
+              My Classroom
+            </Link>
+          )}
           <Link
             href="/test/choose-test"
             className="hover:underline"
@@ -187,6 +195,17 @@ export default function Header() {
                   </Link>
                 </li>
               </>
+            )}
+            {userRole === "student" && (
+              <li>
+                <Link
+                  href="/classroom"
+                  className="block hover:underline"
+                  onClick={toggleMenu}
+                >
+                  My Classroom
+                </Link>
+              </li>
             )}
             <li>
               <Link
