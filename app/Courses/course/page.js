@@ -5,7 +5,7 @@ import { Document, Page } from "react-pdf";
 import { pdfjs } from 'react-pdf';
 import { ArrowBigRight, ArrowBigLeft } from 'lucide-react';
 import ReactPlayer from 'react-player';
-import TestPage from "@/components/Courses/test";
+import TestPage from "@/components/courses/test";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 

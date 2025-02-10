@@ -11,8 +11,8 @@ import { getSubjectsAction, createSubjectAction } from '@/actions/subjects-actio
 import { supabase } from '@/lib/supabaseClient';
 
 import Head from "next/head";
-import SearchBar from "../../components/Courses/SearchBar";
-import UploadForm from "../../components/Courses/uploadForm";
+import SearchBar from "../../components/courses/SearchBar";
+import UploadForm from "../../components/courses/uploadForm";
 
 export default function Courses() {
   const { isSignedIn } = useAuth();
