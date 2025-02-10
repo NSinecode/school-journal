@@ -20,6 +20,8 @@ export default async function StatisticsPage() {
   const profile = profileResponse.data;
   const messageCount = messageCountResponse.data || 0;
   const karma = karmaResponse.data || 0;
+  const score = profile?.score || 0;
+  const testsCompleted = profile?.tests_completed || [];
   const teacherCourses = coursesResponse?.data?.filter((course: SelectCourse) => course.author_id === userId) || [];
 
   if (!profile) {
@@ -47,14 +49,23 @@ export default async function StatisticsPage() {
           {role === "student" && (
             <div>
               <h2 className="text-xl font-semibold mb-2 text-white">Student Statistics</h2>
-              <p className="text-gray-300">Rating: Coming soon</p>
-              <p className="text-gray-300">Tests Completed: Coming soon</p>
+              <p className="text-gray-300"><span className="font-medium">Score:</span> {score}</p>
+              <p className="text-gray-300">
+                <span className="font-medium">Tests Completed:</span>{" "}
+                {testsCompleted.length > 0 ? testsCompleted.length : "No tests completed yet"}
+              </p>
               <p className="text-gray-300">
                 <span className="font-medium">Challenging Topics:</span>{" "}
                 {profile.difficult_topics && profile.difficult_topics.length > 0 
                   ? profile.difficult_topics.join(", ")
                   : "None identified yet"}
               </p>
+              <a 
+                href="/classroom"
+                className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                Go to Classroom
+              </a>
             </div>
           )}
 
@@ -73,7 +84,6 @@ export default async function StatisticsPage() {
                   ? teacherCourses.map((course: SelectCourse) => course.title).join(", ")
                   : "No courses yet"}
               </p>
-              <p className="text-gray-300">Students&apos; Challenging Topics: Coming soon</p>
             </div>
           )}
         </div>
