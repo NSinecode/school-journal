@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { InsertMessage, SelectMessage, messagesTable } from "../schema/messages-schema";
 
 export const getMessages = async (): Promise<SelectMessage[]> => {
@@ -51,5 +51,18 @@ export const updateMessage = async (id: number, data: Partial<InsertMessage>) =>
   } catch (error) {
     console.error("Error updating message:", error);
     throw new Error("Failed to update message");
+  }
+};
+
+export const getMessageCountByAuthor = async (authorId: string): Promise<number> => {
+  try {
+    const result = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(messagesTable)
+      .where(eq(messagesTable.author_id, authorId));
+    return result[0].count;
+  } catch (error) {
+    console.error("Error counting messages:", error);
+    throw new Error("Failed to count messages");
   }
 };
