@@ -40,7 +40,12 @@ export default async function StatisticsPage() {
               <h2 className="text-xl font-semibold mb-2 text-white">Student Statistics</h2>
               <p className="text-gray-300">Rating: Coming soon</p>
               <p className="text-gray-300">Tests Completed: Coming soon</p>
-              <p className="text-gray-300">Challenging Topics: Coming soon</p>
+              <p className="text-gray-300">
+                <span className="font-medium">Challenging Topics:</span>{" "}
+                {profile.difficult_topics && profile.difficult_topics.length > 0 
+                  ? profile.difficult_topics.join(", ")
+                  : "None identified yet"}
+              </p>
             </div>
           )}
 
