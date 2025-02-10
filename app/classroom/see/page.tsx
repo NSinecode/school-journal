@@ -28,10 +28,12 @@ export default function ClassroomViewPage() {
           setError('Failed to load classroom')
         }
       } catch (err) {
+        console.error('Error fetching classroom:', err)
         setError('An error occurred while fetching classroom data')
       } finally {
         setLoading(false)
       }
+
     }
 
     if (searchParams.get('id')) {
