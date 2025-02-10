@@ -118,26 +118,30 @@ export async function getTeacherClassrooms(teacherId: string) {
   }
 }
 
-export async function addStudentToClassroom(
-  classroomId: number, 
-  studentId: string
-): Promise<ActionState> {
+export async function addStudentToClassroom(classroomId: string) {
   try {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
 
-    const updatedClassroom = await updateClassroomStudents(classroomId, studentId);
-    revalidatePath("/classrooms");
-    return { 
-      status: "success", 
-      message: "Successfully joined classroom",
-      data: updatedClassroom[0]
-    };
+    const classroom = await db
+      .select()
+      .from(classroomTable)
+      .where(eq(classroomTable.id, parseInt(classroomId)))
+      .then(rows => rows[0]);
+
+    if (!classroom) {
+      return { status: "error", message: "Classroom not found" };
+    }
+
+    const updatedStudents = [...(classroom.students || []), userId];
+    
+    await db.update(classroomTable)
+      .set({ students: updatedStudents })
+      .where(eq(classroomTable.id, parseInt(classroomId)));
+
+    revalidatePath('/classroom');
+    return { status: "success", message: "Added to classroom" };
   } catch (error) {
-    console.error("Error adding student to classroom:", error);
-    return { 
-      status: "error", 
-      message: error instanceof Error ? error.message : "Failed to join classroom"
-    };
+    return { status: "error", message: "Failed to join classroom" };
   }
 }

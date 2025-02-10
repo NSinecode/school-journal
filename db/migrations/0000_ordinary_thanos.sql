@@ -4,7 +4,9 @@ CREATE TABLE "profiles" (
 	"role" "role" DEFAULT 'student' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"tests_completed" INT[] DEFAULT '{}' NOT NULL
+	"tests_completed" INT[] DEFAULT '{}' NOT NULL,
+	"score" BIGINT DEFAULT 0 NOT NULL,
+	"difficult_topics" TEXT[] DEFAULT '{}' NOT NULL
 );
 --> statement-breakpoint
 
