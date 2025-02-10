@@ -1,6 +1,6 @@
 "use server";
 
-import { getMessages, createMessage, deleteMessage, updateMessage, getMessage, getMessageCountByAuthor } from "@/db/queries/messages_queries";
+import { getMessages, createMessage, deleteMessage, updateMessage, getMessage, getMessageCountByAuthor, getAuthorKarma } from "@/db/queries/messages_queries";
 import { InsertMessage } from "@/db/schema/messages-schema";
 import { ActionState } from "@/types";
 import { revalidatePath } from "next/cache";
@@ -64,5 +64,15 @@ export async function getMessageCountByAuthorAction(authorId: string): Promise<A
   } catch (error) {
     console.error("Error getting message count:", error);
     return { status: "error", message: "Failed to get message count" };
+  }
+}
+
+export async function getAuthorKarmaAction(authorId: string): Promise<ActionState> {
+  try {
+    const karma = await getAuthorKarma(authorId);
+    return { status: "success", message: "Karma retrieved successfully", data: karma };
+  } catch (error) {
+    console.error("Error getting karma:", error);
+    return { status: "error", message: "Failed to get karma" };
   }
 }

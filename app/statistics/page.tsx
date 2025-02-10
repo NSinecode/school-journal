@@ -1,7 +1,10 @@
 import { getUserRole, getProfileByUserIdAction } from "@/actions/profiles-actions";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { getMessageCountByAuthorAction } from "@/actions/messages-actions";
+import { getMessageCountByAuthorAction, getAuthorKarmaAction } from "@/actions/messages-actions";
+import { getTeacherClassrooms } from "@/actions/classroom-actions";
+import { getCoursesAction } from "@/actions/courses-actions";
+import { SelectCourse } from "@/db/schema/course-schema";
 
 export default async function StatisticsPage() {
   const { userId } = await auth();
@@ -10,8 +13,14 @@ export default async function StatisticsPage() {
   const role = await getUserRole();
   const profileResponse = await getProfileByUserIdAction(userId);
   const messageCountResponse = await getMessageCountByAuthorAction(userId);
+  const karmaResponse = await getAuthorKarmaAction(userId);
+  const teacherClassrooms = role === "teacher" ? await getTeacherClassrooms(userId) : [];
+  const coursesResponse = role === "teacher" ? await getCoursesAction() : null;
+  
   const profile = profileResponse.data;
   const messageCount = messageCountResponse.data || 0;
+  const karma = karmaResponse.data || 0;
+  const teacherCourses = coursesResponse?.data?.filter((course: SelectCourse) => course.author_id === userId) || [];
 
   if (!profile) {
     return (
@@ -32,7 +41,7 @@ export default async function StatisticsPage() {
             <h2 className="text-xl font-semibold mb-2 text-white">Profile Information</h2>
             <p><span className="font-medium text-gray-300">Role:</span> {profile.role}</p>
             <p><span className="font-medium text-gray-300">Forum Messages:</span> {messageCount}</p>
-            <p><span className="font-medium text-gray-300">Karma:</span> Coming soon</p>
+            <p><span className="font-medium text-gray-300">Karma:</span> {karma}</p>
           </div>
 
           {role === "student" && (
@@ -52,8 +61,18 @@ export default async function StatisticsPage() {
           {role === "teacher" && (
             <div>
               <h2 className="text-xl font-semibold mb-2 text-white">Teacher Statistics</h2>
-              <p className="text-gray-300">Classes Hosted: Coming soon</p>
-              <p className="text-gray-300">Courses Created: Coming soon</p>
+              <p className="text-gray-300">
+                <span className="font-medium">Classes Hosted:</span>{" "}
+                {teacherClassrooms.length > 0 
+                  ? teacherClassrooms.map(classroom => classroom.name).join(", ")
+                  : "No classes yet"}
+              </p>
+              <p className="text-gray-300">
+                <span className="font-medium">Courses Created:</span>{" "}
+                {teacherCourses.length > 0
+                  ? teacherCourses.map((course: SelectCourse) => course.title).join(", ")
+                  : "No courses yet"}
+              </p>
               <p className="text-gray-300">Students&apos; Challenging Topics: Coming soon</p>
             </div>
           )}

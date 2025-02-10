@@ -66,3 +66,16 @@ export const getMessageCountByAuthor = async (authorId: string): Promise<number>
     throw new Error("Failed to count messages");
   }
 };
+
+export const getAuthorKarma = async (authorId: string): Promise<number> => {
+  try {
+    const result = await db
+      .select({ karma: sql<number>`sum(score)::int` })
+      .from(messagesTable)
+      .where(eq(messagesTable.author_id, authorId));
+    return result[0].karma || 0;
+  } catch (error) {
+    console.error("Error calculating karma:", error);
+    throw new Error("Failed to calculate karma");
+  }
+};

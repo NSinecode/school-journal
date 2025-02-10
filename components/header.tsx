@@ -50,7 +50,7 @@ export default function Header() {
             Home
           </Link>
           <Link
-            href="/courses"
+            href="/Courses"
             className="hover:underline"
           >
             Courses
@@ -74,6 +74,12 @@ export default function Header() {
             className="hover:underline"
           >
             All Tests
+          </Link>
+          <Link
+            href="/statistics"
+            className="hover:underline"
+          >
+            Statistics
           </Link>
         </nav>
         <div className="flex items-center space-x-4">
@@ -109,7 +115,7 @@ export default function Header() {
             </li>
             <li>
               <Link
-                href="/courses"
+                href="/Courses"
                 className="hover:underline"
                 onClick={toggleMenu}
               >
@@ -143,6 +149,15 @@ export default function Header() {
                 onClick={toggleMenu}
               >
                 All Tests
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/statistics"
+                className="block hover:underline"
+                onClick={toggleMenu}
+              >
+                Statistics
               </Link>
             </li>
           </ul>
