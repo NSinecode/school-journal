@@ -1,6 +1,6 @@
 "use server";
 
-import { getMessages, createMessage, deleteMessage, updateMessage, getMessage } from "@/db/queries/messages_queries";
+import { getMessages, createMessage, deleteMessage, updateMessage, getMessage, getMessageCountByAuthor } from "@/db/queries/messages_queries";
 import { InsertMessage } from "@/db/schema/messages-schema";
 import { ActionState } from "@/types";
 import { revalidatePath } from "next/cache";
@@ -54,5 +54,15 @@ export async function updateMessageAction(id: number, data: Partial<InsertMessag
   } catch (error) {
     console.error("Error updating message:", error);
     return { status: "error", message: "Failed to update Message" };
+  }
+}
+
+export async function getMessageCountByAuthorAction(authorId: string): Promise<ActionState> {
+  try {
+    const count = await getMessageCountByAuthor(authorId);
+    return { status: "success", message: "Message count retrieved successfully", data: count };
+  } catch (error) {
+    console.error("Error getting message count:", error);
+    return { status: "error", message: "Failed to get message count" };
   }
 }

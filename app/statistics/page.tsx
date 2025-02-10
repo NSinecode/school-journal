@@ -1,6 +1,7 @@
 import { getUserRole, getProfileByUserIdAction } from "@/actions/profiles-actions";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { getMessageCountByAuthorAction } from "@/actions/messages-actions";
 
 export default async function StatisticsPage() {
   const { userId } = await auth();
@@ -8,7 +9,9 @@ export default async function StatisticsPage() {
 
   const role = await getUserRole();
   const profileResponse = await getProfileByUserIdAction(userId);
+  const messageCountResponse = await getMessageCountByAuthorAction(userId);
   const profile = profileResponse.data;
+  const messageCount = messageCountResponse.data || 0;
 
   if (!profile) {
     return (
@@ -28,7 +31,7 @@ export default async function StatisticsPage() {
           <div>
             <h2 className="text-xl font-semibold mb-2 text-white">Profile Information</h2>
             <p><span className="font-medium text-gray-300">Role:</span> {profile.role}</p>
-            <p><span className="font-medium text-gray-300">Forum Messages:</span> Coming soon</p>
+            <p><span className="font-medium text-gray-300">Forum Messages:</span> {messageCount}</p>
             <p><span className="font-medium text-gray-300">Karma:</span> Coming soon</p>
           </div>
 
@@ -37,7 +40,12 @@ export default async function StatisticsPage() {
               <h2 className="text-xl font-semibold mb-2 text-white">Student Statistics</h2>
               <p className="text-gray-300">Rating: Coming soon</p>
               <p className="text-gray-300">Tests Completed: Coming soon</p>
-              <p className="text-gray-300">Challenging Topics: Coming soon</p>
+              <p className="text-gray-300">
+                <span className="font-medium">Challenging Topics:</span>{" "}
+                {profile.difficult_topics && profile.difficult_topics.length > 0 
+                  ? profile.difficult_topics.join(", ")
+                  : "None identified yet"}
+              </p>
             </div>
           )}
 

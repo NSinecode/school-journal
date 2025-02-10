@@ -9,11 +9,20 @@ type Props = {
   searchParams: Promise<{ id?: number }>
 }
 
+interface Classroom {
+  id: number;
+  name: string;
+  created_at: Date;
+  updated_at: Date;
+  teacher_id: string;
+  students: string[];
+}
+
 export default function ClassroomDetailsPage({ 
   searchParams 
 }: Props) {
   const { userId } = useAuth();
-  const [classroom, setClassroom] = useState<any>(null);
+  const [classroom, setClassroom] = useState<Classroom | null>(null);
   
   useEffect(() => {
     async function loadData() {
