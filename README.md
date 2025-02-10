@@ -22,19 +22,19 @@ git push
 Потом, вам надо создать аккаунты на vercel.com (связаняй с гит-хабом).
 
 На первом сайте вам надо нажать: 
-Add New...
-Project
-Adjust GitHub App Permissions
-Ваш профиль
-Only select repositories
-Select repositories
-Ваш репозиторий
-Save
-Import
-Deploy
-Дальше, на главной странице сайта выберите ваш репозиторий
-Settings
-Environmental Variables
+-Add New...
+-Project
+-Adjust GitHub App Permissions
+-Ваш профиль
+-Only select repositories
+-Select repositories
+-Ваш репозиторий
+-Save
+-Import
+-Deploy
+-Дальше, на главной странице сайта выберите ваш репозиторий
+-Settings
+-Environmental Variables
 
 Вюда надо будет вводить api ключи которые написанные ниже (в поле key - название, в поле value - значение). Чтобы добавить еще один ключ нажмите Add Another:
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/signup
