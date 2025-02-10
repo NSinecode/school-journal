@@ -87,7 +87,7 @@ export default function ChooseTestPage() {
               <p className="text-gray-300">{test.description}</p>
               <p className="text-white mt-2">{test.name}</p>
               <p className="text-sm text-gray-400 mt-1">
-                {test.body.length} вопросов
+                {test.body.length} вопр{test.body.length > 1 ? (test.body.length < 5 ? "оса" : "осов") : "ос"}
               </p>
             </CardContent>
           </Card>
