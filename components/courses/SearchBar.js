@@ -11,7 +11,6 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
     marked: false
   });
   const [subjectsWithFlag, setSubjectsWithFlag] = useState([]);
-  const [filteredCoursesSubjects, setFilteredCoursesSubjects] = useState([]);
   const filtersRend = filters;
   const [query, setQuery] = useState("");
   const [tagString, setTags] = useState("");
@@ -68,15 +67,12 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
     const match = course.tags.toLowerCase().includes(tag);
     return match;
   })) : filteredCourses;
-  filteredCourses = isFilterActive
-    ? filteredCourses.filter((course) => (filters.authorMe == (course.author_id == userId)) || (filters.authorOther == (course.author_id != userId)))
-    : filteredCourses;
-  filteredCourses = isFilterActive 
-    ? filteredCourses.filter(course => (course.video_url != null && course.video_url.trim() != "") == filters.withVideo)
-    : filteredCourses;
-  filteredCourses = isFilterActive
-    ? filteredCourses.filter(course => (profile.marked_courses.includes(course.id)) == filters.marked)
-    : filteredCourses;
+  filteredCourses = filteredCourses.filter(course => 
+    (!filters.authorMe || (course.autor_id == userId) === filters.authorMe) &&
+    (!filters.authorOther || (course.autor_id != userId) === filters.authorOther) &&
+    (!filters.marked || (profile.marked_courses.includes(course.id)) === filters.marked) &&
+    (!filters.withVideo || (course.video_url != null && course.video_url.trim() != "") === filters.withVideo)
+  );
 
   return (
     <div className="relative min-h-screen"> 
