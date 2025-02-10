@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { getUserRole } from '@/actions/profiles-actions';
 import { addStudentToClassroom } from '@/actions/classroom-actions';
 
@@ -9,7 +9,6 @@ export default function InvitePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
     async function handleInvite() {
