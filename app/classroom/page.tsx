@@ -5,9 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from "@clerk/nextjs"
 import { getUserRole, getProfileByUserIdAction } from '@/actions/profiles-actions'
 import { Button } from "@/components/ui/button"
-import { eq } from 'drizzle-orm'
-import { classroomTable } from '@/db/schema'
-import { db } from '@/db/db'
 import { getClassroomByIdAction } from '@/actions/classroom-actions'
 
 
