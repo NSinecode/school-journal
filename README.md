@@ -37,21 +37,21 @@ git push
 - Environmental Variables
 
 Вюда надо будет вводить api ключи которые написанные ниже (в поле key - название, в поле value - значение). Чтобы добавить еще один ключ нажмите Add Another:
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/signup
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/login
+- NEXT_PUBLIC_CLERK_SIGN_UP_URL=/signup
+- NEXT_PUBLIC_CLERK_SIGN_IN_URL=/login
 
 Создайте аккаунты на supabase.com и clerk.com. Из них вам надо получить такие API ключи и вставить в vercel:
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-NEXT_PUBLIC_SUPABASE_URL=
-CLERK_SECRET_KEY=
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-DATABASE_URL=
+- NEXT_PUBLIC_SUPABASE_ANON_KEY=
+- NEXT_PUBLIC_SUPABASE_URL=
+- CLERK_SECRET_KEY=
+- NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+- DATABASE_URL=
 
-После ввода всего, нажмите Save
-Дальше нажмите Deployments(в верхнем левом углу страницы)
-Напротив последнего деплоя, найдите три точки, нажмите на них и нажмите Redeploy, затем снова Redeploy.
-Дождитесь пока процесс закончится и пройдите по самой короткой первой ссылке в разделе Domains.
+- После ввода всего, нажмите Save
+- Дальше нажмите Deployments(в верхнем левом углу страницы)
+- Напротив последнего деплоя, найдите три точки, нажмите на них и нажмите Redeploy, затем снова Redeploy.
+- Дождитесь пока процесс закончится и пройдите по самой короткой первой ссылке в разделе Domains.
 
-Готово!
+#Готово!
 
-Ссылка на видеоролик:
+##Ссылка на видеоролик:
