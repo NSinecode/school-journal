@@ -1,6 +1,6 @@
 "use server";
 
-import { getCourses, createCourse, deleteCourse } from "@/db/queries/courses_queries";
+import { getCourses, createCourse, deleteCourse, getCourse } from "@/db/queries/courses_queries";
 import { InsertCourse } from "@/db/schema/course-schema";
 import { ActionState } from "@/types";
 import { revalidatePath } from "next/cache";
@@ -12,6 +12,16 @@ export async function getCoursesAction(): Promise<ActionState> {
   } catch (error) {
     console.error("Error getting courses:", error);
     return { status: "error", message: "Failed to get Courses" };
+  }
+}
+
+export async function getCourseAction(id: number): Promise<ActionState> {
+  try {
+    const course = await getCourse(id);
+    return { status: "success", message: "course retrieved successfully", data: course };
+  } catch (error) {
+    console.error("Error getting course by ID:", error);
+    return { status: "error", message: "Failed to get course" };
   }
 }
 

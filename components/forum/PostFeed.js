@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createMessageAction, updateMessageAction, deleteMessageAction, getMessageAction } from "@/actions/messages-actions";
+import { updateMessageAction, deleteMessageAction, getMessageAction } from "@/actions/messages-actions";
 import { getProfileByUserIdAction } from "@/actions/profiles-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { supabase } from '@/lib/supabaseClient';
 import Post from "./PostBody";
 
 
@@ -13,8 +14,15 @@ export default function PostFeed({isPost, pstId}) {
   const { isSignedIn } = useAuth();
   const router = useRouter();
   const [posts, setPosts] = useState([]);
+  const [postsDone, setPostsDone] = useState([]);
+
+  // const [courses, setCourses] = useState([]);
+  // const [selectedCourse, setSelectedCourse] = useState();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [updateId, setUpdateId] = useState(null);
+  const [updateMessage, setUpdateMessage] = useState("");
   const [userId, setUserId] = useState("");
   const [newMessage, setNewMessage] = useState("");
   const [isError, setIsError] = useState(false);
@@ -60,48 +68,123 @@ export default function PostFeed({isPost, pstId}) {
     }
     fetchProfile();
   }, [userId]);
+
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const res = await fetch("/api/getMessages");
+        if (!res.ok) throw new Error("Ошибка загрузки постов");
+          const data = await res.json();
+          setPosts(data);
+        } catch (error) {
+          console.error("Ошибка при загрузке:", error);
+        }
+      }
+    fetchPosts();
+  }, []);
+  // useEffect(() => {
+  //   async function fetchCourses() {
+  //     try {
+  //       const res = await fetch("/api/courses");
+  //       if (!res.ok) throw new Error("Ошибка загрузки курсов");
+  //       const data = await res.json();
+  //       setCourses(data);
+  //     } catch (error) {
+  //       console.error("Ошибка при загрузке:", error);
+  //     }
+  //   }
+  //   fetchCourses();
+  // }, []);
+  // const handleChange = (event) => {
+  //   const selectedName = event.target.value;
+  //   const course = courses.find((course) => course.name === selectedName);
+  //   if (course) {
+  //     setSelectedCourse(course.id.toString());
+  //   }
+  // };
+
   
+
+  const handleUpdatePost = async (id, message) => {
+    setIsModalOpen(true);
+    setUpdateId(id);
+    setUpdateMessage(message);
+  }
+  const handleEditMessage = async () => {
+    if (updateMessage.trim() === "") {
+      setIsError(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      return;
+    }
+    setPosts((prevPosts) => { 
+      const newPosts = prevPosts.map((post) => {
+        if (Number(post.id) === Number(updateId)) { 
+          return { ...post, message: updateMessage };
+        }
+        return post;
+      });
+      return newPosts;
+    });
+    await updateMessageAction(updateId, {message: updateMessage});
+    setUpdateId(null);
+    setUpdateMessage("");
+    setIsModalOpen(false);
+  }
   
   const handleAddMessage = async () => {
-    const tempId = parseInt(Math.abs(Math.cos(Date.now()) * 100), 10);
     if (newMessage.trim() === "") {
       setIsError(true);
       setShake(true);
       setTimeout(() => setShake(false), 500);
       return;
     }
-      if (!replyId) {
-        const optimisticPost = {
-          id: tempId,
-          message: newMessage,
-          author_id: userId,
-          created_at: new Date().toISOString(),
-          score: 0
-        };
-        setPosts((prevPosts) => [...prevPosts, optimisticPost]);
-        await createMessageAction({author_id: userId, message: newMessage});
-      } else {
-        const optimisticPost = {
-          id: tempId,
-          message: newMessage,
-          author_id: userId,
-          created_at: new Date().toISOString(),
-          score: 0,
-          replied_to: replyId,
-        };
-        const newReply = await createMessageAction({author_id: userId, message: newMessage, replied_to: replyId});
-        let repPost = await getMessageAction(replyId);
-        const newReplies = [...repPost.data.reply_id, newReply.data.id];
-        repPost = await updateMessageAction(replyId, {reply_id: newReplies});
-        setPosts(posts.map(post => 
-          post.id === replyId ? { ...post, reply_id: repPost.data.reply_id } : post
-        ));
-        setPosts((prevPosts) => [...prevPosts, optimisticPost]);
-        setReplyId(0);
+    if (!replyId) {
+      const { data, error } = await supabase
+        .from("messages") // Название таблицы
+        .insert({author_id: userId, message: newMessage}) // Вставляем данные
+        .select(); // Запрашиваем сразу ID
+      if (error) {
+        console.error("Ошибка при добавлении поста:", error);
+        return null;
       }
+      const optimisticPost = {
+        id: data?.[0]?.id,
+        message: newMessage,
+        author_id: userId,
+        created_at: new Date().toISOString(),
+        score: 0
+      };
+      setPosts((prevPosts) => [...prevPosts, optimisticPost]);
+    } else {
+      const { data, error } = await supabase
+        .from("messages") // Название таблицы
+        .insert({author_id: userId, message: newMessage, replied_to: replyId}) // Вставляем данные
+        .select(); // Запрашиваем сразу ID
+      if (error) {
+        console.error("Ошибка при добавлении поста:", error);
+        return null;
+      }
+      const optimisticPost = {
+        id: data?.[0]?.id,
+        message: newMessage,
+        author_id: userId,
+        created_at: new Date().toISOString(),
+        score: 0,
+        replied_to: replyId,
+      };
+      let repPost = await getMessageAction(replyId);
+      const newReplies = [...repPost.data.reply_id, data?.[0]?.id];
+      repPost = await updateMessageAction(replyId, {reply_id: newReplies});
+      setPosts(posts.map(post => 
+        post.id === replyId ? { ...post, reply_id: repPost.data.reply_id } : post
+      ));
+      setPosts((prevPosts) => [...prevPosts, optimisticPost]);
+      setReplyId(0);
+    }
     
-      setIsModalOpen(false);
-      setNewMessage("");
+    setIsModalOpen(false);
+    setNewMessage("");
   }
 
   const reply = async (id) => {
@@ -125,38 +208,28 @@ export default function PostFeed({isPost, pstId}) {
     setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
     router.refresh();
   };
-  
 
   useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const res = await fetch("/api/getMessages");
-        if (!res.ok) throw new Error("Ошибка загрузки постов");
-          const data = await res.json();
-          setPosts(data);
-        } catch (error) {
-          console.error("Ошибка при загрузке:", error);
-        }
-      }
-    fetchPosts();
-  }, []);
-
-  const postIsPost = isPost ? posts : posts.filter(post => post.replied_to === pstId);
-
-  const sortedPostsByTime = postIsPost.sort((a, b) => {
-    const dateA = new Date(a.created_at).getTime();
-    const dateB = new Date(b.created_at).getTime();
-    return dateB - dateA; 
-  });
-  const sortedPostsByScore = sortedPostsByTime.sort((a, b) => {
-    const ratingA = Number(a.score); 
-    const ratingB = Number(b.score); 
-    return ratingB - ratingA; 
-  });
-
-  const filteredPosts = sortedPostsByScore.filter(post =>
-    post.message.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    setTimeout(() => {
+      const postIsPost = isPost ? [...posts] : posts.filter(post => post.replied_to === pstId);
+  
+      const sortedPostsByTime = [...postIsPost].sort((a, b) => {
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return dateB - dateA; 
+      });
+      const sortedPostsByScore = [...sortedPostsByTime].sort((a, b) => {
+        const ratingA = Number(a.score); 
+        const ratingB = Number(b.score); 
+        return ratingB - ratingA; 
+      });
+  
+      const filteredPosts = sortedPostsByScore.filter(post =>
+        post.message.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setPostsDone(filteredPosts);
+    }, 500);
+  }, [posts, searchQuery, isPost, pstId])
 
 
   if (loading) {
@@ -188,14 +261,15 @@ export default function PostFeed({isPost, pstId}) {
       ) : null}
       {/* Лента постов */}
       <div className="space-y-4">
-        {filteredPosts.length > 0 ? (
-          filteredPosts.map(post => (
+        {postsDone.length > 0 ? (
+          postsDone.map(post => (
             <Post 
               key={ post.id } 
               postB = { post }
 
               handleAddMessage = { handleAddMessage }
               handleRemovePost = { handleRemovePost }
+              handleUpdatePost = { handleUpdatePost } 
               handleReply={ reply }
 
               profile = { profile } 
@@ -216,12 +290,12 @@ export default function PostFeed({isPost, pstId}) {
               shake ? "animate-shake" : ""
             }`}
           >
-            <h2 className="text-lg font-bold mb-4">{replyId ? "New reply" : "New post"}</h2>
+            <h2 className="text-lg font-bold mb-4">{replyId ? "New reply" : (updateId ? "Edit post" : "New post")}</h2>
             <textarea
               type="text"
-              value={newMessage}
+              value={updateId ? updateMessage : newMessage}
               onChange={(e) => {
-                setNewMessage(e.target.value);
+                updateId ? setUpdateMessage(e.target.value) : setNewMessage(e.target.value);
                 setIsError(false);
               }}
               className={`w-full p-2 border rounded mt-3 border-gray-300 ${
@@ -229,13 +303,32 @@ export default function PostFeed({isPost, pstId}) {
               }`}
               placeholder="Enter the message"
             />
+            {/* <input 
+              value={courses.find((course) => course.id.toString() === selectedCourse)?.title}
+              onChange={handleChange}
+              list="course-list" 
+              name="course" 
+              className="w-full p-2 border rounded mt-3 border-gray-300" 
+              placeholder="Choose course to pin"
+            />
+            <datalist id="course-list">
+              {courses.map((course) => (
+                <option key={course.id} value={course.title} />
+              ))}
+            </datalist> */}
             <div className="flex justify-end gap-2 mt-4">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-700 rounded">
                 Cancel
               </button>
-              <button onClick={handleAddMessage} className="px-4 py-2 bg-blue-500 text-white rounded">
-                Post
-              </button>
+              {updateId ? (
+                <button onClick={handleEditMessage} className="px-4 py-2 bg-blue-500 text-white rounded">
+                  Confirm
+                </button>
+              ) : (
+                <button onClick={handleAddMessage} className="px-4 py-2 bg-blue-500 text-white rounded">
+                  Post
+                </button>
+              )}
             </div>
           </div>
         </div>

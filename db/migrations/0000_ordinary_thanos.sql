@@ -3,7 +3,8 @@ CREATE TABLE "profiles" (
 	"user_id" text PRIMARY KEY NOT NULL,
 	"role" "role" DEFAULT 'student' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL, 
+	"marked_courses" TEXT[] DEFAULT '{}' NOT NULL,
 	"tests_completed" INT[] DEFAULT '{}' NOT NULL,
 	"score" BIGINT DEFAULT 0 NOT NULL,
 	"difficult_topics" TEXT[] DEFAULT '{}' NOT NULL
@@ -23,11 +24,20 @@ CREATE TABLE "courses" (
 	"id" SERIAL PRIMARY KEY,
 	"title" TEXT NOT NULL, 
 	"image_url" TEXT,
-	"subject" TEXT[] NOT NULL,
+	"subject" BIGINT NOT NULL,
 	"author_id" TEXT NOT NULL,
 	"description" TEXT,
 	"tags" TEXT,
+	"presentation" TEXT,
+	"test_id" BIGINT,
+	"video_url" TEXT
 );
+
+CREATE TABLE "subjects" (
+	"id" SERIAL PRIMARY KEY,
+	"name" TEXT NOT NULL,
+	"is_confirmed" BOOLEAN DEFAULT false NOT NULL
+)
 
 CREATE TABLE "messages" (
 	"id" SERIAL PRIMARY KEY,
@@ -37,6 +47,7 @@ CREATE TABLE "messages" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"reply_id" BIGINT[] DEFAULT '{}' NOT NULL,
 	"replied_to" BIGINT,
+	"is_edited" BOOLEAN DEFAULT falsed NOT NULL,
 )
 
 CREATE TABLE "tests" (

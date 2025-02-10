@@ -13,6 +13,7 @@ export const profilesTable = pgTable("profiles", {
     .$onUpdate(() => new Date()),
   posts_liked: bigint("posts_liked", { mode: "number" }).array(),
   posts_disliked: bigint("posts_disliked", { mode: "number" }).array(),
+  marked_courses: text("marked_courses").array().default([]),
   tests_completed: bigint("tests_completed", { mode: "number" }).array(),
   score: bigint("score", { mode: "number" }).default(0),
   difficult_topics: text("difficult_topics").array().default([]),

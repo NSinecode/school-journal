@@ -55,12 +55,14 @@ export default function Header() {
           >
             Courses
           </Link>
-          <Link
-            href="/forum"
-            className="hover:underline"
-          >
-            Forum
-          </Link>
+          <SignedIn>
+            <Link
+              href="/forum"
+              className="hover:underline"
+            >
+              Forum
+            </Link>
+          </SignedIn>
           {userRole === 'teacher' && (
             <Link
               href="/test/create"
@@ -75,6 +77,14 @@ export default function Header() {
           >
             All Tests
           </Link>
+          {userRole === "admin" && (
+            <Link
+            href="/subjects"
+            className="hover:underline"
+          >
+            Subjects
+          </Link>
+          )}
           <Link
             href="/statistics"
             className="hover:underline"
@@ -122,16 +132,18 @@ export default function Header() {
                 Courses
               </Link>
             </li>
-            <li>
-              <Link
-                href="/forum"
-                className="block hover:underline"
-                onClick={toggleMenu}
-              >
-                Forum
-              </Link>
-            </li>
-            {userRole === 'teacher' && (
+            <SignedIn>
+              <li>
+                <Link
+                  href="/forum"
+                  className="block hover:underline"
+                  onClick={toggleMenu}
+                >
+                  Forum
+                </Link>
+              </li>
+            </SignedIn>
+            {userRole === "teacher" && (
               <li>
                 <Link
                   href="/test/create"
@@ -151,6 +163,17 @@ export default function Header() {
                 All Tests
               </Link>
             </li>
+            {userRole === "admin" && (
+              <li>
+                <Link
+                  href="/subjects" 
+                  className="block hover:underline"
+                  onClick={toggleMenu}
+                >
+                  Subjects
+                </Link>
+            </li>
+            )}
             <li>
               <Link
                 href="/statistics"

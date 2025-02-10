@@ -5,59 +5,37 @@ import { Button } from "@/components/ui/button"
 import { getTestsAction } from '@/actions/tests-actions'
 import { useSession } from '@clerk/nextjs'
 import { saveTestCompletionAction } from '@/actions/tests-actions'
-import { getProfileByUserId } from '@/db/queries/profiles-queries'
-import { updateProfileAction, updateUserScoreAction } from '@/actions/profiles-actions'
 
-interface Question {
-  title: string
-  answers: string[]
-  correctAnswer: number
-  topic: string
-}
-
-
-interface Test {
-  id: number
-  title: string
-  body: Question[]
-}
-
-export default function TestPage() {
+export default function TestPage({test_id, goToPres}) {
   const { session } = useSession()
   const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
+  const [selectedAnswer, setSelectedAnswer] = useState(null)
   const [score, setScore] = useState(0)
-  const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set())
+  const [answeredQuestions, setAnsweredQuestions] = useState(new Set())
 
-  const [userAnswers, setUserAnswers] = useState<Record<number, number>>({})
+  const [userAnswers, setUserAnswers] = useState({})
   const [showSummary, setShowSummary] = useState(false)
-  const [questions, setQuestions] = useState<Question[]>([])
+  const [questions, setQuestions] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  const [testId, setTestId] = useState<string | null>(null)
-  const [testTitle, setTestTitle] = useState<string>('')
-
-  useEffect(() => {
-    // Get test ID from URL
-    const params = new URLSearchParams(window.location.search)
-    setTestId(params.get('id'))
-  }, [])
-
+  const [testTitle, setTestTitle] = useState('')
+  const testId = test_id;
   useEffect(() => {
     async function loadQuestions() {
       if (!testId) return
       
       const result = await getTestsAction()
       if (result.status === 'success' && result.data) {
-        const selectedTest = result.data.find((test: Test) => Number(test.id) === Number(testId))
+        const selectedTest = result.data.find((test) => Number(test.id) === Number(testId));
         if (selectedTest) {
           setQuestions(selectedTest.body || [])
           setTestTitle(selectedTest.title)
           setIsLoading(false)
           
-          // Clear previous test data
+          localStorage.removeItem('quizScore');
+          localStorage.removeItem('answeredQuestions');
+          localStorage.removeItem('userAnswers');
         } else {
           // Test not found - redirect back
-          window.location.href = '/test/choose-test'
         }
       }
     }
@@ -65,12 +43,10 @@ export default function TestPage() {
   }, [testId])
 
   useEffect(() => {
-    // Set selected answer when navigating between questions
     setSelectedAnswer(userAnswers[currentQuestion] ?? null)
   }, [currentQuestion, userAnswers])
 
   useEffect(() => {
-    // Restore state from localStorage if it exists
     const savedScore = localStorage.getItem('quizScore')
     const savedAnswered = localStorage.getItem('answeredQuestions') 
     const savedUserAnswers = localStorage.getItem('userAnswers')
@@ -78,11 +54,10 @@ export default function TestPage() {
     if (savedScore) setScore(parseInt(savedScore))
     if (savedAnswered) setAnsweredQuestions(new Set(JSON.parse(savedAnswered)))
     if (savedUserAnswers) setUserAnswers(JSON.parse(savedUserAnswers))
-  }, []) // Only run once on mount
+  }, [])
 
-  const handleAnswerSelect = (index: number) => {
+  const handleAnswerSelect = (index) => {
     setSelectedAnswer(index)
-    // Automatically submit answer when selected
     if (!answeredQuestions.has(currentQuestion)) {
       if (index === questions[currentQuestion].correctAnswer) {
         const newScore = score + 1
@@ -92,7 +67,6 @@ export default function TestPage() {
       
       const newAnswered = new Set(answeredQuestions).add(currentQuestion)
       setAnsweredQuestions(newAnswered)
-      // Convert Set to Array before storing
       localStorage.setItem('answeredQuestions', JSON.stringify(Array.from(newAnswered)))
 
       const newUserAnswers = { ...userAnswers, [currentQuestion]: index }
@@ -101,7 +75,7 @@ export default function TestPage() {
     }
   }
 
-  const getButtonStyle = (index: number) => {
+  const getButtonStyle = (index) => {
     if (!answeredQuestions.has(currentQuestion)) {
       return selectedAnswer === index ? "bg-white/10 text-white" : "text-white hover:text-white hover:bg-white/10"
     }
@@ -116,68 +90,17 @@ export default function TestPage() {
   }
 
   const handleFinishTest = async () => {
-    if (!session?.user?.id || !testId) {
-      console.log('Missing session or testId:', { sessionUserId: session?.user?.id, testId });
-      return;
-    }
+    if (!session?.user?.id || !testId) return
     
-    const userId = session.user.id;
-    const profile = await getProfileByUserId(userId);
-    
-    // Check if test was already completed
-    if (profile?.tests_completed?.includes(Number(testId))) {
-      console.log('Test already completed');
-      setShowSummary(true);
-      localStorage.removeItem('quizScore');
-      localStorage.removeItem('answeredQuestions');
-      localStorage.removeItem('userAnswers');
-      return;
-    }
-
-    // Get incorrect questions and their topics
-    const incorrectQuestions = questions.filter((q, idx) => userAnswers[idx] !== q.correctAnswer);
-    const difficultTopics = [...new Set(incorrectQuestions.map(q => q.topic))];
-
-    // Save completion data
     const completion = {
-      user_id: userId,
-      choices: userAnswers,
-      score: score,
-      completed_at: new Date().toISOString()
-    };
-
-    try {
-      const result = await saveTestCompletionAction(Number(testId), completion);
-      console.log('Save completion result:', result);
-    } catch (error) {
-      console.error('Error saving completion:', error);
+      user_id: session.user.id,
+      choices: userAnswers
     }
-
-    // Update user's completed tests, score and difficult topics
-    if (profile) {
-      const updatedTests = [...(profile.tests_completed || []), Number(testId)];
-      const existingTopics = profile.difficult_topics || [];
-      const updatedTopics = [...new Set([...existingTopics, ...difficultTopics])];
-
-      await updateProfileAction(
-        userId, 
-        { 
-          tests_completed: updatedTests,
-          difficult_topics: updatedTopics 
-        }, 
-        '/test'
-      );
-      await updateUserScoreAction(userId, score);
-    }
-
-    // Clear localStorage when showing summary
-    localStorage.removeItem('quizScore');
-    localStorage.removeItem('answeredQuestions');
-    localStorage.removeItem('userAnswers');
-    setShowSummary(true);
+    
+    await saveTestCompletionAction(Number(testId), completion)
+    setShowSummary(true)
   }
 
-  // Add loading state handling
   if (isLoading) {
     return <div className="p-8 text-white">Loading questions...</div>
   }
@@ -187,12 +110,11 @@ export default function TestPage() {
   }
 
   if (showSummary) {
-    // Get incorrect questions and group by topic
     const incorrectQuestions = questions.filter((q, idx) => userAnswers[idx] !== q.correctAnswer)
     const topicMistakes = incorrectQuestions.reduce((acc, q) => {
       acc[q.topic] = (acc[q.topic] || 0) + 1
       return acc
-    }, {} as Record<string, number>)
+    }, {})
 
     return (
       <div className="p-8 max-w-4xl mx-auto">
@@ -249,9 +171,9 @@ export default function TestPage() {
           </Button>
           <Button
             variant="secondary"
-            onClick={() => window.location.href = '/test/choose-test'}
+            onClick={() => goToPres()}
           >
-            Choose Another Test
+            Go back to presentation
           </Button>
         </div>
       </div>

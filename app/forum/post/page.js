@@ -27,7 +27,6 @@ export default function PostPage() {
         const params = new URLSearchParams(window.location.search)
         const id = params.get("id");
         const num = Number(id);
-        console.log(num);
         setPostId(num);
     }, [])
     useEffect(() => {
@@ -69,7 +68,6 @@ export default function PostPage() {
         async function fetchPost() {
             try {
                 if (postId != null && postId != undefined) {
-                    console.log(postId);
                     const res = await getMessageAction(postId);
                     if (!res) throw new Error("Не удалось загрузить пост");
                     setPost(res.data);
