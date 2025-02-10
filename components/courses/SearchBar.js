@@ -10,10 +10,8 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
     withVideo: false,
     marked: false
   });
-  const [subjectsWithFlag, setSubjectsWithFlag] = useState(subjects.map(subject => ({
-    ...subject,
-    isSelected: false, 
-  })));
+  const [subjectsWithFlag, setSubjectsWithFlag] = useState([]);
+  const [filteredCoursesSubjects, setFilteredCoursesSubjects] = useState([]);
   const filtersRend = filters;
   const [query, setQuery] = useState("");
   const [tagString, setTags] = useState("");
@@ -22,8 +20,12 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
   const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
-    console.log(subjectsWithFlag);
-  },[subjectsWithFlag])
+    const swf = subjects.map(subject => ({
+      ...subject,
+      isSelected: false, 
+    }));
+    setSubjectsWithFlag(swf);
+  },[subjects])
 
   const handleExpand = (id) => {
     setExpandedId((prev) => (prev === id ? null : id)); 
@@ -44,7 +46,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
       )
     );
   }
-  const isFilterActive = Object.values(filters).some((value) => value) || subjectsWithFlag.some(subject => subject.isSelected);
+  const isFilterActive = Object.values(filters).some((value) => value);
 
   
   useEffect(() => {
@@ -61,23 +63,20 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
 
   const tagss = tagString === "" ? null : tagString.toLowerCase().split(" ");
 
-  const filteredCoursesSearch = courses.filter((course) => course.title.toLowerCase().includes(query.toLowerCase()))
-  
-  const filteredCoursesTags = tagss != null ? filteredCoursesSearch.filter((course) => tagss.every((tag) => {
+  let filteredCourses = courses.filter((course) => course.title.toLowerCase().includes(query.toLowerCase()));
+  filteredCourses = tagss != null ? filteredCourses.filter((course) => tagss.every((tag) => {
     const match = course.tags.toLowerCase().includes(tag);
     return match;
-  })) : filteredCoursesSearch;
-
-  // const filteredCoursesSubjects = isFilterActive 
-  //   ? filteredCoursesTags.filter((course) => )
-
-  const filteredCoursesAuthor = isFilterActive
-    ? filteredCoursesTags.filter((course) => (filters.authorMe == (course.author_id == userId)) || (filters.authorOther == (course.author_id != userId))) // фильтруем по категории
-    : filteredCoursesTags; 
-  
-  const filteredCoursesOther = filters.withVideo || filters.marked
-    ? filteredCoursesAuthor.filter((course) => (filters.withVideo && ((course.video_url != null) == filters.withVideo)) || (filters.marked && ((profile && profile.marked_courses.includes(String(course.id))) == filters.marked)))
-    : filteredCoursesAuthor;
+  })) : filteredCourses;
+  filteredCourses = isFilterActive
+    ? filteredCourses.filter((course) => (filters.authorMe == (course.author_id == userId)) || (filters.authorOther == (course.author_id != userId)))
+    : filteredCourses;
+  filteredCourses = isFilterActive 
+    ? filteredCourses.filter(course => (course.video_url != null && course.video_url.trim() != "") == filters.withVideo)
+    : filteredCourses;
+  filteredCourses = isFilterActive
+    ? filteredCourses.filter(course => (profile.marked_courses.includes(course.id)) == filters.marked)
+    : filteredCourses;
 
   return (
     <div className="relative min-h-screen"> 
@@ -188,8 +187,8 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
         )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10 grid-rows-auto transition-all duration-300">
-          {filteredCoursesOther && filteredCoursesOther.length > 0 ? (
-              filteredCoursesOther.map((course) => course.id ? (
+          {filteredCourses && filteredCourses.length > 0 ? (
+              filteredCourses.map((course) => course.id ? (
                 <CourseCard 
                   key={course.id} 
                   course={course} 
