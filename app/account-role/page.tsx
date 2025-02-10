@@ -58,7 +58,7 @@ export default function AccountRolePage() {
           className="w-48"
           disabled={isLoading}
         >
-          Teacher
+          Учитель
         </Button>
 
         <Button
@@ -68,7 +68,7 @@ export default function AccountRolePage() {
           className="w-48"
           disabled={isLoading}
         >
-          Student
+          Ученик
         </Button>
       </div>
     </div>

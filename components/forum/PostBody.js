@@ -75,7 +75,7 @@ export default function Post( { postB, profile, handleRemovePost, userId, handle
                 <span className="text-xs text-blue-400">{
                     new Date(post.created_at).toISOString().replaceAll("-", ".").replaceAll("T", " ").slice(0, -5)
                 }</span>
-                <p className='text-xs text-gray-700'>{post.is_edited? "Edited" : ""}</p>
+                <p className='text-xs text-gray-700'>{post.is_edited? "Изменено" : ""}</p>
               </div>
               {isEditing ? (
                 <textarea
@@ -88,7 +88,7 @@ export default function Post( { postB, profile, handleRemovePost, userId, handle
                 className={`w-full p-2 border rounded mt-3 border-gray-300 ${
                   isError ? "border-red-500" : "border-gray-300"
                 }`}
-                placeholder="Enter the message"
+                placeholder="Введите сообщение"
               />
               ) : (
                 <h3 className="font-bold text-white whitespace-pre-line mt-2">{post.message}</h3>
@@ -131,13 +131,13 @@ export default function Post( { postB, profile, handleRemovePost, userId, handle
                       }}
                       className="px-2 my-1 bg-gray-700 rounded-xl mr-2 hover:bg-gray-800"
                     > 
-                      Cancel
+                      Отменить
                     </button>
                     <button
                       onClick={editMessage}
                       className="px-2 my-1 bg-blue-500 rounded-xl hover:bg-blue-600"
                     > 
-                      Confirm
+                      Изменить
                     </button>
                   </div>
                 ) : (

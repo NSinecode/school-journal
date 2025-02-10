@@ -66,13 +66,13 @@ export default function ClassroomViewPage() {
         
         <div className="space-y-4">
           <div>
-            <h2 className="text-xl font-semibold mb-2">Class Details</h2>
-            <p className="text-muted-foreground">Teacher ID: {classroom.teacher_id}</p>
-            <p className="text-muted-foreground">Created: {new Date(classroom.created_at).toLocaleDateString()}</p>
+            <h2 className="text-xl font-semibold mb-2">Детали класса</h2>
+            <p className="text-muted-foreground">ID учителя: {classroom.teacher_id}</p>
+            <p className="text-muted-foreground">Создано: {new Date(classroom.created_at).toLocaleDateString()}</p>
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">Students</h2>
+            <h2 className="text-xl font-semibold mb-2">Ученики</h2>
             {classroom.students && classroom.students.length > 0 ? (
               <ul className="list-disc list-inside space-y-1">
                 {classroom.students.map((studentId, index) => (
@@ -80,12 +80,12 @@ export default function ClassroomViewPage() {
                 ))}
               </ul>
             ) : (
-              <p className="text-muted-foreground">No students enrolled yet</p>
+              <p className="text-muted-foreground">Пока нет учеников</p>
             )}
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-2">Homework</h2>
+            <h2 className="text-xl font-semibold mb-2">Домашнее задание</h2>
             {classroom.homeworkDetails && classroom.homeworkDetails.length > 0 ? (
               <ul className="divide-y">
                 {(classroom.homeworkDetails as SelectCourse[]).map((course) => (
@@ -109,7 +109,7 @@ export default function ClassroomViewPage() {
                 ))}
               </ul>
             ) : (
-              <p className="text-muted-foreground">No homework assigned yet</p>
+              <p className="text-muted-foreground">Пока нет домашнего задания</p>
             )}
           </div>
         </div>

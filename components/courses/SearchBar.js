@@ -107,11 +107,11 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
               onClick={() => setIsFilterOpen(!isFilterOpen)}
               className="bg-blue-500 text-white mr-3 px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition relative"
             >
-              Filters
+              Фильтры
             </button>
             <input
               type="text"
-              placeholder="Enter the course name..."
+              placeholder="Введите название курса..."
               className="flex-1 w-full p-2 border rounded-md"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -125,7 +125,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Столбец с фильтрами */}
             <div>
-              <h4 className="font-semibold mb-2">Subject</h4>
+              <h4 className="font-semibold mb-2">Предмет</h4>
               {subjectsWithFlag.map(subject => (
               <label className="block mb-2" key={subject.id}>
                 <input 
@@ -144,7 +144,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
             <div className="flex flex-col gap-2">
               <SignedIn>
                 <div>
-                  <h4 className="font-semibold mb-2">Author</h4>
+                  <h4 className="font-semibold mb-2">Автор</h4>
                   <label className="block mb-2">
                     <input 
                       type="checkbox" 
@@ -153,7 +153,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
                       checked={ filtersRend.authorMe }
                       onChange={ handleCheckboxChange }
                     />
-                    Me
+                    Я
                   </label>
                   <label className="block mb-2">
                     <input 
@@ -163,14 +163,14 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
                       checked={ filtersRend.authorOther }
                       onChange={ handleCheckboxChange }
                     />
-                    Other
+                    Другой
                   </label>
                 </div>
               </SignedIn>
 
               {/* Столбец с фильтрами */}
               <div>
-                <h4 className="font-semibold mb-2">Other</h4>
+                <h4 className="font-semibold mb-2">Другие фильтры</h4>
                 <label className="block mb-2">
                 <input 
                     type="checkbox" 
@@ -179,7 +179,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
                     checked={ filtersRend.withVideo }
                     onChange={ handleCheckboxChange }
                   />
-                  With video
+                    С видео
                 </label>
                 <SignedIn>
                   <label className="block mb-2">
@@ -190,7 +190,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
                       checked={ filtersRend.marked }
                       onChange={ handleCheckboxChange }
                     />
-                    Marked
+                      В закладках
                   </label>
                 </SignedIn>
                 <label className="block mb-2">
@@ -208,7 +208,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
           </div>
             <input
               type="text"
-              placeholder="Enter the tags through space"
+              placeholder="Введите теги через пробел"
               className="flex-1 w-full p-2 border rounded-md mt-5"
               value={tagString}
               onChange={(e) => setTags(e.target.value)}
@@ -218,7 +218,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
         </div>
         {profile && profile.role == "student" ? (
           <div>
-            <h2 className="mt-2 text-3xl font-bold opacity-40">Homework</h2>
+            <h2 className="mt-2 text-3xl font-bold opacity-40">Домашнее задание</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10 grid-rows-auto transition-all duration-300">
               {homeworkCourses && homeworkCourses.length > 0 ? (
                 homeworkCourses.map((course) => course.id ? (
@@ -233,10 +233,10 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
                   />
                 ) : null)
               ) : (
-                  <p className="col-span-full text-gray-500 text-center mt-4">No results</p>
+                  <p className="col-span-full text-gray-500 text-center mt-4">Домашнего задания нет!</p>
               )}
             </div>
-            <h2 className="mt-2 text-3xl font-bold opacity-40">All courses</h2>
+            <h2 className="mt-2 text-3xl font-bold opacity-40">Все курсы</h2>
           </div>
         ): null}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-10 grid-rows-auto transition-all duration-300">
@@ -253,7 +253,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
                 />
               ) : null)
           ) : (
-              <p className="col-span-full text-gray-500 text-center mt-4">No results</p>
+              <p className="col-span-full text-gray-500 text-center mt-4">Нет курсов</p>
           )}
         </div>
       </aside>

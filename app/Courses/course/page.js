@@ -50,14 +50,14 @@ export default function CoursePage() {
             className={`text-lg font-semibold pr-2 pl-2 rounded-t-lg transition-colors duration-500 ${Number(page) == Number(1) ? "bg-white text-black" : ""}`}
             onClick={() => setPage(1)}
           >
-            Presentation
+            Теория
           </button>
           {course.video_url ? (
             <button 
             className={`text-lg font-semibold pr-2 pl-2 rounded-t-lg transition-colors duration-500 ${Number(page) == Number(2) ? "bg-white text-black" : ""}`}
             onClick={() => setPage(2)}
           >
-            Video
+            Видео
           </button>
           ) : null}
           {course.test_id ? (
@@ -65,7 +65,7 @@ export default function CoursePage() {
               className={`text-lg font-semibold pr-2 pl-2 rounded-t-lg transition-colors duration-500 ${Number(page) == Number(3) ? "bg-white text-black" : ""}`}
               onClick={() => setPage(3)}
             >
-              Test
+              Тест
             </button>
           ) : null}
         </div>
@@ -108,7 +108,7 @@ export default function CoursePage() {
                     disabled={pageNumber < numPages}
                     onClick={() => setPage(3)}
                   >
-                    Go to test
+                    Перейти к тесту
                   </button>
                 </div>
               ) : null}

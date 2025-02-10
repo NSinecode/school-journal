@@ -77,7 +77,7 @@ export default function CourseCard({ course, uId, dClick, isExp, isExpanded, pro
                       </button>
                   ) : null }
                 </SignedIn>
-                {uId == course.author_id ? (
+                {uId == course.author_id || profile.role == "admin" ? (
                     <button
                       className="bg-gray-500 bottom-1 rounded-lg p-1"
                       onClick={(e) => {

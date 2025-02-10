@@ -56,21 +56,21 @@ export default function ChooseClassroomPage() {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Your Classrooms</h1>
+        <h1 className="text-2xl font-bold">Ваши классы</h1>
         <Button onClick={() => router.push('/classroom/create')}>
-          Create Classroom
+          Создать класс
         </Button>
       </div>
 
       <div className="mb-6 flex gap-4">
         <input
           type="text"
-          placeholder="Enter classroom ID"
+          placeholder="Введите ID класса"
           value={searchId}
           onChange={(e) => setSearchId(e.target.value)}
           className="p-2 rounded border flex-1"
         />
-        <Button onClick={handleSearch}>Search</Button>
+        <Button onClick={handleSearch}>Поиск</Button>
       </div>
       
       <div className="grid gap-4">
@@ -84,7 +84,7 @@ export default function ChooseClassroomPage() {
               <div>
                 <h2 className="text-xl font-semibold">{classroom.name}</h2>
                 <p className="text-gray-600">
-                  {classroom.students?.length || 0} students | Score: {classroom.score}
+                  {classroom.students?.length || 0} учеников | Успеваемость: {classroom.score}
                 </p>
               </div>
             </Button>
@@ -93,13 +93,13 @@ export default function ChooseClassroomPage() {
               className="px-3 h-auto"
               onClick={() => navigator.clipboard.writeText(classroom.id)}
             >
-              Copy ID
+              Скопировать ID
             </Button>
           </div>
         ))}
 
         {classrooms.length === 0 && (
-          <p className="text-gray-500 text-center">No classrooms found. Create one!</p>
+          <p className="text-gray-500 text-center">У вас нету классов. Создайте новый!</p>
         )}
       </div>
     </div>

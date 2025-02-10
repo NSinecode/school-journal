@@ -94,7 +94,7 @@ export default function ClassroomDetailsPage({
       
       <div className="shadow rounded-lg p-6 space-y-4">
         <div>
-          <h2 className="text-lg font-semibold text-white mb-2">Classroom Details</h2>
+          <h2 className="text-lg font-semibold text-white mb-2">Детали класса</h2>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div className="text-white/60">ID:</div>
             <div className="text-white flex items-center gap-2">
@@ -106,18 +106,18 @@ export default function ClassroomDetailsPage({
                 }}
                 className="ml-2 px-3 py-1 text-xs bg-blue-500 hover:bg-blue-600 rounded-md"
               >
-                Copy Invite Link
+                Ссылка для приглашения
               </button>
             </div>
-            <div className="text-white/60">Created:</div>
+            <div className="text-white/60">Создано:</div>
             <div className="text-white">{new Date(classroom.created_at).toLocaleDateString()}</div>
-            <div className="text-white/60">Teacher ID:</div>
+            <div className="text-white/60">ID учителя:</div>
             <div className="text-white">{classroom.teacher_id}</div>
           </div>
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold text-white mb-2">Students</h2>
+          <h2 className="text-lg font-semibold text-white mb-2">Ученики</h2>
           {classroom.students.length > 0 ? (
             <ul className="list-disc pl-5 text-white">
               {classroom.students.map((student: string, index: number) => (
@@ -125,13 +125,13 @@ export default function ClassroomDetailsPage({
               ))}
             </ul>
           ) : (
-            <p className="text-white/60">No students enrolled yet</p>
+            <p className="text-white/60">Пока нет учеников</p>
           )}
         </div>
       </div>
 
       <div className="mt-6">
-        <h2 className="text-lg font-semibold text-white mb-2">Homework</h2>
+        <h2 className="text-lg font-semibold text-white mb-2">Домашнее задание</h2>
         <div className="flex flex-col gap-4">
           <div className="flex gap-2">
             <input
@@ -142,13 +142,13 @@ export default function ClassroomDetailsPage({
               className={`flex-1 p-2 border rounded ${
                 isErrorHomework ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Choose a course for homework"
+              placeholder="Выберите курс для домашнего задания"
             />
             <button
               onClick={handleHomeworkSubmit}
               className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
             >
-              Add Homework
+              Добавить домашнее задание
             </button>
           </div>
           <datalist id="homework-list">
@@ -165,7 +165,7 @@ export default function ClassroomDetailsPage({
               })}
             </ul>
           ) : (
-            <p className="text-white/60">No homework assigned yet</p>
+            <p className="text-white/60">Пока нет домашнего задания</p>
           )}
         </div>
       </div>

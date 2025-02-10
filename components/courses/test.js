@@ -102,11 +102,11 @@ export default function TestPage({test_id, goToPres}) {
   }
 
   if (isLoading) {
-    return <div className="p-8 text-white">Loading questions...</div>
+    return <div className="p-8 text-white">Загрузка вопросов...</div>
   }
 
   if (!questions.length) {
-    return <div className="p-8 text-white">No questions available.</div>
+    return <div className="p-8 text-white">Нет доступных вопросов.</div>
   }
 
   if (showSummary) {
@@ -119,19 +119,19 @@ export default function TestPage({test_id, goToPres}) {
     return (
       <div className="p-8 max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-white text-2xl">Quiz Summary</h2>
+          <h2 className="text-white text-2xl">Результаты</h2>
           <div className="text-white text-xl">
-            Final Score: {score}/{questions.length}
+            Финальная оценка: {score}/{questions.length}
           </div>
         </div>
 
         {Object.keys(topicMistakes).length > 0 && (
           <div className="mb-8 p-4 rounded-lg border border-yellow-500 bg-yellow-500/10">
-            <h3 className="text-white mb-2">Topics to Review:</h3>
+            <h3 className="text-white mb-2">Темы для повторения:</h3>
             <ul className="space-y-1">
               {Object.entries(topicMistakes).map(([topic, count]) => (
                 <li key={topic} className="text-yellow-200">
-                  {topic}: {count} mistake{count > 1 ? 's' : ''}
+                  {topic}: {count} ошиб{count > 1 ? (count < 5 ? "ки" : "ок") : 'ка'}
                 </li>
               ))}
             </ul>
@@ -151,11 +151,11 @@ export default function TestPage({test_id, goToPres}) {
               <p className="text-white mb-2">{idx + 1}. {question.title}</p>
               <div className="text-sm">
                 <p className="text-green-400">
-                  Correct: {String.fromCharCode(65 + question.correctAnswer)}: {question.answers[question.correctAnswer]}
+                  Правильный ответ: {String.fromCharCode(65 + question.correctAnswer)}: {question.answers[question.correctAnswer]}
                 </p>
                 {userAnswers[idx] !== question.correctAnswer && (
                   <p className="text-red-400">
-                    Your answer: {String.fromCharCode(65 + userAnswers[idx])}: {question.answers[userAnswers[idx]]}
+                    Ваш ответ: {String.fromCharCode(65 + userAnswers[idx])}: {question.answers[userAnswers[idx]]}
                   </p>
                 )}
               </div>
@@ -167,13 +167,13 @@ export default function TestPage({test_id, goToPres}) {
           <Button
             onClick={() => setShowSummary(false)}
           >
-            Return to Questions
+            Вернуться к вопросам
           </Button>
           <Button
             variant="secondary"
             onClick={() => goToPres()}
           >
-            Go back to presentation
+            Вернуться к теории
           </Button>
         </div>
       </div>
@@ -188,7 +188,7 @@ export default function TestPage({test_id, goToPres}) {
           <h2 className="text-lightgray-600">Question {currentQuestion + 1} of {questions.length}</h2>
         </div>
         <div className="text-white">
-          Score: {score}
+          Оценка: {score}
         </div>
       </div>
 
@@ -226,7 +226,7 @@ export default function TestPage({test_id, goToPres}) {
           }}
           disabled={currentQuestion === 0}
         >
-          Back
+          Назад
         </Button>
         <Button
           onClick={() => {
@@ -241,7 +241,7 @@ export default function TestPage({test_id, goToPres}) {
           }}
           disabled={!answeredQuestions.has(currentQuestion) && selectedAnswer === null}
         >
-          {currentQuestion === questions.length - 1 ? 'Finish Test' : 'Next'}
+          {currentQuestion === questions.length - 1 ? 'Закончить тест' : 'Следующий вопрос'}
         </Button>
       </div>
     </div>

@@ -54,7 +54,7 @@ export default function ChooseTestPage() {
   }
 
   if (!tests.length) {
-    return <div className="p-8 text-white">No tests available.</div>
+    return <div className="p-8 text-white">Нету тестов</div>
   }
 
   return (
@@ -62,15 +62,15 @@ export default function ChooseTestPage() {
       <div className="mb-6 flex gap-4">
         <input
           type="number"
-          placeholder="Enter test ID"
+          placeholder="Введите ID теста"
           value={searchId}
           onChange={(e) => setSearchId(e.target.value)}
           className="p-2 rounded bg-white/5 border border-white/10 text-white"
         />
-        <Button onClick={handleSearch}>Search</Button>
+        <Button onClick={handleSearch}>Поиск</Button>
       </div>
 
-      <h1 className="text-2xl font-bold text-white mb-6">Choose a Test</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Выберите тест</h1>
       <div className="grid gap-4 md:grid-cols-2">
         {tests.map((test) => (
           <Card 
@@ -87,7 +87,7 @@ export default function ChooseTestPage() {
               <p className="text-gray-300">{test.description}</p>
               <p className="text-white mt-2">{test.name}</p>
               <p className="text-sm text-gray-400 mt-1">
-                {test.body.length} questions
+                {test.body.length} вопросов
               </p>
             </CardContent>
           </Card>

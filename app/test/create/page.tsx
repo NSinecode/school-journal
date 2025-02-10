@@ -94,12 +94,12 @@ export default function CreatePage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Create Questions</h1>
+      <h1 className="text-2xl font-bold mb-6">Создайте вопросы</h1>
       
       <div className="space-y-4 mb-6">
         <input
           type="text"
-          placeholder="Test Name"
+          placeholder="Название теста"
           value={testName}
           onChange={(e) => setTestName(e.target.value)}
           className="w-full p-2 border rounded"
@@ -107,7 +107,7 @@ export default function CreatePage() {
         
         <input
           type="text"
-          placeholder="Question"
+          placeholder="Вопрос"
           value={currentQuestion.title}
           onChange={(e) => setCurrentQuestion({ ...currentQuestion, title: e.target.value })}
           className="w-full p-2 border rounded"
@@ -115,7 +115,7 @@ export default function CreatePage() {
         
         <input
           type="text"
-          placeholder="Topic"
+          placeholder="Тема"
           value={currentQuestion.topic}
           onChange={(e) => setCurrentQuestion({ ...currentQuestion, topic: e.target.value })}
           className="w-full p-2 border rounded"
@@ -125,7 +125,7 @@ export default function CreatePage() {
           <div key={index} className="flex gap-2">
             <input
               type="text"
-              placeholder={`Answer ${index + 1}`}
+              placeholder={`Ответ ${index + 1}`}
               value={answer}
               onChange={(e) => handleAnswerChange(index, e.target.value)}
               className="flex-1 p-2 border rounded"
@@ -143,22 +143,22 @@ export default function CreatePage() {
           onClick={addQuestion}
           className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
         >
-          Add Question
+          Добавить вопрос
         </button>
       </div>
 
       {questions.length > 0 && (
         <>
           <div className="mb-6">
-            <h2 className="text-xl font-bold mb-2">Added Questions:</h2>
+            <h2 className="text-xl font-bold mb-2">Вопросы:</h2>
             {questions.map((q, i) => (
               <div key={i} className="space-y-4">
                 <div className="rounded-lg border p-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p><strong>Question:</strong> {q.title}</p>
-                      <p><strong>Topic:</strong> {q.topic}</p>
-                      <p><strong>Answers:</strong></p>
+                      <p><strong>Вопрос:</strong> {q.title}</p>
+                      <p><strong>Тема:</strong> {q.topic}</p>
+                      <p><strong>Ответы:</strong></p>
                       <ul className="list-disc pl-6">
                         {q.answers.map((a, j) => (
                           <li key={j} className={j === q.correctAnswer ? 'font-bold' : ''}>
@@ -175,7 +175,7 @@ export default function CreatePage() {
                           onClick={() => handleDeleteQuestion(i)}
                         >
                           <TrashIcon />
-                          Delete Question
+                          Удалить вопрос
                         </Button>
                       </div>
                       <div className="mt-2">
@@ -187,7 +187,7 @@ export default function CreatePage() {
                             handleDeleteQuestion(i)
                           }}
                         >
-                          Edit Question
+                          Изменить вопрос
                         </Button>
                       </div>
                     </div>
@@ -202,7 +202,7 @@ export default function CreatePage() {
             className="w-full"
             disabled={!testName || questions.length === 0 || isPublishing}
           >
-            {isPublishing ? 'Publishing...' : 'Publish Test'}
+            {isPublishing ? 'Публикация...' : 'Опубликовать тест'}
           </Button>
         </>
       )}
