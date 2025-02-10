@@ -47,20 +47,20 @@ export default function Header() {
             href="/"
             className="hover:underline"
           >
-            Home
+            Главная
           </Link>
           <Link
             href="/Courses"
             className="hover:underline"
           >
-            Courses
+            Курсы
           </Link>
           <SignedIn>
             <Link
               href="/forum"
               className="hover:underline"
             >
-              Forum
+              Форум
             </Link>
           </SignedIn>
           {userRole === 'teacher' && (
@@ -69,19 +69,19 @@ export default function Header() {
                 href="/test/create"
                 className="hover:underline"
               >
-                Create Test
+                Создать тест
               </Link>
               <Link
                 href="/classroom/choose"
                 className="hover:underline"
               >
-                Classrooms
+                Классы
               </Link>
               <Link
                 href="/classroom/create"
                 className="hover:underline"
               >
-                Create Classroom
+                Создать класс
               </Link>
             </>
           )}
@@ -90,28 +90,28 @@ export default function Header() {
               href="/classroom"
               className="hover:underline"
             >
-              My Classroom
+              Мои классы
             </Link>
           )}
           <Link
             href="/test/choose-test"
             className="hover:underline"
           >
-            All Tests
+            Тесты
           </Link>
           {userRole === "admin" && (
             <Link
             href="/subjects"
             className="hover:underline"
           >
-            Subjects
+            Предметы
           </Link>
           )}
           <Link
             href="/statistics"
             className="hover:underline"
           >
-            Statistics
+            Статистика
           </Link>
         </nav>
         <div className="flex items-center space-x-4">
@@ -142,7 +142,7 @@ export default function Header() {
                 className="block hover:underline"
                 onClick={toggleMenu}
               >
-                Home
+                Главная
               </Link>
             </li>
             <li>
@@ -151,7 +151,7 @@ export default function Header() {
                 className="hover:underline"
                 onClick={toggleMenu}
               >
-                Courses
+                Курсы
               </Link>
             </li>
             <SignedIn>
@@ -161,7 +161,7 @@ export default function Header() {
                   className="block hover:underline"
                   onClick={toggleMenu}
                 >
-                  Forum
+                  Форум
                 </Link>
               </li>
             </SignedIn>
@@ -173,7 +173,7 @@ export default function Header() {
                     className="block hover:underline"
                     onClick={toggleMenu}
                   >
-                    Create Test
+                    Создать тест
                   </Link>
                 </li>
                 <li>
@@ -182,7 +182,7 @@ export default function Header() {
                     className="block hover:underline"
                     onClick={toggleMenu}
                   >
-                    Classrooms
+                    Классы
                   </Link>
                 </li>
                 <li>
@@ -191,7 +191,7 @@ export default function Header() {
                     className="block hover:underline"
                     onClick={toggleMenu}
                   >
-                    Create Classroom
+                    Создать класс
                   </Link>
                 </li>
               </>
@@ -203,7 +203,7 @@ export default function Header() {
                   className="block hover:underline"
                   onClick={toggleMenu}
                 >
-                  My Classroom
+                  Мои классы
                 </Link>
               </li>
             )}
@@ -213,7 +213,7 @@ export default function Header() {
                 className="block hover:underline"
                 onClick={toggleMenu}
               >
-                All Tests
+                Тесты
               </Link>
             </li>
             {userRole === "admin" && (
@@ -223,7 +223,7 @@ export default function Header() {
                   className="block hover:underline"
                   onClick={toggleMenu}
                 >
-                  Subjects
+                  Предметы
                 </Link>
             </li>
             )}
@@ -233,7 +233,7 @@ export default function Header() {
                 className="block hover:underline"
                 onClick={toggleMenu}
               >
-                Statistics
+                Статистика
               </Link>
             </li>
           </ul>

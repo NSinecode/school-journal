@@ -35,54 +35,54 @@ export default async function StatisticsPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4 text-white">Your Statistics</h1>
+      <h1 className="text-2xl font-bold mb-4 text-white">Ваша статистика</h1>
       
       <div className="bg-gray-900 shadow-md border border-gray-700 rounded-lg p-6 text-gray-200">
         <div className="space-y-4">
           <div>
-            <h2 className="text-xl font-semibold mb-2 text-white">Profile Information</h2>
-            <p><span className="font-medium text-gray-300">Role:</span> {profile.role}</p>
-            <p><span className="font-medium text-gray-300">Forum Messages:</span> {messageCount}</p>
+            <h2 className="text-xl font-semibold mb-2 text-white">Информация о профиле</h2>
+            <p><span className="font-medium text-gray-300">Роль:</span> {profile.role}</p>
+            <p><span className="font-medium text-gray-300">Сообщений на форуме:</span> {messageCount}</p>
             <p><span className="font-medium text-gray-300">Karma:</span> {karma}</p>
           </div>
 
           {role === "student" && (
             <div>
-              <h2 className="text-xl font-semibold mb-2 text-white">Student Statistics</h2>
-              <p className="text-gray-300"><span className="font-medium">Score:</span> {score}</p>
+              <h2 className="text-xl font-semibold mb-2 text-white">Статистика студента</h2>
+              <p className="text-gray-300"><span className="font-medium">Успеваемость:</span> {score}</p>
               <p className="text-gray-300">
-                <span className="font-medium">Tests Completed:</span>{" "}
-                {testsCompleted.length > 0 ? testsCompleted.length : "No tests completed yet"}
+                <span className="font-medium">Тестов завершено:</span>{" "}
+                {testsCompleted.length > 0 ? testsCompleted.length : "Вы пока не завершили ни одного теста"}
               </p>
               <p className="text-gray-300">
-                <span className="font-medium">Challenging Topics:</span>{" "}
+                <span className="font-medium">Проблемные темы:</span>{" "}
                 {profile.difficult_topics && profile.difficult_topics.length > 0 
                   ? profile.difficult_topics.join(", ")
-                  : "None identified yet"}
+                  : "Пока проблемных тем нет!"}
               </p>
               <a 
                 href="/classroom"
                 className="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
               >
-                Go to Classroom
+                Перейти к вашим классам
               </a>
             </div>
           )}
 
           {role === "teacher" && (
             <div>
-              <h2 className="text-xl font-semibold mb-2 text-white">Teacher Statistics</h2>
+              <h2 className="text-xl font-semibold mb-2 text-white">Статистика учителя</h2>
               <p className="text-gray-300">
-                <span className="font-medium">Classes Hosted:</span>{" "}
+                <span className="font-medium">Классов создано:</span>{" "}
                 {teacherClassrooms.length > 0 
                   ? teacherClassrooms.map(classroom => classroom.name).join(", ")
-                  : "No classes yet"}
+                  : "Пока не создано ни одного класса"}
               </p>
               <p className="text-gray-300">
-                <span className="font-medium">Courses Created:</span>{" "}
+                <span className="font-medium">Курсов создано :</span>{" "}
                 {teacherCourses.length > 0
                   ? teacherCourses.map((course: SelectCourse) => course.title).join(", ")
-                  : "No courses yet"}
+                  : "Пока не создано ни одного курса"}
               </p>
             </div>
           )}

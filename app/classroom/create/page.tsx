@@ -64,12 +64,12 @@ export default function CreateClassroomPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Create Classroom</h1>
+      <h1 className="text-2xl font-bold mb-6">Создать класс</h1>
       
       <div className="space-y-4 mb-6">
         <input
           type="text"
-          placeholder="Classroom Name"
+          placeholder="Имя класса"
           value={classroomName}
           onChange={(e) => setClassroomName(e.target.value)}
           className="w-full p-2 border rounded"
@@ -80,7 +80,7 @@ export default function CreateClassroomPage() {
           className="w-full"
           disabled={!classroomName || isCreating}
         >
-          {isCreating ? 'Creating...' : 'Create Classroom'}
+          {isCreating ? 'Создание...' : 'Создать класс'}
         </Button>
       </div>
     </div>

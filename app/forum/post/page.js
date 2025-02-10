@@ -176,7 +176,7 @@ export default function PostPage() {
                     shake ? "animate-shake" : ""
                     }`}
                 >
-                    <h2 className="text-lg font-bold mb-4">{replyId ? "New reply" : "New post"}</h2>
+                    <h2 className="text-lg font-bold mb-4">{replyId ? "Новый ответ" : "Новое сообщение"}</h2>
                     <textarea
                     type="text"
                     value={newMessage}
@@ -187,14 +187,14 @@ export default function PostPage() {
                     className={`w-full p-2 border rounded mt-3 border-gray-300 ${
                         isError ? "border-red-500" : "border-gray-300"
                     }`}
-                    placeholder="Enter the message"
+                    placeholder="Введите сообщение"
                     />
                     <div className="flex justify-end gap-2 mt-4">
                     <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-700 rounded">
-                        Cancel
+                        Отмена
                     </button>
                     <button onClick={handleAddMessage} className="px-4 py-2 bg-blue-500 text-white rounded">
-                        Post
+                        Опубликовать
                     </button>
                     </div>
                 </div>

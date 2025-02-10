@@ -220,13 +220,13 @@ export default function PostFeed({isPost, pstId}) {
               className="flex-1 w-full bg-blue-500 text-white py-2 rounded mb-4 hover:bg-blue-600 p-3"
               onClick={() => setIsModalOpen(true)}
             >
-              New
+              Создать
             </button>
           </SignedIn>
           {/* Поисковая строка */}
           <input
               type="text"
-              placeholder="Post search"
+              placeholder="Поиск по сообщениям"
               className="flex-4 w-full p-2 border rounded mb-4"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -252,7 +252,7 @@ export default function PostFeed({isPost, pstId}) {
             />
           ))
         ) : (
-          <p className="text-center text-gray-500">No posts founded</p>
+          <p className="text-center text-gray-500">Сообщений не найдено</p>
         )}
       </div>
 
@@ -263,7 +263,7 @@ export default function PostFeed({isPost, pstId}) {
               shake ? "animate-shake" : ""
             }`}
           >
-            <h2 className="text-lg font-bold mb-4">{replyId ? "New reply" : "New post"}</h2>
+            <h2 className="text-lg font-bold mb-4">{replyId ? "Новый ответ" : "Новое сообщение"}</h2>
             <textarea
               type="text"
               value={newMessage}
@@ -274,7 +274,7 @@ export default function PostFeed({isPost, pstId}) {
               className={`w-full p-2 border rounded mt-3 border-gray-300 ${
                 isError ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter the message"
+              placeholder="Введите сообщение"
             />
             {/* <input 
               value={courses.find((course) => course.id.toString() === selectedCourse)?.title}
@@ -291,10 +291,10 @@ export default function PostFeed({isPost, pstId}) {
             </datalist> */}
             <div className="flex justify-end gap-2 mt-4">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-700 rounded">
-                Cancel
+                Отменить
               </button>
               <button onClick={handleAddMessage} className="px-4 py-2 bg-blue-500 text-white rounded">
-                Post
+                Опубликовать
               </button>
             </div>
           </div>

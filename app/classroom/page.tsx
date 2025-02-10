@@ -96,7 +96,7 @@ export default function ClassroomPage() {
         ))}
 
         {classrooms.length === 0 && (
-          <p className="text-gray-500 text-center">No classrooms joined yet. Join one using a classroom ID!</p>
+          <p className="text-gray-500 text-center">Вы пока ни в одном классе</p>
         )}
       </div>
     </div>

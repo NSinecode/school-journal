@@ -38,7 +38,7 @@ export default function Forum() {
             {subjectsNotConfirmed.length > 0 ? (
                 <div>
                     <div>
-                        <h1 className="text-3xl font-bold font-sans opacity-80">New requests</h1>
+                        <h1 className="text-3xl font-bold font-sans opacity-80">Новые заявки</h1>
                     </div>
                     <div className="mb-3">
                         {subjectsNotConfirmed.map(subject => (
@@ -51,13 +51,13 @@ export default function Forum() {
                                   className="mt-2 p-2 bg-green-500 bg-opacity-60 rounded-xl border-2 border-green-600 hover:bg-opacity-50" 
                                   onClick={() => handleConfrimSuject(subject.id)}
                                 >
-                                    Confirm
+                                    Одобрить
                                 </button>
                                 <button
                                   className="mt-2 p-2 bg-red-500 bg-opacity-60 rounded-xl border-2 border-red-600 hover:bg-opacity-50"
                                   onClick={() => handleDeleteSubject(subject.id, false)}
                                 >
-                                    Discard
+                                    Отменить
                                 </button>
                             </div>
                         ))}
@@ -65,7 +65,7 @@ export default function Forum() {
                 </div>
             ) : null}
             <div>
-                <h1 className="text-3xl font-bold font-sans opacity-80">Confirmed subjects</h1>
+                <h1 className="text-3xl font-bold font-sans opacity-80">Подтвержденные предметы</h1>
                 {subjectConfirmed.map(subject => (
                     <div
                       key={subject.id}
@@ -76,7 +76,7 @@ export default function Forum() {
                           className="mt-2 p-2 bg-red-500 bg-opacity-60 rounded-xl border-2 border-red-600 hover:bg-opacity-50"
                           onClick={() => handleDeleteSubject(subject.id, true)}
                         >
-                            Delete
+                            Удалить
                         </button>
                     </div>
                 ))}

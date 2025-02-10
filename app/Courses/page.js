@@ -275,15 +275,15 @@ export default function Courses() {
   return (
     <>
       <Head>
-        <title>Courses</title>
+        <title>Курсы</title>
       </Head>
       <div>
-        <h1 className="flex flex-col items-center p-5">Courses searching</h1>
+        <h1 className="flex flex-col items-center p-5">Поиск курсов</h1>
         <SignedIn>
           {profile && (profile.role == "teacher" || profile.role == "admin") ? (
           <div className="flex justify-center">
             <button onClick={toggleModal} className="flex justify-center p-2 bg-blue-500 text-white rounded-lg mb-4 hover:bg-blue-600 transition relative">
-              Create course
+              Создать курс
             </button>
           </div>
           ) : null}
@@ -297,7 +297,7 @@ export default function Courses() {
               shake ? "animate-shake" : ""
             }`}
           >
-            <h2 className="text-lg font-bold mb-4">Create course</h2>
+            <h2 className="text-lg font-bold mb-4">Создать курс</h2>
             <input
               type="text"
               value={newTitle}
@@ -308,7 +308,7 @@ export default function Courses() {
               className={`w-full p-2 border rounded ${
                 isError ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter the name"
+              placeholder="Введите название"
             />
             <input
               type="text"
@@ -317,14 +317,14 @@ export default function Courses() {
                 setNewDescription(e.target.value);
               }}
               className="w-full p-2 border rounded mt-3 border-gray-300"
-              placeholder="Enter the description"
+              placeholder="Введите описание"
             />
             <div className="flex gap-2">
               <button
                 className="flex justify-center mt-3 p-2 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition relative"
                 onClick={handleRequest}
               >
-                Make a subject request
+                Оставить заявку на добавление предмета
               </button>
               <input 
                 value={subjects.find((subject) => subject.id.toString() === selectedSubject)?.name || ""}
@@ -336,7 +336,7 @@ export default function Courses() {
                 list="subject-list" 
                 name="subject" 
                 className={`w-full p-2 border rounded mt-3 ${isErrorSub ? "border-red-500" : "border-gray-300"}`} 
-                placeholder="Choose subject"
+                placeholder="Выберите предмет"
               />
               <datalist id="subject-list">
                 {subjects.map((subject) => (
@@ -361,7 +361,7 @@ export default function Courses() {
               className={`w-full p-2 border rounded mt-3 ${
                 isErrorTag ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter the tags through a space or enter"
+              placeholder="Введите теги черех пробел или Enter"
             />
             <div
               className="grid grid-cols-3 gap-2 mt-2"
@@ -393,7 +393,7 @@ export default function Courses() {
                 setVideo(e.target.value);
               }}
               className="w-full p-2 border rounded mt-3 border-gray-300"
-              placeholder="Enter the video URL"
+              placeholder="Введите URL видео"
             />
             <input 
               value={testInput}
@@ -402,7 +402,7 @@ export default function Courses() {
               list="test-list" 
               name="test" 
               className={`w-full p-2 border rounded mt-3 ${isErrorTest ? "border-red-500" : "border-gray-300"}`} 
-              placeholder="Choose test"
+              placeholder="Выберите тест"
             />
             <datalist id="test-list">
               {tests.map((test) => (
@@ -415,10 +415,10 @@ export default function Courses() {
             />
             <div className="flex justify-end gap-2 mt-4">
               <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-700 rounded">
-                Cancel
+                Отменить
               </button>
               <button onClick={handleAddCourse} disabled={!isLoaded} className="px-4 py-2 bg-blue-500 disabled:opacity-50 text-white rounded">
-                Create
+                Создать
               </button>
             </div>
           </div>
@@ -441,14 +441,14 @@ export default function Courses() {
               className={`w-full p-2 border rounded ${
                 isSubError ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter the name"
+              placeholder="Введите название предмета"
             />
             <div className="flex justify-end gap-2 mt-4">
               <button onClick={() => setIsRequestOpen(false)} className="px-4 py-2 bg-gray-700 rounded">
-                Cancel
+                Отменить
               </button>
               <button onClick={handleSubjectRequest} className="px-4 py-2 bg-blue-500 disabled:opacity-50 text-white rounded">
-                Make request
+                Оставить заявку
               </button>
             </div>
           </div>
