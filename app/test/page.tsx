@@ -209,7 +209,7 @@ export default function TestPage() {
             <ul className="space-y-1">
               {Object.entries(topicMistakes).map(([topic, count]) => (
                 <li key={topic} className="text-yellow-200">
-                  {topic}: {count} ошибки{count > 1 ? 's' : ''}
+                  {topic}: {count} ошиб{count > 1 ? (count < 5 ? "ки" : "ок") : 'ка'}
                 </li>
               ))}
             </ul>

@@ -119,7 +119,7 @@ export default function TestPage({test_id, goToPres}) {
     return (
       <div className="p-8 max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-white text-2xl">Результаты теста</h2>
+          <h2 className="text-white text-2xl">Результаты</h2>
           <div className="text-white text-xl">
             Финальная оценка: {score}/{questions.length}
           </div>
@@ -127,11 +127,11 @@ export default function TestPage({test_id, goToPres}) {
 
         {Object.keys(topicMistakes).length > 0 && (
           <div className="mb-8 p-4 rounded-lg border border-yellow-500 bg-yellow-500/10">
-            <h3 className="text-white mb-2">TТемы для повторения:</h3>
+            <h3 className="text-white mb-2">Темы для повторения:</h3>
             <ul className="space-y-1">
               {Object.entries(topicMistakes).map(([topic, count]) => (
                 <li key={topic} className="text-yellow-200">
-                  {topic}: {count} ошибки{count > 1 ? 's' : ''}
+                  {topic}: {count} ошиб{count > 1 ? (count < 5 ? "ки" : "ок") : 'ка'}
                 </li>
               ))}
             </ul>
