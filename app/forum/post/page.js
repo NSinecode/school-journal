@@ -6,6 +6,8 @@ import Post from "@/components/forum/PostBody";
 import PostFeed from "@/components/forum/PostFeed";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { motion } from 'framer-motion'
+import styles from '@/app/coming-soon/page.module.css'
 
 
 export default function PostPage() {
@@ -144,9 +146,22 @@ export default function PostPage() {
         router.refresh();
     };
     
-    if (loading) {
-        return <h3 className="max-w-2xl mx-auto p-4">loading...</h3>
-    }
+    if(loading) {
+        return (
+          <div className="min-h-screen flex flex-col items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-center"
+            >
+              <div className="mb-8 flex justify-center">
+                <div className={styles.loader}></div>
+              </div>
+            </motion.div>
+          </div>
+        )
+      }
 
     return(
         <div className="max-w-2xl mx-auto p-4">

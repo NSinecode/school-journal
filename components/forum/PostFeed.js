@@ -6,6 +6,8 @@ import { getProfileByUserIdAction } from "@/actions/profiles-actions";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { supabase } from '@/lib/supabaseClient';
+import { motion } from 'framer-motion'
+import styles from '@/app/coming-soon/page.module.css'
 import Post from "./PostBody";
 
 
@@ -216,8 +218,21 @@ export default function PostFeed({isPost, pstId}) {
   }, [posts, searchQuery, isPost, pstId])
 
 
-  if (loading) {
-    return <div className="max-w-2xl mx-auto p-4">Loading...</div>;
+  if(loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <div className="mb-8 flex justify-center">
+            <div className={styles.loader}></div>
+          </div>
+        </motion.div>
+      </div>
+    )
   }
 
   return (

@@ -10,6 +10,8 @@ import { getTestsAction } from '@/actions/tests-actions'
 import { getProfileByUserIdAction } from "@/actions/profiles-actions";
 import { getSubjectsAction, createSubjectAction } from '@/actions/subjects-actions';
 import { supabase } from '@/lib/supabaseClient';
+import { motion } from 'framer-motion'
+import styles from '@/app/coming-soon/page.module.css'
 
 import Head from "next/head";
 import SearchBar from "../../components/courses/SearchBar";
@@ -276,7 +278,20 @@ export default function Courses() {
   };
 
   if(loading) {
-    return <h1>Loading...</h1>
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <div className="mb-8 flex justify-center">
+            <div className={styles.loader}></div>
+          </div>
+        </motion.div>
+      </div>
+    )
   }
 
   return (
