@@ -50,7 +50,6 @@ export default function Courses() {
 
   const [newSubject, setNewSubject] = useState("");
 
-  const [isLoaded, setIsLoaded] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -242,7 +241,6 @@ export default function Courses() {
     }
     let fileUrl = signedUrlData.signedUrl;
     setIsUploading(false);
-    setIsLoaded(true);
     const newTagReady = tagsArr.join("/"); 
 
     const { data, error } = await supabase
@@ -271,7 +269,6 @@ export default function Courses() {
     setNewTitle("");
     setNewDescription("");
     setSelectedTest(null);
-    setIsLoaded(false);
     setVideo('');
     router.refresh();
   };
