@@ -3,16 +3,18 @@ export const dynamic = "force-dynamic";
 
 import { X } from 'lucide-react';
 import { useState, useEffect } from "react";
+import ReactPlayer from "react-player";
 import { SignedIn, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { getTestsAction } from '@/actions/tests-actions'
 import { getProfileByUserIdAction } from "@/actions/profiles-actions";
 import { getSubjectsAction, createSubjectAction } from '@/actions/subjects-actions';
 import { supabase } from '@/lib/supabaseClient';
+import { motion } from 'framer-motion'
+import styles from '@/app/coming-soon/page.module.css'
 
 import Head from "next/head";
 import SearchBar from "../../components/courses/SearchBar";
-import UploadForm from "../../components/courses/uploadForm";
 
 export default function Courses() {
   const { isSignedIn } = useAuth();
@@ -31,7 +33,7 @@ export default function Courses() {
   const [selectedTest, setSelectedTest] = useState();
   const [testInput, setInputValue] = useState("");
   const [selectedSubject, setSelectedSubject] = useState();
-  const [fileUrl, setFileUrl] = useState('');
+  const [file, setFile] = useState(null);
   const [video, setVideo] = useState('');
 
   const [isError, setIsError] = useState(false);
@@ -39,6 +41,7 @@ export default function Courses() {
   const [isErrorTest, setIsErrorTest] = useState(false);
   const [isErrorSub, setIsErrorSub] = useState(false);
   const [isSubError, setIsSubError] = useState(false);
+  const [isVidError, setIsVidError] = useState(false);
   const [shake, setShake] = useState(false);
 
   const [tests, setTests] = useState([]);
@@ -47,7 +50,7 @@ export default function Courses() {
 
   const [newSubject, setNewSubject] = useState("");
 
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -139,11 +142,19 @@ export default function Courses() {
     }
   }
 
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+
+
   const handleClick = async (delId) => {
     if (!delId) return; // Если id не задано, ничего не делаем
     try {
       let presToDel = (courses.find((course) => course.id == delId)).presentation.split("/");
       presToDel = presToDel[9].split("?")[0];
+      console.log(presToDel);
       const res = await fetch("/api/delCourse", {
         method: "POST", // или POST, если необходимо отправить данные в теле
         headers: {
@@ -166,6 +177,18 @@ export default function Courses() {
     }
   };
 
+
+  const handleDiscard = async () => {
+    setFile(null);
+    setIsModalOpen(false);
+    setNewTitle("");
+    setNewDescription("");
+    setSelectedTest(null);
+    setSelectedSubject(null);
+    setIsLoaded(false);
+    setInputValue("");
+    setVideo('');
+  }
   const handleAddCourse = async () => {
     if (newTitle.trim() == "") {
       setIsError(true);
@@ -187,7 +210,37 @@ export default function Courses() {
       setShake(true);
       setTimeout(() => setShake(false), 500); // Останавливаем тряску
       return;
+    } else if (!ReactPlayer.canPlay(video) && video.trim() != "") {
+      setIsVidError(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500); // Останавливаем тряску
+      return;
     }
+    if (!file) return;
+    setIsUploading(true);
+    
+    const filePath = `uploads/${Date.now()}.pdf`;
+    const { errorLoad } = await supabase.storage
+      .from('course presentations') 
+      .upload(filePath, file);
+
+
+    if (errorLoad) {
+      console.error('Ошибка загрузки:', errorLoad.message);
+      return;
+    }
+
+    const { data: signedUrlData, error: urlError } = await supabase
+      .storage
+      .from('course presentations') 
+      .createSignedUrl(filePath, 60 * 60 * 24 * 30 * 6);
+
+    if (urlError) {
+      console.error('Error creating signed URL:', urlError.message);
+      return;
+    }
+    let fileUrl = signedUrlData.signedUrl;
+    setIsUploading(false);
     const newTagReady = tagsArr.join("/"); 
 
     const { data, error } = await supabase
@@ -216,7 +269,6 @@ export default function Courses() {
     setNewTitle("");
     setNewDescription("");
     setSelectedTest(null);
-    setIsLoaded(false);
     setVideo('');
     router.refresh();
   };
@@ -269,7 +321,20 @@ export default function Courses() {
   };
 
   if(loading) {
-    return <h1>Loading...</h1>
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <div className="mb-8 flex justify-center">
+            <div className={styles.loader}></div>
+          </div>
+        </motion.div>
+      </div>
+    )
   }
 
   return (
@@ -391,8 +456,11 @@ export default function Courses() {
               value={video}
               onChange={(e) => {
                 setVideo(e.target.value);
+                setIsVidError(false);
               }}
-              className="w-full p-2 border rounded mt-3 border-gray-300"
+              className={`w-full p-2 border rounded mt-3 ${
+                isVidError ? "border-red-500" : "border-gray-300"
+              }`}
               placeholder="Введите URL видео"
             />
             <input 
@@ -409,15 +477,16 @@ export default function Courses() {
                 <option key={test.id} value={test.name} />
               ))}
             </datalist>
-            <UploadForm 
-              onFileUpload={setFileUrl}
-              isLoaded={setIsLoaded}
+            <input 
+              className="w-full p-2 border rounded mt-3"
+              type="file" 
+              onChange={handleFileChange} 
             />
             <div className="flex justify-end gap-2 mt-4">
-              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-gray-700 rounded">
+              <button onClick={handleDiscard} className="px-4 py-2 bg-gray-700 rounded">
                 Отменить
               </button>
-              <button onClick={handleAddCourse} disabled={!isLoaded} className="px-4 py-2 bg-blue-500 disabled:opacity-50 text-white rounded">
+              <button onClick={handleAddCourse} disabled={isUploading || !file} className="px-4 py-2 bg-blue-500 disabled:opacity-50 text-white rounded">
                 Создать
               </button>
             </div>

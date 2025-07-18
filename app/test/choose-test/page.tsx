@@ -6,6 +6,8 @@ import { useSession } from '@clerk/nextjs'
 import { getTestsAction } from '@/actions/tests-actions'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { motion } from 'framer-motion'
+import styles from '@/app/coming-soon/page.module.css'
 
 interface Test {
   id: number
@@ -57,8 +59,21 @@ export default function ChooseTestPage() {
     )
   }
 
-  if (isLoading) {
-    return <div className="p-8 text-white">Loading tests...</div>
+  if(isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <div className="mb-8 flex justify-center">
+            <div className={styles.loader}></div>
+          </div>
+        </motion.div>
+      </div>
+    )
   }
 
   if (!tests.length) {

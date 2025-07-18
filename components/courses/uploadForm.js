@@ -14,7 +14,7 @@ export default function UploadForm({ onFileUpload, isLoaded }) {
 
     setUploading(true);
     
-    const filePath = `uploads/${Date.now()}_${file.name}`;
+    const filePath = `uploads/${Date.now()}.pdf`;
     const { error } = await supabase.storage
       .from('course presentations') 
       .upload(filePath, file);

@@ -6,6 +6,8 @@ import { pdfjs } from 'react-pdf';
 import { ArrowBigRight, ArrowBigLeft } from 'lucide-react';
 import ReactPlayer from 'react-player';
 import TestPage from "@/components/courses/test";
+import { motion } from 'framer-motion'
+import styles from '@/app/coming-soon/page.module.css'
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -36,8 +38,21 @@ export default function CoursePage() {
       setPage(1);
     }
 
-    if (!course) {
-        return <h1>Loading...</h1>
+    if(!course) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <div className="mb-8 flex justify-center">
+              <div className={styles.loader}></div>
+            </div>
+          </motion.div>
+        </div>
+      )
     }
   
     return (

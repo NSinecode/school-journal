@@ -143,6 +143,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
             {/* Столбец с фильтрами */}
             <div className="flex flex-col gap-2">
               <SignedIn>
+                {profile.role != "student" ? (
                 <div>
                   <h4 className="font-semibold mb-2">Автор</h4>
                   <label className="block mb-2">
@@ -166,6 +167,7 @@ export default function SearchBar( { courses, userId, delClick, profile, subject
                     Другой
                   </label>
                 </div>
+                ) : null}
               </SignedIn>
 
               {/* Столбец с фильтрами */}
