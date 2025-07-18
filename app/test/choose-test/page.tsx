@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from '@clerk/nextjs'
 import { getTestsAction } from '@/actions/tests-actions'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -15,6 +16,7 @@ interface Test {
 }
 
 export default function ChooseTestPage() {
+  const { session } = useSession()
   const [tests, setTests] = useState<Test[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchId, setSearchId] = useState('')
@@ -22,6 +24,12 @@ export default function ChooseTestPage() {
   const router = useRouter()
 
   useEffect(() => {
+    // Check authentication
+    if (!session?.user?.id) {
+      router.push('/login')
+      return
+    }
+    
     async function loadTests() {
       const result = await getTestsAction()
       if (result.status === 'success' && result.data) {
@@ -30,7 +38,7 @@ export default function ChooseTestPage() {
       setIsLoading(false)
     }
     loadTests()
-  }, [])
+  }, [session, router])
 
   const handleSearch = () => {
     if (!searchId.trim()) return

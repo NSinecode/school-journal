@@ -7,6 +7,7 @@ import { useSession } from '@clerk/nextjs'
 import { saveTestCompletionAction } from '@/actions/tests-actions'
 import { getProfileByUserId } from '@/db/queries/profiles-queries'
 import { updateProfileAction, updateUserScoreAction } from '@/actions/profiles-actions'
+import { useRouter } from 'next/navigation'
 
 interface Question {
   title: string
@@ -24,6 +25,7 @@ interface Test {
 
 export default function TestPage() {
   const { session } = useSession()
+  const router = useRouter()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [score, setScore] = useState(0)
@@ -37,10 +39,16 @@ export default function TestPage() {
   const [testTitle, setTestTitle] = useState<string>('')
 
   useEffect(() => {
+    // Check authentication
+    if (!session?.user?.id) {
+      router.push('/login')
+      return
+    }
+    
     // Get test ID from URL
     const params = new URLSearchParams(window.location.search)
     setTestId(params.get('id'))
-  }, [])
+  }, [session, router])
 
   useEffect(() => {
     async function loadQuestions() {
@@ -71,14 +79,19 @@ export default function TestPage() {
 
   useEffect(() => {
     // Restore state from localStorage if it exists
-    const savedScore = localStorage.getItem('quizScore')
-    const savedAnswered = localStorage.getItem('answeredQuestions') 
-    const savedUserAnswers = localStorage.getItem('userAnswers')
-
-    if (savedScore) setScore(parseInt(savedScore))
+    if(localStorage.getItem("testId") == testId) {
+      const savedScore = localStorage.getItem('quizScore')
+      const savedAnswered = localStorage.getItem('answeredQuestions') 
+      const savedUserAnswers = localStorage.getItem('userAnswers')
+      if (savedScore) setScore(parseInt(savedScore))
     if (savedAnswered) setAnsweredQuestions(new Set(JSON.parse(savedAnswered)))
-    if (savedUserAnswers) setUserAnswers(JSON.parse(savedUserAnswers))
+      if (savedUserAnswers) setUserAnswers(JSON.parse(savedUserAnswers))
+    }
   }, []) // Only run once on mount
+
+  if (testId) {
+    localStorage.setItem("testId", testId)
+  }
 
   const handleAnswerSelect = (index: number) => {
     setSelectedAnswer(index)

@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:generate": "npx drizzle-kit generate",
-    "db:migrate": "npx drizzle-kit migrate"
+    "db:generate": "drizzle-kit generate:pg",
+    "db:migrate": "node -r dotenv/config src/db/migrate.ts"
   },
   "dependencies": {
     "@clerk/backend": "^1.23.9",
