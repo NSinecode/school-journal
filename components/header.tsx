@@ -65,6 +65,14 @@ export default function Header() {
               Форум
             </Link>
           </SignedIn>
+          <SignedIn>
+            <Link
+              href="/qcards"
+              className="hover:underline"
+            >
+              Quizlet
+            </Link>
+          </SignedIn>
           {userRole === 'teacher' && (
             <>
               <Link
